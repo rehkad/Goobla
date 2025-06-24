@@ -1,6 +1,6 @@
 // Package api implements the client-side API for code wishing to interact
-// with the ollama service. The methods of the [Client] type correspond to
-// the ollama REST API as described in [the API documentation].
+// with the Moogla service. The methods of the [Client] type correspond to
+// the Moogla REST API as described in [the API documentation].
 // The moogla.command-line client itself uses this package to interact with
 // the backend service.
 //
@@ -33,7 +33,7 @@ import (
 	"github.com/moogla/moogla/version"
 )
 
-// Client encapsulates client state for interacting with the ollama
+// Client encapsulates client state for interacting with the Moogla
 // service. Use [ClientFromEnvironment] to create new Clients.
 type Client struct {
 	base *url.URL
@@ -58,12 +58,12 @@ func checkError(resp *http.Response, body []byte) error {
 
 // ClientFromEnvironment creates a new [Client] using configuration from the
 // environment variable MOOGLA_HOST, which points to the network host and
-// port on which the ollama service is listening. The format of this variable
+// port on which the Moogla service is listening. The format of this variable
 // is:
 //
 //	<scheme>://<host>:<port>
 //
-// If the variable is not specified, a default ollama host and port will be
+// If the variable is not specified, a default Moogla host and port will be
 // used.
 func ClientFromEnvironment() (*Client, error) {
 	return &Client{
@@ -130,7 +130,7 @@ func (c *Client) do(ctx context.Context, method, path string, reqData, respData 
 
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Accept", "application/json")
-	request.Header.Set("User-Agent", fmt.Sprintf("ollama/%s (%s %s) Go/%s", version.Version, runtime.GOARCH, runtime.GOOS, runtime.Version()))
+	request.Header.Set("User-Agent", fmt.Sprintf("moogla/%s (%s %s) Go/%s", version.Version, runtime.GOARCH, runtime.GOOS, runtime.Version()))
 
 	if token != "" {
 		request.Header.Set("Authorization", token)
@@ -196,7 +196,7 @@ func (c *Client) stream(ctx context.Context, method, path string, data any, fn f
 
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Accept", "application/x-ndjson")
-	request.Header.Set("User-Agent", fmt.Sprintf("ollama/%s (%s %s) Go/%s", version.Version, runtime.GOARCH, runtime.GOOS, runtime.Version()))
+	request.Header.Set("User-Agent", fmt.Sprintf("moogla/%s (%s %s) Go/%s", version.Version, runtime.GOARCH, runtime.GOOS, runtime.Version()))
 
 	if token != "" {
 		request.Header.Set("Authorization", token)
@@ -286,7 +286,7 @@ func (c *Client) Chat(ctx context.Context, req *ChatRequest, fn ChatResponseFunc
 // returns an error, [Client.Pull] will stop the process and return this error.
 type PullProgressFunc func(ProgressResponse) error
 
-// Pull downloads a model from the ollama library. fn is called each time
+// Pull downloads a model from the Moogla library. fn is called each time
 // progress is made on the request and can be used to display a progress bar,
 // etc.
 func (c *Client) Pull(ctx context.Context, req *PullRequest, fn PullProgressFunc) error {
@@ -305,7 +305,7 @@ func (c *Client) Pull(ctx context.Context, req *PullRequest, fn PullProgressFunc
 // It's similar to other progress function types like [PullProgressFunc].
 type PushProgressFunc func(ProgressResponse) error
 
-// Push uploads a model to the model library; requires registering for ollama.ai
+// Push uploads a model to the model library; requires registering for Moogla.ai
 // and adding a public key first. fn is called each time progress is made on
 // the request and can be used to display a progress bar, etc.
 func (c *Client) Push(ctx context.Context, req *PushRequest, fn PushProgressFunc) error {

@@ -5,7 +5,7 @@ import Store from 'electron-store'
 import { getCurrentWindow, app } from '@electron/remote'
 
 import { install } from './install'
-import MooglaIcon from './ollama.svg'
+import MooglaIcon from './moogla.svg'
 
 const store = new Store()
 
@@ -19,7 +19,7 @@ export default function () {
   const [step, setStep] = useState<Step>(Step.WELCOME)
   const [commandCopied, setCommandCopied] = useState<boolean>(false)
 
-  const command = 'ollama run llama3.2'
+  const command = 'moogla run llama3.2'
 
   return (
     <div className='drag'>
@@ -47,7 +47,7 @@ export default function () {
           <>
             <div className='mx-auto flex flex-col space-y-28 text-center'>
               <h1 className='mt-4 text-2xl tracking-tight text-gray-900'>Install the command line</h1>
-              <pre className='mx-auto text-4xl text-gray-400'>&gt; ollama</pre>
+              <pre className='mx-auto text-4xl text-gray-400'>&gt; moogla</pre>
               <div className='mx-auto'>
                 <button
                   onClick={async () => {

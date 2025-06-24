@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://moogla.com">
-    <img alt="ollama" height="200px" src="https://github.com/moogla/moogla/assets/3325447/0d0b44e2-8f4a-4e99-9b52-a5c1c741c8f7">
+    <img alt="Moogla" height="200px" src="https://github.com/moogla/moogla/assets/3325447/0d0b44e2-8f4a-4e99-9b52-a5c1c741c8f7">
   </a>
 </div>
 
@@ -26,17 +26,17 @@ curl -fsSL https://moogla.com/install.sh | sh
 
 ### Docker
 
-The official [Moogla Docker image](https://hub.docker.com/r/ollama/ollama) `ollama/ollama` is available on Docker Hub.
+The official [Moogla Docker image](https://hub.docker.com/r/moogla/moogla) `moogla/moogla` is available on Docker Hub.
 
 ### Libraries
 
-- [ollama-python](https://github.com/moogla/moogla-python)
-- [ollama-js](https://github.com/moogla/moogla-js)
+- [moogla-python](https://github.com/moogla/moogla-python)
+- [moogla-js](https://github.com/moogla/moogla-js)
 
 ### Community
 
-- [Discord](https://discord.gg/ollama)
-- [Reddit](https://reddit.com/r/ollama)
+- [Discord](https://discord.gg/moogla)
+- [Reddit](https://reddit.com/r/moogla)
 
 ## Quickstart
 
@@ -48,7 +48,7 @@ moogla run gemma3
 
 ## Model library
 
-Moogla supports a list of models available on [moogla.com/library](https://moogla.com/library 'ollama model library')
+Moogla supports a list of models available on [moogla.com/library](https://moogla.com/library 'moogla model library')
 
 Here are some example models that can be downloaded:
 
@@ -228,7 +228,7 @@ moogla stop llama3.2
 
 ### Start Moogla
 
-`moogla serve` is used when you want to start ollama without running the desktop application.
+`moogla serve` is used when you want to start Moogla without running the desktop application.
 
 ## Building
 

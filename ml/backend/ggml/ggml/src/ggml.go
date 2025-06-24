@@ -84,7 +84,7 @@ var OnceLoad = sync.OnceFunc(func() {
 			continue
 		}
 
-		if abspath != filepath.Dir(exe) && !strings.Contains(abspath, filepath.FromSlash("lib/ollama")) {
+		if abspath != filepath.Dir(exe) && !strings.Contains(abspath, filepath.FromSlash("lib/moogla")) {
 			slog.Debug("skipping path which is not part of ollama", "path", abspath)
 			continue
 		}

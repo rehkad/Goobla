@@ -71,21 +71,21 @@ for BINDIR in /usr/local/bin /usr/bin /bin; do
 done
 MOOGLA_INSTALL_DIR=$(dirname ${BINDIR})
 
-if [ -d "$MOOGLA_INSTALL_DIR/lib/ollama" ] ; then
-    status "Cleaning up old version at $MOOGLA_INSTALL_DIR/lib/ollama"
-    $SUDO rm -rf "$MOOGLA_INSTALL_DIR/lib/ollama"
+if [ -d "$MOOGLA_INSTALL_DIR/lib/moogla" ] ; then
+    status "Cleaning up old version at $MOOGLA_INSTALL_DIR/lib/moogla"
+    $SUDO rm -rf "$MOOGLA_INSTALL_DIR/lib/moogla"
 fi
-status "Installing ollama to $MOOGLA_INSTALL_DIR"
+status "Installing moogla to $MOOGLA_INSTALL_DIR"
 $SUDO install -o0 -g0 -m755 -d $BINDIR
-$SUDO install -o0 -g0 -m755 -d "$MOOGLA_INSTALL_DIR/lib/ollama"
+$SUDO install -o0 -g0 -m755 -d "$MOOGLA_INSTALL_DIR/lib/moogla"
 status "Downloading Linux ${ARCH} bundle"
 curl --fail --show-error --location --progress-bar \
-    "https://moogla.com/download/ollama-linux-${ARCH}.tgz${VER_PARAM}" | \
+    "https://moogla.com/download/moogla-linux-${ARCH}.tgz${VER_PARAM}" | \
     $SUDO tar -xzf - -C "$MOOGLA_INSTALL_DIR"
 
-if [ "$MOOGLA_INSTALL_DIR/bin/ollama" != "$BINDIR/ollama" ] ; then
-    status "Making ollama accessible in the PATH in $BINDIR"
-    $SUDO ln -sf "$MOOGLA_INSTALL_DIR/ollama" "$BINDIR/ollama"
+if [ "$MOOGLA_INSTALL_DIR/bin/moogla" != "$BINDIR/moogla" ] ; then
+    status "Making moogla accessible in the PATH in $BINDIR"
+    $SUDO ln -sf "$MOOGLA_INSTALL_DIR/moogla" "$BINDIR/moogla"
 fi
 
 # Check for NVIDIA JetPack systems with additional downloads
@@ -93,12 +93,12 @@ if [ -f /etc/nv_tegra_release ] ; then
     if grep R36 /etc/nv_tegra_release > /dev/null ; then
         status "Downloading JetPack 6 components"
         curl --fail --show-error --location --progress-bar \
-            "https://moogla.com/download/ollama-linux-${ARCH}-jetpack6.tgz${VER_PARAM}" | \
+            "https://moogla.com/download/moogla-linux-${ARCH}-jetpack6.tgz${VER_PARAM}" | \
             $SUDO tar -xzf - -C "$MOOGLA_INSTALL_DIR"
     elif grep R35 /etc/nv_tegra_release > /dev/null ; then
         status "Downloading JetPack 5 components"
         curl --fail --show-error --location --progress-bar \
-            "https://moogla.com/download/ollama-linux-${ARCH}-jetpack5.tgz${VER_PARAM}" | \
+            "https://moogla.com/download/moogla-linux-${ARCH}-jetpack5.tgz${VER_PARAM}" | \
             $SUDO tar -xzf - -C "$MOOGLA_INSTALL_DIR"
     else
         warning "Unsupported JetPack version detected.  GPU may not be supported"
@@ -107,39 +107,39 @@ fi
 
 install_success() {
     status 'The Moogla API is now available at 127.0.0.1:11434.'
-    status 'Install complete. Run "ollama" from the command line.'
+    status 'Install complete. Run "moogla" from the command line.'
 }
 trap install_success EXIT
 
 # Everything from this point onwards is optional.
 
 configure_systemd() {
-    if ! id ollama >/dev/null 2>&1; then
-        status "Creating ollama user..."
-        $SUDO useradd -r -s /bin/false -U -m -d /usr/share/ollama ollama
+    if ! id moogla >/dev/null 2>&1; then
+        status "Creating moogla user..."
+        $SUDO useradd -r -s /bin/false -U -m -d /usr/share/moogla moogla
     fi
     if getent group render >/dev/null 2>&1; then
-        status "Adding ollama user to render group..."
-        $SUDO usermod -a -G render ollama
+        status "Adding moogla user to render group..."
+        $SUDO usermod -a -G render moogla
     fi
     if getent group video >/dev/null 2>&1; then
-        status "Adding ollama user to video group..."
-        $SUDO usermod -a -G video ollama
+        status "Adding moogla user to video group..."
+        $SUDO usermod -a -G video moogla
     fi
 
-    status "Adding current user to ollama group..."
-    $SUDO usermod -a -G ollama $(whoami)
+    status "Adding current user to moogla group..."
+    $SUDO usermod -a -G moogla $(whoami)
 
-    status "Creating ollama systemd service..."
-    cat <<EOF | $SUDO tee /etc/systemd/system/ollama.service >/dev/null
+    status "Creating moogla systemd service..."
+    cat <<EOF | $SUDO tee /etc/systemd/system/moogla.service >/dev/null
 [Unit]
 Description=Moogla Service
 After=network-online.target
 
 [Service]
-ExecStart=$BINDIR/ollama serve
-User=ollama
-Group=ollama
+ExecStart=$BINDIR/moogla serve
+User=moogla
+Group=moogla
 Restart=always
 RestartSec=3
 Environment="PATH=$PATH"
@@ -150,11 +150,11 @@ EOF
     SYSTEMCTL_RUNNING="$(systemctl is-system-running || true)"
     case $SYSTEMCTL_RUNNING in
         running|degraded)
-            status "Enabling and starting ollama service..."
+            status "Enabling and starting moogla service..."
             $SUDO systemctl daemon-reload
-            $SUDO systemctl enable ollama
+            $SUDO systemctl enable moogla
 
-            start_service() { $SUDO systemctl restart ollama; }
+            start_service() { $SUDO systemctl restart moogla; }
             trap start_service EXIT
             ;;
         *)
@@ -224,7 +224,7 @@ fi
 if check_gpu lspci amdgpu || check_gpu lshw amdgpu; then
     status "Downloading Linux ROCm ${ARCH} bundle"
     curl --fail --show-error --location --progress-bar \
-        "https://moogla.com/download/ollama-linux-${ARCH}-rocm.tgz${VER_PARAM}" | \
+        "https://moogla.com/download/moogla-linux-${ARCH}-rocm.tgz${VER_PARAM}" | \
         $SUDO tar -xzf - -C "$MOOGLA_INSTALL_DIR"
 
     install_success

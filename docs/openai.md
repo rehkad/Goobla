@@ -16,7 +16,7 @@ client = OpenAI(
     base_url='http://localhost:11434/v1/',
 
     # required but ignored
-    api_key='ollama',
+    api_key='moogla',
 )
 
 chat_completion = client.chat.completions.create(
@@ -67,7 +67,7 @@ embeddings = client.embeddings.create(
 from pydantic import BaseModel
 from openai import OpenAI
 
-client = OpenAI(base_url="http://localhost:11434/v1", api_key="ollama")
+client = OpenAI(base_url="http://localhost:11434/v1", api_key="moogla")
 
 # Define the schema for the response
 class FriendInfo(BaseModel):
@@ -106,7 +106,7 @@ const openai = new OpenAI({
   baseURL: 'http://localhost:11434/v1/',
 
   // required but ignored
-  apiKey: 'ollama',
+  apiKey: 'moogla',
 })
 
 const chatCompletion = await openai.chat.completions.create({
@@ -287,14 +287,14 @@ curl http://localhost:11434/v1/embeddings \
 #### Notes
 
 - `created` corresponds to when the model was last modified
-- `owned_by` corresponds to the ollama username, defaulting to `"library"`
+- `owned_by` corresponds to the Moogla username, defaulting to `"library"`
 
 ### `/v1/models/{model}`
 
 #### Notes
 
 - `created` corresponds to when the model was last modified
-- `owned_by` corresponds to the ollama username, defaulting to `"library"`
+- `owned_by` corresponds to the Moogla username, defaulting to `"library"`
 
 ### `/v1/embeddings`
 
@@ -312,18 +312,18 @@ curl http://localhost:11434/v1/embeddings \
 
 ## Models
 
-Before using a model, pull it locally `ollama pull`:
+Before using a model, pull it locally `moogla pull`:
 
 ```shell
-ollama pull llama3.2
+moogla pull llama3.2
 ```
 
 ### Default model names
 
-For tooling that relies on default OpenAI model names such as `gpt-3.5-turbo`, use `ollama cp` to copy an existing model name to a temporary name:
+For tooling that relies on default OpenAI model names such as `gpt-3.5-turbo`, use `moogla cp` to copy an existing model name to a temporary name:
 
 ```shell
-ollama cp llama3.2 gpt-3.5-turbo
+moogla cp llama3.2 gpt-3.5-turbo
 ```
 
 Afterwards, this new model name can be specified the `model` field:
@@ -351,7 +351,7 @@ FROM <some model>
 PARAMETER num_ctx <context size>
 ```
 
-Use the `ollama create mymodel` command to create a new model with the updated context size. Call the API with the updated model name:
+Use the `moogla create mymodel` command to create a new model with the updated context size. Call the API with the updated model name:
 
 ```shell
 curl http://localhost:11434/v1/chat/completions \
