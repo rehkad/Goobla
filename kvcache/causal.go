@@ -685,15 +685,29 @@ func (c *Causal) shift(seq int, beginIndex, offset int32) error {
 }
 
 func (c *Causal) Remove(seq int, beginIndex, endIndex int32) error {
-	// TODO(jessegross): We should check to see if removing the middle of the sequence will
-	// cause the sliding window to encompass tokens that we no longer have. If so, then we
-	// should return an error, which will trigger the runner to evaluate the full history and
-	// rebuild the window. However, if we have multimodal inputs in our history, this reuse
-	// results in use after free, so we don't do it for now.
+	// When removing entries that are not at the end of the sequence we may
+	// shift the remaining tokens earlier in the sequence.  For sliding
+	// window attention this can cause the new window to reference tokens
+	// that have already been dropped from the cache.  In that case we need
+	// to rebuild the cache from the full history so signal an error back to
+	// the caller.
 
 	var offset int32
 	if endIndex != math.MaxInt32 {
 		offset = beginIndex - endIndex
+	}
+
+	// Find the earliest position that we still have cached for this
+	// sequence before applying any mutations. This is used to detect if
+	// shifting remaining tokens would move them to a point that references
+	// tokens we no longer have.
+	var earliest int32 = math.MaxInt32
+	for i := range c.cells {
+		if slices.Contains(c.cells[i].sequences, seq) {
+			if c.cells[i].pos < earliest {
+				earliest = c.cells[i].pos
+			}
+		}
 	}
 
 	seqRange := newRange()
@@ -708,7 +722,14 @@ func (c *Causal) Remove(seq int, beginIndex, endIndex int32) error {
 						return errors.New("shifting cells shared by multiple sequences not supported")
 					}
 
-					c.cells[i].pos += offset
+					newPos := c.cells[i].pos + offset
+					if c.windowSize != math.MaxInt32 && earliest != math.MaxInt32 {
+						if newPos-c.windowSize+1 < earliest {
+							return fmt.Errorf("remove would reference uncached history")
+						}
+					}
+
+					c.cells[i].pos = newPos
 				}
 				if i < seqRange.min {
 					seqRange.min = i

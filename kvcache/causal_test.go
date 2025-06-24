@@ -437,6 +437,86 @@ func TestCanResume(t *testing.T) {
 	}
 }
 
+func TestSWARemoveWindow(t *testing.T) {
+	t.Run("valid", func(t *testing.T) {
+		backend := &testBackend{}
+		cache := NewSWACache(2, func(ctx ml.Context, layer int, key, shift ml.Tensor) (ml.Tensor, error) {
+			return key.Add(ctx, shift), nil
+		})
+		defer cache.Close()
+
+		cache.Init(backend, ml.DTypeF16, 1, 16, 16)
+
+		ctx := backend.NewContext()
+		defer ctx.Close()
+
+		// initial tokens 0-3
+		if err := cache.StartForward(ctx, input.Batch{Positions: []int32{0, 1, 2, 3}, Sequences: []int{0, 0, 0, 0}}, false); err != nil {
+			t.Fatalf("StartForward failed: %v", err)
+		}
+		cache.SetLayer(0)
+		tensor := ctx.FromFloatSlice([]float32{1, 2, 3, 4}, 1, 1, 4)
+		cache.Put(ctx, tensor, tensor)
+
+		// slide window so earliest position is 4
+		if err := cache.StartForward(ctx, input.Batch{Positions: []int32{4, 5}, Sequences: []int{0, 0}}, false); err != nil {
+			t.Fatalf("StartForward failed: %v", err)
+		}
+		cache.SetLayer(0)
+		tensor = ctx.FromFloatSlice([]float32{5, 6}, 1, 1, 2)
+		cache.Put(ctx, tensor, tensor)
+
+		if err := cache.StartForward(ctx, input.Batch{Positions: []int32{6}, Sequences: []int{0}}, false); err != nil {
+			t.Fatalf("StartForward failed: %v", err)
+		}
+		cache.SetLayer(0)
+		tensor = ctx.FromFloatSlice([]float32{7}, 1, 1, 1)
+		cache.Put(ctx, tensor, tensor)
+
+		if err := cache.Remove(0, 5, 6); err != nil {
+			t.Fatalf("Remove returned error: %v", err)
+		}
+	})
+
+	t.Run("invalid", func(t *testing.T) {
+		backend := &testBackend{}
+		cache := NewSWACache(2, func(ctx ml.Context, layer int, key, shift ml.Tensor) (ml.Tensor, error) {
+			return key.Add(ctx, shift), nil
+		})
+		defer cache.Close()
+
+		cache.Init(backend, ml.DTypeF16, 1, 16, 16)
+
+		ctx := backend.NewContext()
+		defer ctx.Close()
+
+		if err := cache.StartForward(ctx, input.Batch{Positions: []int32{0, 1, 2, 3}, Sequences: []int{0, 0, 0, 0}}, false); err != nil {
+			t.Fatalf("StartForward failed: %v", err)
+		}
+		cache.SetLayer(0)
+		tensor := ctx.FromFloatSlice([]float32{1, 2, 3, 4}, 1, 1, 4)
+		cache.Put(ctx, tensor, tensor)
+
+		if err := cache.StartForward(ctx, input.Batch{Positions: []int32{4, 5}, Sequences: []int{0, 0}}, false); err != nil {
+			t.Fatalf("StartForward failed: %v", err)
+		}
+		cache.SetLayer(0)
+		tensor = ctx.FromFloatSlice([]float32{5, 6}, 1, 1, 2)
+		cache.Put(ctx, tensor, tensor)
+
+		if err := cache.StartForward(ctx, input.Batch{Positions: []int32{6}, Sequences: []int{0}}, false); err != nil {
+			t.Fatalf("StartForward failed: %v", err)
+		}
+		cache.SetLayer(0)
+		tensor = ctx.FromFloatSlice([]float32{7}, 1, 1, 1)
+		cache.Put(ctx, tensor, tensor)
+
+		if err := cache.Remove(0, 3, 4); err == nil {
+			t.Fatalf("expected error removing uncached window")
+		}
+	})
+}
+
 type testBackend struct {
 	ml.Backend
 }
