@@ -203,6 +203,10 @@ func (s *Server) GenerateHandler(c *gin.Context) {
 		return
 	}
 
+	if req.Think != nil && !*req.Think && !slices.Contains(m.Capabilities(), model.CapabilityThinking) {
+		slog.Warn("model does not support thinking output", "model", req.Model)
+	}
+
 	checkpointLoaded := time.Now()
 
 	// load the model
