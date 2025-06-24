@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/moogla/moogla/model"
+	"github.com/goobla/goobla/model"
 )
 
 func TestWeighted(t *testing.T) {

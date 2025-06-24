@@ -7,7 +7,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/moogla/moogla/api"
+	"github.com/goobla/goobla/api"
 )
 
 func waitForServer(ctx context.Context, client *api.Client) error {

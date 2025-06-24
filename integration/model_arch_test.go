@@ -15,8 +15,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/moogla/moogla/api"
-	"github.com/moogla/moogla/format"
+	"github.com/goobla/goobla/api"
+	"github.com/goobla/goobla/format"
 )
 
 var (
@@ -61,10 +61,10 @@ func TestModelsGenerate(t *testing.T) {
 	// TODO use info API eventually
 	var maxVram uint64
 	var err error
-	if s := os.Getenv("MOOGLA_MAX_VRAM"); s != "" {
+	if s := os.Getenv("GOOBLA_MAX_VRAM"); s != "" {
 		maxVram, err = strconv.ParseUint(s, 10, 64)
 		if err != nil {
-			t.Fatalf("invalid  MOOGLA_MAX_VRAM %v", err)
+			t.Fatalf("invalid  GOOBLA_MAX_VRAM %v", err)
 		}
 	} else {
 		slog.Warn("No VRAM info available, testing all models, so larger ones might timeout...")
@@ -114,10 +114,10 @@ func TestModelsEmbed(t *testing.T) {
 	// TODO use info API eventually
 	var maxVram uint64
 	var err error
-	if s := os.Getenv("MOOGLA_MAX_VRAM"); s != "" {
+	if s := os.Getenv("GOOBLA_MAX_VRAM"); s != "" {
 		maxVram, err = strconv.ParseUint(s, 10, 64)
 		if err != nil {
-			t.Fatalf("invalid  MOOGLA_MAX_VRAM %v", err)
+			t.Fatalf("invalid  GOOBLA_MAX_VRAM %v", err)
 		}
 	} else {
 		slog.Warn("No VRAM info available, testing all models, so larger ones might timeout...")

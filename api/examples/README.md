@@ -1,4 +1,4 @@
-# Moogla API Examples
+# Goobla API Examples
 
 Run the examples in this directory with:
 

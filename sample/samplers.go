@@ -7,8 +7,8 @@ import (
 	"math/rand/v2"
 	"slices"
 
-	"github.com/moogla/moogla/llama"
-	"github.com/moogla/moogla/model"
+	"github.com/goobla/goobla/llama"
+	"github.com/goobla/goobla/model"
 )
 
 // token represents information about a single token during sampling

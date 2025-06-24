@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/moogla/moogla/fs"
+	"github.com/goobla/goobla/fs"
 )
 
 type Backend interface {

@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	fsggml "github.com/moogla/moogla/fs/ggml"
-	"github.com/moogla/moogla/ml/backend/ggml"
+	fsggml "github.com/goobla/goobla/fs/ggml"
+	"github.com/goobla/goobla/ml/backend/ggml"
 )
 
 func TestGetTensorNewType(t *testing.T) {

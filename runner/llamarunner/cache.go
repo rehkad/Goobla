@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/moogla/moogla/llama"
+	"github.com/goobla/goobla/llama"
 )
 
 type InputCache struct {

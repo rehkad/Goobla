@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/moogla/moogla/format"
+	"github.com/goobla/goobla/format"
 )
 
 type memInfo struct {
@@ -13,7 +13,7 @@ type memInfo struct {
 	FreeSwap    uint64 `json:"free_swap,omitempty"` // TODO split this out for system only
 }
 
-// Beginning of an `ollama info` command
+// Beginning of an `goobla info` command
 type GpuInfo struct { // TODO better name maybe "InferenceProcessor"?
 	memInfo
 	Library string `json:"library,omitempty"`

@@ -5,8 +5,8 @@ import (
 	"image"
 	"math"
 
-	"github.com/moogla/moogla/fs"
-	"github.com/moogla/moogla/model/imageproc"
+	"github.com/goobla/goobla/fs"
+	"github.com/goobla/goobla/model/imageproc"
 )
 
 // ImageProcessor contains configuration for the Qwen 2.5 VL image processing

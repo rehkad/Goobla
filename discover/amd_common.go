@@ -39,9 +39,9 @@ func commonAMDValidateLibDir() (string, error) {
 	// Favor our bundled version
 
 	// Installer payload location if we're running the installed binary
-	rocmTargetDir := filepath.Join(LibMooglaPath, "rocm")
+	rocmTargetDir := filepath.Join(LibGooblaPath, "rocm")
 	if rocmLibUsable(rocmTargetDir) {
-		slog.Debug("detected ROCM next to ollama executable " + rocmTargetDir)
+		slog.Debug("detected ROCM next to goobla executable " + rocmTargetDir)
 		return rocmTargetDir, nil
 	}
 

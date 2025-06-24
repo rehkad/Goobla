@@ -4,8 +4,8 @@ import (
 	"testing"
 	"text/template"
 
+	"github.com/goobla/goobla/api"
 	"github.com/google/go-cmp/cmp"
-	"github.com/moogla/moogla/api"
 )
 
 func TestParser(t *testing.T) {

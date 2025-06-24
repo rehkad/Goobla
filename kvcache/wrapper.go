@@ -3,8 +3,8 @@ package kvcache
 import (
 	"math"
 
-	"github.com/moogla/moogla/ml"
-	"github.com/moogla/moogla/model/input"
+	"github.com/goobla/goobla/ml"
+	"github.com/goobla/goobla/model/input"
 )
 
 // Wrapper cache is a container for multiple types of caches,

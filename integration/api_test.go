@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/moogla/moogla/api"
+	"github.com/goobla/goobla/api"
 )
 
 func TestAPIGenerate(t *testing.T) {

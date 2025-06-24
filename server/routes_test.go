@@ -24,22 +24,22 @@ import (
 	"log/slog"
 
 	"github.com/gin-gonic/gin"
+	"github.com/goobla/goobla/api"
+	"github.com/goobla/goobla/fs/ggml"
+	"github.com/goobla/goobla/openai"
+	"github.com/goobla/goobla/server/internal/client/goobla"
+	"github.com/goobla/goobla/template"
+	"github.com/goobla/goobla/types/model"
+	"github.com/goobla/goobla/version"
 	"github.com/google/go-cmp/cmp"
-	"github.com/moogla/moogla/api"
-	"github.com/moogla/moogla/fs/ggml"
-	"github.com/moogla/moogla/openai"
-	"github.com/moogla/moogla/server/internal/client/moogla"
-	"github.com/moogla/moogla/template"
-	"github.com/moogla/moogla/types/model"
-	"github.com/moogla/moogla/version"
 )
 
 func createTestFile(t *testing.T, name string) (string, string) {
 	t.Helper()
 
-	modelDir := os.Getenv("MOOGLA_MODELS")
+	modelDir := os.Getenv("GOOBLA_MODELS")
 	if modelDir == "" {
-		t.Fatalf("MOOGLA_MODELS not specified")
+		t.Fatalf("GOOBLA_MODELS not specified")
 	}
 
 	f, err := os.CreateTemp(t.TempDir(), name)
@@ -124,7 +124,7 @@ func TestRoutes(t *testing.T) {
 	createTestModel := func(t *testing.T, name string) {
 		t.Helper()
 
-		_, digest := createTestFile(t, "ollama-model")
+		_, digest := createTestFile(t, "goobla-model")
 
 		fn := func(resp api.ProgressResponse) {
 			t.Logf("Status: %s", resp.Status)
@@ -352,7 +352,7 @@ func TestRoutes(t *testing.T) {
 			Method: http.MethodPost,
 			Path:   "/api/create",
 			Setup: func(t *testing.T, req *http.Request) {
-				_, digest := createTestFile(t, "ollama-model")
+				_, digest := createTestFile(t, "goobla-model")
 				stream := false
 				createReq := api.CreateRequest{
 					Name:   "t-bone",
@@ -509,15 +509,15 @@ func TestRoutes(t *testing.T) {
 	}
 
 	modelsDir := t.TempDir()
-	t.Setenv("MOOGLA_MODELS", modelsDir)
+	t.Setenv("GOOBLA_MODELS", modelsDir)
 
-	rc := &ollama.Registry{
+	rc := &goobla.Registry{
 		// This is a temporary measure to allow us to move forward,
-		// surfacing any code contacting moogla.com we do not intended
+		// surfacing any code contacting goobla.com we do not intended
 		// to.
 		//
 		// Currently, this only handles DELETE /api/delete, which
-		// should not make any contact with the moogla.com registry, so
+		// should not make any contact with the goobla.com registry, so
 		// be clear about that.
 		//
 		// Tests that do need to contact the registry here, will be
@@ -573,7 +573,7 @@ func casingShuffle(s string) string {
 }
 
 func TestManifestCaseSensitivity(t *testing.T) {
-	t.Setenv("MOOGLA_MODELS", t.TempDir())
+	t.Setenv("GOOBLA_MODELS", t.TempDir())
 
 	r := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -603,7 +603,7 @@ func TestManifestCaseSensitivity(t *testing.T) {
 	checkManifestList := func() {
 		t.Helper()
 
-		mandir := filepath.Join(os.Getenv("MOOGLA_MODELS"), "manifests/")
+		mandir := filepath.Join(os.Getenv("GOOBLA_MODELS"), "manifests/")
 		var entries []string
 		t.Logf("dir entries:")
 		fsys := os.DirFS(mandir)
@@ -700,7 +700,7 @@ func TestManifestCaseSensitivity(t *testing.T) {
 }
 
 func TestShow(t *testing.T) {
-	t.Setenv("MOOGLA_MODELS", t.TempDir())
+	t.Setenv("GOOBLA_MODELS", t.TempDir())
 
 	var s Server
 
@@ -867,7 +867,7 @@ func TestFilterThinkTags(t *testing.T) {
 				{Role: "user", Content: "What is the answer?"},
 			},
 			model: &Model{
-				Name:      "registry.ollama.ai/library/deepseek-r1:latest",
+				Name:      "registry.goobla.ai/library/deepseek-r1:latest",
 				ShortName: "deepseek-r1:7b",
 				Template:  thinkTmpl,
 			},

@@ -13,8 +13,8 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"github.com/moogla/moogla/api"
-	"github.com/moogla/moogla/fs/ggml"
+	"github.com/goobla/goobla/api"
+	"github.com/goobla/goobla/fs/ggml"
 )
 
 func TestNamed(t *testing.T) {
@@ -276,10 +276,10 @@ Hello friend![/INST] Hello human![INST] What is your name?[/INST] `,
 					{Role: "user", Content: "Hello friend!"},
 					{Role: "assistant", Content: "Hello human!"},
 					{Role: "user", Content: "What is your name?"},
-					{Role: "assistant", Content: "My name is Moogla and I"},
+					{Role: "assistant", Content: "My name is Goobla and I"},
 				},
 			},
-			`[INST] Hello friend![/INST] Hello human![INST] What is your name?[/INST] My name is Moogla and I`,
+			`[INST] Hello friend![/INST] Hello human![INST] What is your name?[/INST] My name is Goobla and I`,
 		},
 		{
 			"chatml",

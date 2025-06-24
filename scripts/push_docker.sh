@@ -3,7 +3,7 @@
 set -eu
 
 export VERSION=${VERSION:-0.0.0}
-export GOFLAGS="'-mod=vendor -ldflags=-w -s \"-X=github.com/moogla/moogla/version.Version=$VERSION\" \"-X=github.com/moogla/moogla/server.mode=release\"'"
+export GOFLAGS="'-mod=vendor -ldflags=-w -s \"-X=github.com/goobla/goobla/version.Version=$VERSION\" \"-X=github.com/goobla/goobla/server.mode=release\"'"
 
 docker build \
     --push \
@@ -11,5 +11,5 @@ docker build \
     --build-arg=VERSION \
     --build-arg=GOFLAGS \
     -f Dockerfile \
-    -t ollama/ollama -t ollama/ollama:$VERSION \
+    -t goobla/goobla -t goobla/goobla:$VERSION \
     .

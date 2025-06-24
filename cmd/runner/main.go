@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/moogla/moogla/runner"
+	"github.com/goobla/goobla/runner"
 )
 
 func main() {

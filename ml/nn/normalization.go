@@ -1,7 +1,7 @@
 package nn
 
 import (
-	"github.com/moogla/moogla/ml"
+	"github.com/goobla/goobla/ml"
 )
 
 type LayerNorm struct {

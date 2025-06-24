@@ -1,10 +1,10 @@
 # Desktop
 
-This app builds upon Moogla to provide a desktop experience for running models.
+This app builds upon Goobla to provide a desktop experience for running models.
 
 ## Developing
 
-First, build the `moogla` binary:
+First, build the `goobla` binary:
 
 ```shell
 cd ..

@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/moogla/moogla/api"
+	"github.com/goobla/goobla/api"
 	"github.com/stretchr/testify/require"
 )
 
@@ -49,7 +49,7 @@ func TestVisionModels(t *testing.T) {
 			defer cancel()
 			client, _, cleanup := InitServerConnection(ctx, t)
 
-			// Note: sometimes it returns "the ollamas" sometimes "the ollams"
+			// Note: sometimes it returns "the gooblas" sometimes "the ollams"
 			resp := "the ollam"
 			defer cleanup()
 			require.NoError(t, PullIfMissing(ctx, client, req.Model))
@@ -78,7 +78,7 @@ func TestIntegrationSplitBatch(t *testing.T) {
 		},
 	}
 
-	// Note: sometimes it returns "the ollamas" sometimes "the ollams"
+	// Note: sometimes it returns "the gooblas" sometimes "the ollams"
 	resp := "the ollam"
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Minute)
 	defer cancel()

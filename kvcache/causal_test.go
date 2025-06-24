@@ -5,8 +5,8 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/moogla/moogla/ml"
-	"github.com/moogla/moogla/model/input"
+	"github.com/goobla/goobla/ml"
+	"github.com/goobla/goobla/model/input"
 )
 
 type testCase struct {

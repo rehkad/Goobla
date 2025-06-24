@@ -2,34 +2,34 @@
 
 ## Install
 
-To install Moogla, run the following command:
+To install Goobla, run the following command:
 
 ```shell
-curl -fsSL https://moogla.com/install.sh | sh
+curl -fsSL https://goobla.com/install.sh | sh
 ```
 
 ## Manual install
 
 > [!NOTE]
-> If you are upgrading from a prior version, you should remove the old libraries with `sudo rm -rf /usr/lib/moogla` first.
+> If you are upgrading from a prior version, you should remove the old libraries with `sudo rm -rf /usr/lib/goobla` first.
 
 Download and extract the package:
 
 ```shell
-curl -L https://moogla.com/download/moogla-linux-amd64.tgz -o moogla-linux-amd64.tgz
-sudo tar -C /usr -xzf moogla-linux-amd64.tgz
+curl -L https://goobla.com/download/goobla-linux-amd64.tgz -o goobla-linux-amd64.tgz
+sudo tar -C /usr -xzf goobla-linux-amd64.tgz
 ```
 
-Start Moogla:
+Start Goobla:
 
 ```shell
-moogla serve
+goobla serve
 ```
 
-In another terminal, verify that Moogla is running:
+In another terminal, verify that Goobla is running:
 
 ```shell
-moogla -v
+goobla -v
 ```
 
 ### AMD GPU install
@@ -37,8 +37,8 @@ moogla -v
 If you have an AMD GPU, also download and extract the additional ROCm package:
 
 ```shell
-curl -L https://moogla.com/download/moogla-linux-amd64-rocm.tgz -o moogla-linux-amd64-rocm.tgz
-sudo tar -C /usr -xzf moogla-linux-amd64-rocm.tgz
+curl -L https://goobla.com/download/goobla-linux-amd64-rocm.tgz -o goobla-linux-amd64-rocm.tgz
+sudo tar -C /usr -xzf goobla-linux-amd64-rocm.tgz
 ```
 
 ### ARM64 install
@@ -46,30 +46,30 @@ sudo tar -C /usr -xzf moogla-linux-amd64-rocm.tgz
 Download and extract the ARM64-specific package:
 
 ```shell
-curl -L https://moogla.com/download/moogla-linux-arm64.tgz -o moogla-linux-arm64.tgz
-sudo tar -C /usr -xzf moogla-linux-arm64.tgz
+curl -L https://goobla.com/download/goobla-linux-arm64.tgz -o goobla-linux-arm64.tgz
+sudo tar -C /usr -xzf goobla-linux-arm64.tgz
 ```
 
-### Adding Moogla as a startup service (recommended)
+### Adding Goobla as a startup service (recommended)
 
-Create a user and group for Moogla:
+Create a user and group for Goobla:
 
 ```shell
-sudo useradd -r -s /bin/false -U -m -d /usr/share/moogla moogla
-sudo usermod -a -G moogla $(whoami)
+sudo useradd -r -s /bin/false -U -m -d /usr/share/goobla goobla
+sudo usermod -a -G goobla $(whoami)
 ```
 
-Create a service file in `/etc/systemd/system/moogla.service`:
+Create a service file in `/etc/systemd/system/goobla.service`:
 
 ```ini
 [Unit]
-Description=Moogla Service
+Description=Goobla Service
 After=network-online.target
 
 [Service]
-ExecStart=/usr/bin/moogla serve
-User=moogla
-Group=moogla
+ExecStart=/usr/bin/goobla serve
+User=goobla
+Group=goobla
 Restart=always
 RestartSec=3
 Environment="PATH=$PATH"
@@ -82,7 +82,7 @@ Then start the service:
 
 ```shell
 sudo systemctl daemon-reload
-sudo systemctl enable moogla
+sudo systemctl enable goobla
 ```
 
 ### Install CUDA drivers (optional)
@@ -99,13 +99,13 @@ nvidia-smi
 
 [Download and Install](https://rocm.docs.amd.com/projects/install-on-linux/en/latest/tutorial/quick-start.html) ROCm v6.
 
-### Start Moogla
+### Start Goobla
 
-Start Moogla and verify it is running:
+Start Goobla and verify it is running:
 
 ```shell
-sudo systemctl start moogla
-sudo systemctl status moogla
+sudo systemctl start goobla
+sudo systemctl status goobla
 ```
 
 > [!NOTE]
@@ -117,78 +117,78 @@ sudo systemctl status moogla
 
 ## Customizing
 
-To customize the installation of Moogla, you can edit the systemd service file or the environment variables by running:
+To customize the installation of Goobla, you can edit the systemd service file or the environment variables by running:
 
 ```shell
-sudo systemctl edit moogla
+sudo systemctl edit goobla
 ```
 
-Alternatively, create an override file manually in `/etc/systemd/system/moogla.service.d/override.conf`:
+Alternatively, create an override file manually in `/etc/systemd/system/goobla.service.d/override.conf`:
 
 ```ini
 [Service]
-Environment="MOOGLA_DEBUG=1"
+Environment="GOOBLA_DEBUG=1"
 ```
 
 ## Updating
 
-Update Moogla by running the install script again:
+Update Goobla by running the install script again:
 
 ```shell
-curl -fsSL https://moogla.com/install.sh | sh
+curl -fsSL https://goobla.com/install.sh | sh
 ```
 
-Or by re-downloading Moogla:
+Or by re-downloading Goobla:
 
 ```shell
-curl -L https://moogla.com/download/moogla-linux-amd64.tgz -o moogla-linux-amd64.tgz
-sudo tar -C /usr -xzf moogla-linux-amd64.tgz
+curl -L https://goobla.com/download/goobla-linux-amd64.tgz -o goobla-linux-amd64.tgz
+sudo tar -C /usr -xzf goobla-linux-amd64.tgz
 ```
 
 ## Installing specific versions
 
-Use `MOOGLA_VERSION` environment variable with the install script to install a specific version of Moogla, including pre-releases. You can find the version numbers in the [releases page](https://github.com/moogla/moogla/releases).
+Use `GOOBLA_VERSION` environment variable with the install script to install a specific version of Goobla, including pre-releases. You can find the version numbers in the [releases page](https://github.com/goobla/goobla/releases).
 
 For example:
 
 ```shell
-curl -fsSL https://moogla.com/install.sh | MOOGLA_VERSION=0.5.7 sh
+curl -fsSL https://goobla.com/install.sh | GOOBLA_VERSION=0.5.7 sh
 ```
 
 ## Viewing logs
 
-To view logs of Moogla running as a startup service, run:
+To view logs of Goobla running as a startup service, run:
 
 ```shell
-journalctl -e -u moogla
+journalctl -e -u goobla
 ```
 
 ## Uninstall
 
-Remove the moogla service:
+Remove the goobla service:
 
 ```shell
-sudo systemctl stop moogla
-sudo systemctl disable moogla
-sudo rm /etc/systemd/system/moogla.service
+sudo systemctl stop goobla
+sudo systemctl disable goobla
+sudo rm /etc/systemd/system/goobla.service
 ```
 
-Remove the moogla binary from your bin directory (either `/usr/local/bin`, `/usr/bin`, or `/bin`):
+Remove the goobla binary from your bin directory (either `/usr/local/bin`, `/usr/bin`, or `/bin`):
 
 ```shell
-sudo rm $(which moogla)
+sudo rm $(which goobla)
 ```
 
-Remove the downloaded models and Moogla service user and group:
+Remove the downloaded models and Goobla service user and group:
 
 ```shell
-sudo rm -r /usr/share/moogla
-sudo userdel moogla
-sudo groupdel moogla
+sudo rm -r /usr/share/goobla
+sudo userdel goobla
+sudo groupdel goobla
 ```
 
 Remove installed libraries:
 
 ```shell
-sudo rm -rf /usr/local/lib/moogla
+sudo rm -rf /usr/local/lib/goobla
 ```

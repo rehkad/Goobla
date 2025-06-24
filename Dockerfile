@@ -78,7 +78,7 @@ RUN --mount=type=cache,target=/root/.ccache \
         && cmake --install build --component CUDA --strip --parallel 8
 
 FROM base AS build
-WORKDIR /go/src/github.com/moogla/moogla
+WORKDIR /go/src/github.com/goobla/goobla
 COPY go.mod go.sum .
 RUN curl -fsSL https://golang.org/dl/go$(awk '/^go/ { print $2 }' go.mod).linux-$(case $(uname -m) in x86_64) echo amd64 ;; aarch64) echo arm64 ;; esac).tar.gz | tar xz -C /usr/local
 ENV PATH=/usr/local/go/bin:$PATH
@@ -87,22 +87,22 @@ COPY . .
 ARG GOFLAGS="'-ldflags=-w -s'"
 ENV CGO_ENABLED=1
 RUN --mount=type=cache,target=/root/.cache/go-build \
-    go build -trimpath -buildmode=pie -o /bin/moogla .
+    go build -trimpath -buildmode=pie -o /bin/goobla .
 
 FROM --platform=linux/amd64 scratch AS amd64
-COPY --from=cuda-12 dist/lib/moogla /lib/moogla
+COPY --from=cuda-12 dist/lib/goobla /lib/goobla
 
 FROM --platform=linux/arm64 scratch AS arm64
-COPY --from=cuda-12 dist/lib/moogla /lib/moogla/cuda_sbsa
-COPY --from=jetpack-5 dist/lib/moogla /lib/moogla/cuda_jetpack5
-COPY --from=jetpack-6 dist/lib/moogla /lib/moogla/cuda_jetpack6
+COPY --from=cuda-12 dist/lib/goobla /lib/goobla/cuda_sbsa
+COPY --from=jetpack-5 dist/lib/goobla /lib/goobla/cuda_jetpack5
+COPY --from=jetpack-6 dist/lib/goobla /lib/goobla/cuda_jetpack6
 
 FROM scratch AS rocm
-COPY --from=rocm-6 dist/lib/moogla /lib/moogla
+COPY --from=rocm-6 dist/lib/goobla /lib/goobla
 
 FROM ${FLAVOR} AS archive
-COPY --from=cpu dist/lib/moogla /lib/moogla
-COPY --from=build /bin/moogla /bin/moogla
+COPY --from=cpu dist/lib/goobla /lib/goobla
+COPY --from=build /bin/goobla /bin/goobla
 
 FROM ubuntu:20.04
 RUN apt-get update \
@@ -111,11 +111,11 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=archive /bin /usr/bin
 ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-COPY --from=archive /lib/moogla /usr/lib/moogla
+COPY --from=archive /lib/goobla /usr/lib/goobla
 ENV LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64
 ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
 ENV NVIDIA_VISIBLE_DEVICES=all
-ENV MOOGLA_HOST=0.0.0.0:11434
+ENV GOOBLA_HOST=0.0.0.0:11434
 EXPOSE 11434
-ENTRYPOINT ["/bin/moogla"]
+ENTRYPOINT ["/bin/goobla"]
 CMD ["serve"]

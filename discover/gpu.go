@@ -21,8 +21,8 @@ import (
 	"sync"
 	"unsafe"
 
-	"github.com/moogla/moogla/envconfig"
-	"github.com/moogla/moogla/format"
+	"github.com/goobla/goobla/envconfig"
+	"github.com/goobla/goobla/format"
 )
 
 type cudaHandles struct {
@@ -114,7 +114,7 @@ func initCudaHandles() *cudaHandles {
 
 	// Aligned with driver, we can't carry as payloads
 	nvcudaMgmtPatterns := NvcudaGlobs
-	cudartMgmtPatterns = append(cudartMgmtPatterns, filepath.Join(LibMooglaPath, "cuda_v*", CudartMgmtName))
+	cudartMgmtPatterns = append(cudartMgmtPatterns, filepath.Join(LibGooblaPath, "cuda_v*", CudartMgmtName))
 	cudartMgmtPatterns = append(cudartMgmtPatterns, CudartGlobs...)
 
 	if len(NvmlGlobs) > 0 {
@@ -300,7 +300,7 @@ func GetGPUInfo() GpuInfoList {
 
 				// Start with our bundled libraries
 				if variant != "" {
-					variantPath := filepath.Join(LibMooglaPath, "cuda_"+variant)
+					variantPath := filepath.Join(LibGooblaPath, "cuda_"+variant)
 					if _, err := os.Stat(variantPath); err == nil {
 						// Put the variant directory first in the search path to avoid runtime linking to the wrong library
 						gpuInfo.DependencyPath = append([]string{variantPath}, gpuInfo.DependencyPath...)
@@ -389,7 +389,7 @@ func GetGPUInfo() GpuInfoList {
 						gpuInfo.FreeMemory = uint64(memInfo.free)
 						gpuInfo.ID = C.GoString(&memInfo.gpu_id[0])
 						gpuInfo.Name = C.GoString(&memInfo.gpu_name[0])
-						gpuInfo.DependencyPath = []string{LibMooglaPath}
+						gpuInfo.DependencyPath = []string{LibGooblaPath}
 						gpuInfo.MinimumMemory = oneapiMinimumMemory
 
 						if gpuInfo.TotalMemory < IGPUMemLimit {
@@ -544,7 +544,7 @@ func FindGPULibs(baseLibName string, defaultPatterns []string) []string {
 	slog.Debug("Searching for GPU library", "name", baseLibName)
 
 	// search our bundled libraries first
-	patterns := []string{filepath.Join(LibMooglaPath, baseLibName)}
+	patterns := []string{filepath.Join(LibGooblaPath, baseLibName)}
 
 	var ldPaths []string
 	switch runtime.GOOS {
@@ -644,7 +644,7 @@ func loadNVCUDAMgmt(nvcudaLibPaths []string) (int, *C.nvcuda_handle_t, string, e
 				err = fmt.Errorf("no nvidia devices detected by library %s", libPath)
 				slog.Info(err.Error())
 			case C.CUDA_ERROR_UNKNOWN:
-				err = fmt.Errorf("unknown error initializing cuda driver library %s: %s. see https://github.com/moogla/moogla/blob/main/docs/troubleshooting.md for more information", libPath, C.GoString(resp.err))
+				err = fmt.Errorf("unknown error initializing cuda driver library %s: %s. see https://github.com/goobla/goobla/blob/main/docs/troubleshooting.md for more information", libPath, C.GoString(resp.err))
 				slog.Warn(err.Error())
 			default:
 				msg := C.GoString(resp.err)
@@ -764,7 +764,7 @@ func GetSystemInfo() SystemInfo {
 // installation directory.  This is used to skip GPU discovery logic when the
 // binary was built without GPU support.
 func isCPUOnlyBuild() bool {
-	entries, err := os.ReadDir(LibMooglaPath)
+	entries, err := os.ReadDir(LibGooblaPath)
 	if err != nil {
 		return false
 	}

@@ -1,7 +1,7 @@
 #include <string.h>
 #include <inttypes.h>
 
-#include "moogla-debug.h"
+#include "goobla-debug.h"
 
 static int mul(int64_t *dims, int ndims) {
     int result = 1;
@@ -67,7 +67,7 @@ static void print_tensor_i32(const void *tensor, int i) {
     fprintf(stderr, "%s%d", value < 0 ? "" : " ", value);
 }
 
-static void moogla_debug_tensor(const struct ggml_tensor *tensor, bool verbose, const char *prefix, int indent) {
+static void goobla_debug_tensor(const struct ggml_tensor *tensor, bool verbose, const char *prefix, int indent) {
     fprintf(stderr, "%s%s %s (%s): [%" PRIi64 " %" PRIi64 " %" PRIi64 " %" PRIi64 "]\n", prefix, tensor->name,
             ggml_op_name(tensor->op), ggml_type_name(tensor->type), tensor->ne[0],
             tensor->ne[1], tensor->ne[2], tensor->ne[3]);
@@ -101,8 +101,8 @@ static void moogla_debug_tensor(const struct ggml_tensor *tensor, bool verbose, 
     fprintf(stderr, "\n");
 }
 
-void moogla_debug(const struct ggml_tensor *tensor, bool verbose) {
-    moogla_debug_tensor(tensor, verbose, ">>> ", 4);
+void goobla_debug(const struct ggml_tensor *tensor, bool verbose) {
+    goobla_debug_tensor(tensor, verbose, ">>> ", 4);
 
     for (int i = 0; i < GGML_MAX_SRC && tensor->src[i] != NULL; ++i) {
         char src[8];
@@ -111,6 +111,6 @@ void moogla_debug(const struct ggml_tensor *tensor, bool verbose) {
             src[sizeof(src) - 1] = '\0';
         }
 
-        moogla_debug_tensor(tensor->src[i], verbose, src, 4);
+        goobla_debug_tensor(tensor->src[i], verbose, src, 4);
     }
 }

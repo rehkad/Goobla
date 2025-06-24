@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/moogla/moogla/api"
-	"github.com/moogla/moogla/types/model"
+	"github.com/goobla/goobla/api"
+	"github.com/goobla/goobla/types/model"
 )
 
 // Test that a warning is printed when thinking is requested but not supported.
@@ -39,7 +39,7 @@ func TestWarnMissingThinking(t *testing.T) {
 		}))
 		defer srv.Close()
 
-		t.Setenv("MOOGLA_HOST", srv.URL)
+		t.Setenv("GOOBLA_HOST", srv.URL)
 		client, err := api.ClientFromEnvironment()
 		if err != nil {
 			t.Fatal(err)

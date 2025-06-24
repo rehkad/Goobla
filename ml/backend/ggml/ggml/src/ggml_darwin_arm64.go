@@ -5,6 +5,6 @@ package ggml
 import "C"
 
 import (
-	_ "github.com/moogla/moogla/ml/backend/ggml/ggml/src/ggml-blas"
-	_ "github.com/moogla/moogla/ml/backend/ggml/ggml/src/ggml-metal"
+	_ "github.com/goobla/goobla/ml/backend/ggml/ggml/src/ggml-blas"
+	_ "github.com/goobla/goobla/ml/backend/ggml/ggml/src/ggml-metal"
 )

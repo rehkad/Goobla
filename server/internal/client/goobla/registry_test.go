@@ -1,4 +1,4 @@
-package ollama
+package goobla
 
 import (
 	"bytes"
@@ -18,8 +18,8 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/moogla/moogla/server/internal/cache/blob"
-	"github.com/moogla/moogla/server/internal/testutil"
+	"github.com/goobla/goobla/server/internal/cache/blob"
+	"github.com/goobla/goobla/server/internal/testutil"
 )
 
 func ExampleRegistry_cancelOnFirstError() {
@@ -559,7 +559,7 @@ func TestUnlink(t *testing.T) {
 		d := blob.DigestFromBytes("{}")
 		err := blob.PutBytes(rc.Cache, d, "{}")
 		check(err)
-		err = rc.Cache.Link("registry.ollama.ai/library/single:latest", d)
+		err = rc.Cache.Link("registry.goobla.ai/library/single:latest", d)
 		check(err)
 
 		// confirm linked

@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/moogla/moogla/logutil"
+	"github.com/goobla/goobla/logutil"
 )
 
 const spmWhitespaceSep = "▁"

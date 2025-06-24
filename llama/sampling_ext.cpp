@@ -91,7 +91,7 @@ struct llama_grammar *grammar_init(char* grammar, uint32_t* tokens, size_t n_tok
             return nullptr;
         }
 
-        ollama_vocab *vocab = new ollama_vocab();
+        goobla_vocab *vocab = new goobla_vocab();
         vocab->set_eog_tokens(eog_tokens, n_eog_tokens);
         vocab->add_token_pieces(tokens, n_tokens, pieces);
         

@@ -21,7 +21,7 @@ import (
 	"golang.org/x/text/encoding/unicode"
 	"golang.org/x/text/transform"
 
-	"github.com/moogla/moogla/api"
+	"github.com/goobla/goobla/api"
 )
 
 var ErrModelNotFound = errors.New("no Modelfile or safetensors files found")

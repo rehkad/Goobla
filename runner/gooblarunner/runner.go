@@ -1,4 +1,4 @@
-package mooglarunner
+package gooblarunner
 
 import (
 	"bytes"
@@ -25,17 +25,17 @@ import (
 	"golang.org/x/image/bmp"
 	"golang.org/x/sync/semaphore"
 
-	"github.com/moogla/moogla/api"
-	"github.com/moogla/moogla/envconfig"
-	"github.com/moogla/moogla/llm"
-	"github.com/moogla/moogla/logutil"
-	"github.com/moogla/moogla/ml"
-	"github.com/moogla/moogla/model"
-	"github.com/moogla/moogla/model/input"
-	"github.com/moogla/moogla/runner/common"
-	"github.com/moogla/moogla/sample"
+	"github.com/goobla/goobla/api"
+	"github.com/goobla/goobla/envconfig"
+	"github.com/goobla/goobla/llm"
+	"github.com/goobla/goobla/logutil"
+	"github.com/goobla/goobla/ml"
+	"github.com/goobla/goobla/model"
+	"github.com/goobla/goobla/model/input"
+	"github.com/goobla/goobla/runner/common"
+	"github.com/goobla/goobla/sample"
 
-	_ "github.com/moogla/moogla/model/models"
+	_ "github.com/goobla/goobla/model/models"
 )
 
 type Sequence struct {
@@ -921,7 +921,7 @@ func Execute(args []string) error {
 		return err
 	}
 	slog.SetDefault(logutil.NewLogger(os.Stderr, envconfig.LogLevel()))
-	slog.Info("starting ollama engine")
+	slog.Info("starting goobla engine")
 
 	server := &Server{
 		batchSize: *batchSize,

@@ -14,12 +14,12 @@ import (
 	"time"
 )
 
-// Host returns the scheme and host. Host can be configured via the MOOGLA_HOST environment variable.
+// Host returns the scheme and host. Host can be configured via the GOOBLA_HOST environment variable.
 // Default is scheme "http" and host "127.0.0.1:11434"
 func Host() *url.URL {
 	defaultPort := "11434"
 
-	s := strings.TrimSpace(Var("MOOGLA_HOST"))
+	s := strings.TrimSpace(Var("GOOBLA_HOST"))
 	scheme, hostport, ok := strings.Cut(s, "://")
 	switch {
 	case !ok:
@@ -53,9 +53,9 @@ func Host() *url.URL {
 	}
 }
 
-// AllowedOrigins returns a list of allowed origins. AllowedOrigins can be configured via the MOOGLA_ORIGINS environment variable.
+// AllowedOrigins returns a list of allowed origins. AllowedOrigins can be configured via the GOOBLA_ORIGINS environment variable.
 func AllowedOrigins() (origins []string) {
-	if s := Var("MOOGLA_ORIGINS"); s != "" {
+	if s := Var("GOOBLA_ORIGINS"); s != "" {
 		origins = strings.Split(s, ",")
 	}
 
@@ -79,10 +79,10 @@ func AllowedOrigins() (origins []string) {
 	return origins
 }
 
-// Models returns the path to the models directory. Models directory can be configured via the MOOGLA_MODELS environment variable.
-// Default is $HOME/.ollama/models
+// Models returns the path to the models directory. Models directory can be configured via the GOOBLA_MODELS environment variable.
+// Default is $HOME/.goobla/models
 func Models() string {
-	if s := Var("MOOGLA_MODELS"); s != "" {
+	if s := Var("GOOBLA_MODELS"); s != "" {
 		return s
 	}
 
@@ -91,15 +91,15 @@ func Models() string {
 		panic(err)
 	}
 
-	return filepath.Join(home, ".ollama", "models")
+	return filepath.Join(home, ".goobla", "models")
 }
 
-// KeepAlive returns the duration that models stay loaded in memory. KeepAlive can be configured via the MOOGLA_KEEP_ALIVE environment variable.
+// KeepAlive returns the duration that models stay loaded in memory. KeepAlive can be configured via the GOOBLA_KEEP_ALIVE environment variable.
 // Negative values are treated as infinite. Zero is treated as no keep alive.
 // Default is 5 minutes.
 func KeepAlive() (keepAlive time.Duration) {
 	keepAlive = 5 * time.Minute
-	if s := Var("MOOGLA_KEEP_ALIVE"); s != "" {
+	if s := Var("GOOBLA_KEEP_ALIVE"); s != "" {
 		if d, err := time.ParseDuration(s); err == nil {
 			keepAlive = d
 		} else if n, err := strconv.ParseInt(s, 10, 64); err == nil {
@@ -114,12 +114,12 @@ func KeepAlive() (keepAlive time.Duration) {
 	return keepAlive
 }
 
-// LoadTimeout returns the duration for stall detection during model loads. LoadTimeout can be configured via the MOOGLA_LOAD_TIMEOUT environment variable.
+// LoadTimeout returns the duration for stall detection during model loads. LoadTimeout can be configured via the GOOBLA_LOAD_TIMEOUT environment variable.
 // Zero or Negative values are treated as infinite.
 // Default is 5 minutes.
 func LoadTimeout() (loadTimeout time.Duration) {
 	loadTimeout = 5 * time.Minute
-	if s := Var("MOOGLA_LOAD_TIMEOUT"); s != "" {
+	if s := Var("GOOBLA_LOAD_TIMEOUT"); s != "" {
 		if d, err := time.ParseDuration(s); err == nil {
 			loadTimeout = d
 		} else if n, err := strconv.ParseInt(s, 10, 64); err == nil {
@@ -153,7 +153,7 @@ func Bool(k string) func() bool {
 // Values are 0 or false INFO (Default), 1 or true DEBUG, 2 TRACE
 func LogLevel() slog.Level {
 	level := slog.LevelInfo
-	if s := Var("MOOGLA_DEBUG"); s != "" {
+	if s := Var("GOOBLA_DEBUG"); s != "" {
 		if b, _ := strconv.ParseBool(s); b {
 			level = slog.LevelDebug
 		} else if i, _ := strconv.ParseInt(s, 10, 64); i != 0 {
@@ -166,25 +166,25 @@ func LogLevel() slog.Level {
 
 var (
 	// FlashAttention enables the experimental flash attention feature.
-	FlashAttention = Bool("MOOGLA_FLASH_ATTENTION")
+	FlashAttention = Bool("GOOBLA_FLASH_ATTENTION")
 	// KvCacheType is the quantization type for the K/V cache.
-	KvCacheType = String("MOOGLA_KV_CACHE_TYPE")
+	KvCacheType = String("GOOBLA_KV_CACHE_TYPE")
 	// NoHistory disables readline history.
-	NoHistory = Bool("MOOGLA_NOHISTORY")
+	NoHistory = Bool("GOOBLA_NOHISTORY")
 	// NoPrune disables pruning of model blobs on startup.
-	NoPrune = Bool("MOOGLA_NOPRUNE")
+	NoPrune = Bool("GOOBLA_NOPRUNE")
 	// SchedSpread allows scheduling models across all GPUs.
-	SchedSpread = Bool("MOOGLA_SCHED_SPREAD")
+	SchedSpread = Bool("GOOBLA_SCHED_SPREAD")
 	// IntelGPU enables experimental Intel GPU detection.
-	IntelGPU = Bool("MOOGLA_INTEL_GPU")
+	IntelGPU = Bool("GOOBLA_INTEL_GPU")
 	// MultiUserCache optimizes prompt caching for multi-user scenarios
-	MultiUserCache = Bool("MOOGLA_MULTIUSER_CACHE")
-	// Enable the new Moogla engine
-	NewEngine = Bool("MOOGLA_NEW_ENGINE")
+	MultiUserCache = Bool("GOOBLA_MULTIUSER_CACHE")
+	// Enable the new Goobla engine
+	NewEngine = Bool("GOOBLA_NEW_ENGINE")
 	// ContextLength sets the default context length
-	ContextLength = Uint("MOOGLA_CONTEXT_LENGTH", 4096)
-	// Auth enables authentication between the Moogla client and server
-	UseAuth = Bool("MOOGLA_AUTH")
+	ContextLength = Uint("GOOBLA_CONTEXT_LENGTH", 4096)
+	// Auth enables authentication between the Goobla client and server
+	UseAuth = Bool("GOOBLA_AUTH")
 )
 
 func String(s string) func() string {
@@ -194,7 +194,7 @@ func String(s string) func() string {
 }
 
 var (
-	LLMLibrary = String("MOOGLA_LLM_LIBRARY")
+	LLMLibrary = String("GOOBLA_LLM_LIBRARY")
 
 	CudaVisibleDevices    = String("CUDA_VISIBLE_DEVICES")
 	HipVisibleDevices     = String("HIP_VISIBLE_DEVICES")
@@ -218,12 +218,12 @@ func Uint(key string, defaultValue uint) func() uint {
 }
 
 var (
-	// NumParallel sets the number of parallel model requests. NumParallel can be configured via the MOOGLA_NUM_PARALLEL environment variable.
-	NumParallel = Uint("MOOGLA_NUM_PARALLEL", 0)
-	// MaxRunners sets the maximum number of loaded models. MaxRunners can be configured via the MOOGLA_MAX_LOADED_MODELS environment variable.
-	MaxRunners = Uint("MOOGLA_MAX_LOADED_MODELS", 0)
-	// MaxQueue sets the maximum number of queued requests. MaxQueue can be configured via the MOOGLA_MAX_QUEUE environment variable.
-	MaxQueue = Uint("MOOGLA_MAX_QUEUE", 512)
+	// NumParallel sets the number of parallel model requests. NumParallel can be configured via the GOOBLA_NUM_PARALLEL environment variable.
+	NumParallel = Uint("GOOBLA_NUM_PARALLEL", 0)
+	// MaxRunners sets the maximum number of loaded models. MaxRunners can be configured via the GOOBLA_MAX_LOADED_MODELS environment variable.
+	MaxRunners = Uint("GOOBLA_MAX_LOADED_MODELS", 0)
+	// MaxQueue sets the maximum number of queued requests. MaxQueue can be configured via the GOOBLA_MAX_QUEUE environment variable.
+	MaxQueue = Uint("GOOBLA_MAX_QUEUE", 512)
 )
 
 func Uint64(key string, defaultValue uint64) func() uint64 {
@@ -241,7 +241,7 @@ func Uint64(key string, defaultValue uint64) func() uint64 {
 }
 
 // Set aside VRAM per GPU
-var GpuOverhead = Uint64("MOOGLA_GPU_OVERHEAD", 0)
+var GpuOverhead = Uint64("GOOBLA_GPU_OVERHEAD", 0)
 
 type EnvVar struct {
 	Name        string
@@ -251,25 +251,25 @@ type EnvVar struct {
 
 func AsMap() map[string]EnvVar {
 	ret := map[string]EnvVar{
-		"MOOGLA_DEBUG":             {"MOOGLA_DEBUG", LogLevel(), "Show additional debug information (e.g. MOOGLA_DEBUG=1)"},
-		"MOOGLA_FLASH_ATTENTION":   {"MOOGLA_FLASH_ATTENTION", FlashAttention(), "Enabled flash attention"},
-		"MOOGLA_KV_CACHE_TYPE":     {"MOOGLA_KV_CACHE_TYPE", KvCacheType(), "Quantization type for the K/V cache (default: f16)"},
-		"MOOGLA_GPU_OVERHEAD":      {"MOOGLA_GPU_OVERHEAD", GpuOverhead(), "Reserve a portion of VRAM per GPU (bytes)"},
-		"MOOGLA_HOST":              {"MOOGLA_HOST", Host(), "IP Address for the ollama server (default 127.0.0.1:11434)"},
-		"MOOGLA_KEEP_ALIVE":        {"MOOGLA_KEEP_ALIVE", KeepAlive(), "The duration that models stay loaded in memory (default \"5m\")"},
-		"MOOGLA_LLM_LIBRARY":       {"MOOGLA_LLM_LIBRARY", LLMLibrary(), "Set LLM library to bypass autodetection"},
-		"MOOGLA_LOAD_TIMEOUT":      {"MOOGLA_LOAD_TIMEOUT", LoadTimeout(), "How long to allow model loads to stall before giving up (default \"5m\")"},
-		"MOOGLA_MAX_LOADED_MODELS": {"MOOGLA_MAX_LOADED_MODELS", MaxRunners(), "Maximum number of loaded models per GPU"},
-		"MOOGLA_MAX_QUEUE":         {"MOOGLA_MAX_QUEUE", MaxQueue(), "Maximum number of queued requests"},
-		"MOOGLA_MODELS":            {"MOOGLA_MODELS", Models(), "The path to the models directory"},
-		"MOOGLA_NOHISTORY":         {"MOOGLA_NOHISTORY", NoHistory(), "Do not preserve readline history"},
-		"MOOGLA_NOPRUNE":           {"MOOGLA_NOPRUNE", NoPrune(), "Do not prune model blobs on startup"},
-		"MOOGLA_NUM_PARALLEL":      {"MOOGLA_NUM_PARALLEL", NumParallel(), "Maximum number of parallel requests"},
-		"MOOGLA_ORIGINS":           {"MOOGLA_ORIGINS", AllowedOrigins(), "A comma separated list of allowed origins"},
-		"MOOGLA_SCHED_SPREAD":      {"MOOGLA_SCHED_SPREAD", SchedSpread(), "Always schedule model across all GPUs"},
-		"MOOGLA_MULTIUSER_CACHE":   {"MOOGLA_MULTIUSER_CACHE", MultiUserCache(), "Optimize prompt caching for multi-user scenarios"},
-		"MOOGLA_CONTEXT_LENGTH":    {"MOOGLA_CONTEXT_LENGTH", ContextLength(), "Context length to use unless otherwise specified (default: 4096)"},
-		"MOOGLA_NEW_ENGINE":        {"MOOGLA_NEW_ENGINE", NewEngine(), "Enable the new Moogla engine"},
+		"GOOBLA_DEBUG":             {"GOOBLA_DEBUG", LogLevel(), "Show additional debug information (e.g. GOOBLA_DEBUG=1)"},
+		"GOOBLA_FLASH_ATTENTION":   {"GOOBLA_FLASH_ATTENTION", FlashAttention(), "Enabled flash attention"},
+		"GOOBLA_KV_CACHE_TYPE":     {"GOOBLA_KV_CACHE_TYPE", KvCacheType(), "Quantization type for the K/V cache (default: f16)"},
+		"GOOBLA_GPU_OVERHEAD":      {"GOOBLA_GPU_OVERHEAD", GpuOverhead(), "Reserve a portion of VRAM per GPU (bytes)"},
+		"GOOBLA_HOST":              {"GOOBLA_HOST", Host(), "IP Address for the goobla server (default 127.0.0.1:11434)"},
+		"GOOBLA_KEEP_ALIVE":        {"GOOBLA_KEEP_ALIVE", KeepAlive(), "The duration that models stay loaded in memory (default \"5m\")"},
+		"GOOBLA_LLM_LIBRARY":       {"GOOBLA_LLM_LIBRARY", LLMLibrary(), "Set LLM library to bypass autodetection"},
+		"GOOBLA_LOAD_TIMEOUT":      {"GOOBLA_LOAD_TIMEOUT", LoadTimeout(), "How long to allow model loads to stall before giving up (default \"5m\")"},
+		"GOOBLA_MAX_LOADED_MODELS": {"GOOBLA_MAX_LOADED_MODELS", MaxRunners(), "Maximum number of loaded models per GPU"},
+		"GOOBLA_MAX_QUEUE":         {"GOOBLA_MAX_QUEUE", MaxQueue(), "Maximum number of queued requests"},
+		"GOOBLA_MODELS":            {"GOOBLA_MODELS", Models(), "The path to the models directory"},
+		"GOOBLA_NOHISTORY":         {"GOOBLA_NOHISTORY", NoHistory(), "Do not preserve readline history"},
+		"GOOBLA_NOPRUNE":           {"GOOBLA_NOPRUNE", NoPrune(), "Do not prune model blobs on startup"},
+		"GOOBLA_NUM_PARALLEL":      {"GOOBLA_NUM_PARALLEL", NumParallel(), "Maximum number of parallel requests"},
+		"GOOBLA_ORIGINS":           {"GOOBLA_ORIGINS", AllowedOrigins(), "A comma separated list of allowed origins"},
+		"GOOBLA_SCHED_SPREAD":      {"GOOBLA_SCHED_SPREAD", SchedSpread(), "Always schedule model across all GPUs"},
+		"GOOBLA_MULTIUSER_CACHE":   {"GOOBLA_MULTIUSER_CACHE", MultiUserCache(), "Optimize prompt caching for multi-user scenarios"},
+		"GOOBLA_CONTEXT_LENGTH":    {"GOOBLA_CONTEXT_LENGTH", ContextLength(), "Context length to use unless otherwise specified (default: 4096)"},
+		"GOOBLA_NEW_ENGINE":        {"GOOBLA_NEW_ENGINE", NewEngine(), "Enable the new Goobla engine"},
 
 		// Informational
 		"HTTP_PROXY":  {"HTTP_PROXY", String("HTTP_PROXY")(), "HTTP proxy"},
@@ -290,7 +290,7 @@ func AsMap() map[string]EnvVar {
 		ret["ROCR_VISIBLE_DEVICES"] = EnvVar{"ROCR_VISIBLE_DEVICES", RocrVisibleDevices(), "Set which AMD devices are visible by UUID or numeric ID"}
 		ret["GPU_DEVICE_ORDINAL"] = EnvVar{"GPU_DEVICE_ORDINAL", GpuDeviceOrdinal(), "Set which AMD devices are visible by numeric ID"}
 		ret["HSA_OVERRIDE_GFX_VERSION"] = EnvVar{"HSA_OVERRIDE_GFX_VERSION", HsaOverrideGfxVersion(), "Override the gfx used for all detected AMD GPUs"}
-		ret["MOOGLA_INTEL_GPU"] = EnvVar{"MOOGLA_INTEL_GPU", IntelGPU(), "Enable experimental Intel GPU detection"}
+		ret["GOOBLA_INTEL_GPU"] = EnvVar{"GOOBLA_INTEL_GPU", IntelGPU(), "Enable experimental Intel GPU detection"}
 	}
 
 	return ret

@@ -9,7 +9,7 @@ usage() {
 }
 
 export VERSION=${VERSION:-$(git describe --tags --first-parent --abbrev=7 --long --dirty --always | sed -e "s/^v//g")}
-export GOFLAGS="'-mod=vendor -ldflags=-w -s \"-X=github.com/moogla/moogla/version.Version=${VERSION#v}\" \"-X=github.com/moogla/moogla/server.mode=release\"'"
+export GOFLAGS="'-mod=vendor -ldflags=-w -s \"-X=github.com/goobla/goobla/version.Version=${VERSION#v}\" \"-X=github.com/goobla/goobla/server.mode=release\"'"
 export CGO_CPPFLAGS='-mmacosx-version-min=11.3'
 
 ARCHS="arm64 amd64"
@@ -43,25 +43,25 @@ _build_darwin() {
 _sign_darwin() {
     status "Creating universal binary..."
     mkdir -p dist/darwin
-    lipo -create -output dist/darwin/moogla dist/darwin-*/moogla
-    chmod +x dist/darwin/moogla
+    lipo -create -output dist/darwin/goobla dist/darwin-*/goobla
+    chmod +x dist/darwin/goobla
 
     if [ -n "$APPLE_IDENTITY" ]; then
-        for F in dist/darwin/moogla dist/darwin-amd64/lib/moogla/*; do
-            codesign -f --timestamp -s "$APPLE_IDENTITY" --identifier ai.moogla.moogla --options=runtime $F
+        for F in dist/darwin/goobla dist/darwin-amd64/lib/goobla/*; do
+            codesign -f --timestamp -s "$APPLE_IDENTITY" --identifier ai.goobla.goobla --options=runtime $F
         done
 
         # create a temporary zip for notarization
         TEMP=$(mktemp -u).zip
-        ditto -c -k --keepParent dist/darwin/moogla "$TEMP"
+        ditto -c -k --keepParent dist/darwin/goobla "$TEMP"
         xcrun notarytool submit "$TEMP" --wait --timeout 10m --apple-id $APPLE_ID --password $APPLE_PASSWORD --team-id $APPLE_TEAM_ID
         rm -f "$TEMP"
     fi
 
     status "Creating universal tarball..."
-    tar -cf dist/moogla-darwin.tar --strip-components 2 dist/darwin/moogla
-    tar -rf dist/moogla-darwin.tar --strip-components 4 dist/darwin-amd64/lib/
-    gzip -9vc <dist/moogla-darwin.tar >dist/moogla-darwin.tgz
+    tar -cf dist/goobla-darwin.tar --strip-components 2 dist/darwin/goobla
+    tar -rf dist/goobla-darwin.tar --strip-components 4 dist/darwin-amd64/lib/
+    gzip -9vc <dist/goobla-darwin.tar >dist/goobla-darwin.tgz
 }
 
 _build_macapp() {
@@ -73,7 +73,7 @@ _build_macapp() {
         npm run --prefix macapp make
     fi
 
-    mv ./macapp/out/make/zip/darwin/universal/Moogla-darwin-universal-$VERSION.zip dist/Moogla-darwin.zip
+    mv ./macapp/out/make/zip/darwin/universal/Goobla-darwin-universal-$VERSION.zip dist/Goobla-darwin.zip
 }
 
 if [ "$#" -eq 0 ]; then

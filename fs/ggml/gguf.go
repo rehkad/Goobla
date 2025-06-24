@@ -14,8 +14,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/moogla/moogla/discover"
-	"github.com/moogla/moogla/format"
+	"github.com/goobla/goobla/discover"
+	"github.com/goobla/goobla/format"
 
 	"golang.org/x/sync/errgroup"
 )

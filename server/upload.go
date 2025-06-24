@@ -19,8 +19,8 @@ import (
 
 	"golang.org/x/sync/errgroup"
 
-	"github.com/moogla/moogla/api"
-	"github.com/moogla/moogla/format"
+	"github.com/goobla/goobla/api"
+	"github.com/goobla/goobla/format"
 )
 
 var blobUploadManager sync.Map

@@ -3,12 +3,12 @@
 package wintray
 
 const (
-	firstTimeTitle   = "Moogla is running"
+	firstTimeTitle   = "Goobla is running"
 	firstTimeMessage = "Click here to get started"
 	updateTitle      = "Update available"
-	updateMessage    = "Moogla version %s is ready to install"
+	updateMessage    = "Goobla version %s is ready to install"
 
-	quitMenuTitle            = "Quit Moogla"
+	quitMenuTitle            = "Quit Goobla"
 	updateAvailableMenuTitle = "An update is available"
 	updateMenuTitle          = "Restart to update"
 	diagLogsMenuTitle        = "View logs"

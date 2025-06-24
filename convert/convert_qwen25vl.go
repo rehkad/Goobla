@@ -5,7 +5,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/moogla/moogla/fs/ggml"
+	"github.com/goobla/goobla/fs/ggml"
 )
 
 type qwen25VLModel struct {

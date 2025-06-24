@@ -9,15 +9,15 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/moogla/moogla/api"
-	"github.com/moogla/moogla/discover"
-	"github.com/moogla/moogla/fs/ggml"
+	"github.com/goobla/goobla/api"
+	"github.com/goobla/goobla/discover"
+	"github.com/goobla/goobla/fs/ggml"
 )
 
 func TestEstimateGPULayers(t *testing.T) {
-	t.Setenv("MOOGLA_DEBUG", "1")
-	t.Setenv("MOOGLA_KV_CACHE_TYPE", "") // Ensure default f16
-	t.Setenv("MOOGLA_CONTEXT_LENGTH", "2048")
+	t.Setenv("GOOBLA_DEBUG", "1")
+	t.Setenv("GOOBLA_KV_CACHE_TYPE", "") // Ensure default f16
+	t.Setenv("GOOBLA_CONTEXT_LENGTH", "2048")
 
 	modelName := "dummy"
 	f, err := os.CreateTemp(t.TempDir(), modelName)

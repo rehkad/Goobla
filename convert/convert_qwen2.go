@@ -1,6 +1,6 @@
 package convert
 
-import "github.com/moogla/moogla/fs/ggml"
+import "github.com/goobla/goobla/fs/ggml"
 
 type qwen2Model struct {
 	ModelParameters

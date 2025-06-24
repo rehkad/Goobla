@@ -13,7 +13,7 @@ body:
     id: logs
     attributes:
       label: Relevant log output
-      description: Please copy and paste any relevant log output. See [Troubleshooting Guide](https://github.com/moogla/moogla/blob/main/docs/troubleshooting.md#how-to-troubleshoot-issues) for details.
+      description: Please copy and paste any relevant log output. See [Troubleshooting Guide](https://github.com/goobla/goobla/blob/main/docs/troubleshooting.md#how-to-troubleshoot-issues) for details.
       render: shell
     validations:
       required: false
@@ -61,8 +61,8 @@ body:
   - type: input
     id: version
     attributes:
-      label: Moogla version
-      description: What version of Moogla are you using? (`ollama --version`)
+      label: Goobla version
+      description: What version of Goobla are you using? (`goobla --version`)
       placeholder: e.g., 0.1.32
     validations:
       required: false

@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/moogla/moogla/cmd"
+	"github.com/goobla/goobla/cmd"
 )
 
 func main() {

@@ -7,11 +7,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/moogla/moogla/api"
-	"github.com/moogla/moogla/discover"
-	"github.com/moogla/moogla/envconfig"
-	"github.com/moogla/moogla/format"
-	"github.com/moogla/moogla/fs/ggml"
+	"github.com/goobla/goobla/api"
+	"github.com/goobla/goobla/discover"
+	"github.com/goobla/goobla/envconfig"
+	"github.com/goobla/goobla/format"
+	"github.com/goobla/goobla/fs/ggml"
 )
 
 // This algorithm looks for a complete fit to determine if we need to unload other models
@@ -85,8 +85,8 @@ func EstimateGPULayers(gpus []discover.GpuInfo, f *ggml.GGML, projectors []strin
 	var llamaEngineProjectorWeights uint64
 
 	// Projectors loaded with output layer
-	var ollamaEngineProjectorWeights uint64
-	var ollamaEngineProjectorGraph uint64
+	var gooblaEngineProjectorWeights uint64
+	var gooblaEngineProjectorGraph uint64
 
 	// Conditional output size on GPU 0
 	var memoryLayerOutput uint64
@@ -117,7 +117,7 @@ func EstimateGPULayers(gpus []discover.GpuInfo, f *ggml.GGML, projectors []strin
 		opts.NumCtx = max(opts.NumCtx, 2048)
 	}
 	if llamaEngineProjectorWeights == 0 {
-		ollamaEngineProjectorWeights, ollamaEngineProjectorGraph = f.VisionGraphSize()
+		gooblaEngineProjectorWeights, gooblaEngineProjectorGraph = f.VisionGraphSize()
 		opts.NumCtx = max(opts.NumCtx, 2048)
 	}
 
@@ -260,7 +260,7 @@ func EstimateGPULayers(gpus []discover.GpuInfo, f *ggml.GGML, projectors []strin
 	}
 
 	// Determine if we need to consider output then find where it fits
-	memoryLastLayer := memoryLayerOutput + ollamaEngineProjectorWeights + ollamaEngineProjectorGraph
+	memoryLastLayer := memoryLayerOutput + gooblaEngineProjectorWeights + gooblaEngineProjectorGraph
 	if memoryLastLayer > 0 {
 		if opts.NumGPU < 0 || layerCount < opts.NumGPU {
 			for j := len(gpusWithSpace); j > 0; j-- {
@@ -335,8 +335,8 @@ func EstimateGPULayers(gpus []discover.GpuInfo, f *ggml.GGML, projectors []strin
 		memoryLayerOutput:   memoryLayerOutput,
 		graphFullOffload:    graphFullOffload,
 		graphPartialOffload: graphPartialOffload,
-		projectorWeights:    llamaEngineProjectorWeights + ollamaEngineProjectorWeights,
-		projectorGraph:      ollamaEngineProjectorGraph,
+		projectorWeights:    llamaEngineProjectorWeights + gooblaEngineProjectorWeights,
+		projectorGraph:      gooblaEngineProjectorGraph,
 	}
 
 	if gpus[0].Library == "cpu" {

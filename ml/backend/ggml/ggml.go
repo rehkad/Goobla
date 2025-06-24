@@ -23,13 +23,13 @@ import (
 	"unicode"
 	"unsafe"
 
-	"github.com/moogla/moogla/format"
-	"github.com/moogla/moogla/fs"
-	fsggml "github.com/moogla/moogla/fs/ggml"
-	"github.com/moogla/moogla/logutil"
-	"github.com/moogla/moogla/ml"
-	ggml "github.com/moogla/moogla/ml/backend/ggml/ggml/src"
-	"github.com/moogla/moogla/ml/nn/rope"
+	"github.com/goobla/goobla/format"
+	"github.com/goobla/goobla/fs"
+	fsggml "github.com/goobla/goobla/fs/ggml"
+	"github.com/goobla/goobla/logutil"
+	"github.com/goobla/goobla/ml"
+	ggml "github.com/goobla/goobla/ml/backend/ggml/ggml/src"
+	"github.com/goobla/goobla/ml/nn/rope"
 	"golang.org/x/sync/errgroup"
 )
 

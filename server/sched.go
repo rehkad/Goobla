@@ -15,13 +15,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/moogla/moogla/api"
-	"github.com/moogla/moogla/discover"
-	"github.com/moogla/moogla/envconfig"
-	"github.com/moogla/moogla/format"
-	"github.com/moogla/moogla/fs/ggml"
-	"github.com/moogla/moogla/llm"
-	"github.com/moogla/moogla/types/model"
+	"github.com/goobla/goobla/api"
+	"github.com/goobla/goobla/discover"
+	"github.com/goobla/goobla/envconfig"
+	"github.com/goobla/goobla/format"
+	"github.com/goobla/goobla/fs/ggml"
+	"github.com/goobla/goobla/llm"
+	"github.com/goobla/goobla/types/model"
 )
 
 type LlmRequest struct {
@@ -134,7 +134,7 @@ func (s *Scheduler) processPending(ctx context.Context) {
 			}
 			numParallel := int(envconfig.NumParallel())
 			// `mllama` is a snowflake and uses an encoder cache which cannot be used with num_parallel > 1
-			// ref: https://github.com/moogla/moogla/issues/4165
+			// ref: https://github.com/goobla/goobla/issues/4165
 			if slices.Contains(pending.model.Config.ModelFamilies, "mllama") && numParallel != 1 {
 				numParallel = 1
 				slog.Warn("mllama does not currently support parallel requests")
@@ -181,11 +181,11 @@ func (s *Scheduler) processPending(ctx context.Context) {
 						}
 						if allReliable {
 							// HACK
-							os.Setenv("MOOGLA_MAX_LOADED_MODELS", strconv.Itoa(defaultModelsPerGPU*len(gpus)))
-							slog.Debug("updating default concurrency", "MOOGLA_MAX_LOADED_MODELS", envconfig.MaxRunners(), "gpu_count", len(gpus))
+							os.Setenv("GOOBLA_MAX_LOADED_MODELS", strconv.Itoa(defaultModelsPerGPU*len(gpus)))
+							slog.Debug("updating default concurrency", "GOOBLA_MAX_LOADED_MODELS", envconfig.MaxRunners(), "gpu_count", len(gpus))
 						} else {
 							// HACK
-							os.Setenv("MOOGLA_MAX_LOADED_MODELS", strconv.Itoa(len(gpus)))
+							os.Setenv("GOOBLA_MAX_LOADED_MODELS", strconv.Itoa(len(gpus)))
 							slog.Info("one or more GPUs detected that are unable to accurately report free memory - disabling default concurrency")
 						}
 					}
@@ -450,7 +450,7 @@ func (s *Scheduler) load(req *LlmRequest, f *ggml.GGML, gpus discover.GpuInfoLis
 		// show a generalized compatibility error until there is a better way to
 		// check for model compatibility
 		if errors.Is(err, ggml.ErrUnsupportedFormat) || strings.Contains(err.Error(), "failed to load model") {
-			err = fmt.Errorf("%v: this model may be incompatible with your version of Moogla. If you previously pulled this model, try updating it by running `ollama pull %s`", err, req.model.ShortName)
+			err = fmt.Errorf("%v: this model may be incompatible with your version of Goobla. If you previously pulled this model, try updating it by running `goobla pull %s`", err, req.model.ShortName)
 		}
 		slog.Info("NewLlamaServer failed", "model", req.model.ModelPath, "error", err)
 		req.errCh <- err

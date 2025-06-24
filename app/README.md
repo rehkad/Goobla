@@ -1,4 +1,4 @@
-# Moogla App
+# Goobla App
 
 ## Linux
 
@@ -15,7 +15,7 @@ If you want to build the installer, youll need to install
 
 
 In the top directory of this repo, run the following powershell script
-to build the ollama CLI, ollama app, and ollama installer.
+to build the goobla CLI, goobla app, and goobla installer.
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\build_windows.ps1

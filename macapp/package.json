@@ -1,8 +1,8 @@
 {
-  "name": "moogla",
-  "productName": "Moogla",
+  "name": "goobla",
+  "productName": "Goobla",
   "version": "0.0.0",
-  "description": "moogla",
+  "description": "goobla",
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",

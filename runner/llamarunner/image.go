@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/moogla/moogla/llama"
+	"github.com/goobla/goobla/llama"
 )
 
 const imageCacheSize = 4

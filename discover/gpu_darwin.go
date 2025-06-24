@@ -14,7 +14,7 @@ import (
 	"runtime"
 	"syscall"
 
-	"github.com/moogla/moogla/format"
+	"github.com/goobla/goobla/format"
 )
 
 const (

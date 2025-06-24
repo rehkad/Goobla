@@ -3,8 +3,8 @@ package nn
 import (
 	"fmt"
 
-	"github.com/moogla/moogla/kvcache"
-	"github.com/moogla/moogla/ml"
+	"github.com/goobla/goobla/kvcache"
+	"github.com/goobla/goobla/ml"
 )
 
 // Attention implements scaled dot-product attention for transformer models:

@@ -11,16 +11,16 @@ import (
 )
 
 var (
-	AppName          = "ollama app"
-	CLIName          = "moogla"
-	AppDir           = "/opt/Moogla"
-	AppDataDir       = "/opt/Moogla"
+	AppName          = "goobla app"
+	CLIName          = "goobla"
+	AppDir           = "/opt/Goobla"
+	AppDataDir       = "/opt/Goobla"
 	LogDir           = "/tmp"
 	UpdateStageDir   = "/tmp"
 	AppLogFile       = filepath.Join(LogDir, "app.log")
 	ServerLogFile    = filepath.Join(LogDir, "server.log")
 	UpgradeLogFile   = filepath.Join(LogDir, "upgrade.log")
-	Installer        = "MooglaSetup.exe"
+	Installer        = "GooblaSetup.exe"
 	LogRotationCount = 5
 )
 
@@ -30,7 +30,7 @@ func init() {
 		CLIName += ".exe"
 		// Logs, configs, downloads go to LOCALAPPDATA
 		localAppData := os.Getenv("LOCALAPPDATA")
-		AppDataDir = filepath.Join(localAppData, "Moogla")
+		AppDataDir = filepath.Join(localAppData, "Goobla")
 		LogDir = AppDataDir
 		UpdateStageDir = filepath.Join(AppDataDir, "updates")
 		AppLogFile = filepath.Join(LogDir, "app.log")
@@ -40,7 +40,7 @@ func init() {
 		exe, err := os.Executable()
 		if err != nil {
 			slog.Warn("error discovering executable directory", "error", err)
-			AppDir = filepath.Join(localAppData, "Programs", "Moogla")
+			AppDir = filepath.Join(localAppData, "Programs", "Goobla")
 		} else {
 			AppDir = filepath.Dir(exe)
 		}
@@ -73,14 +73,14 @@ func init() {
 		_, err = os.Stat(AppDataDir)
 		if errors.Is(err, os.ErrNotExist) {
 			if err := os.MkdirAll(AppDataDir, 0o755); err != nil {
-				slog.Error(fmt.Sprintf("create ollama dir %s: %v", AppDataDir, err))
+				slog.Error(fmt.Sprintf("create goobla dir %s: %v", AppDataDir, err))
 			}
 		}
 	} else if runtime.GOOS == "darwin" {
 		AppName += ".app"
 		home, err := os.UserHomeDir()
 		if err == nil {
-			AppDataDir = filepath.Join(home, ".ollama")
+			AppDataDir = filepath.Join(home, ".goobla")
 			LogDir = filepath.Join(AppDataDir, "logs")
 			UpdateStageDir = filepath.Join(AppDataDir, "updates")
 			AppLogFile = filepath.Join(LogDir, "app.log")
@@ -98,13 +98,13 @@ func init() {
 		_, err = os.Stat(LogDir)
 		if errors.Is(err, os.ErrNotExist) {
 			if err := os.MkdirAll(LogDir, 0o755); err != nil {
-				slog.Error(fmt.Sprintf("create ollama dir %s: %v", LogDir, err))
+				slog.Error(fmt.Sprintf("create goobla dir %s: %v", LogDir, err))
 			}
 		}
 	} else if runtime.GOOS == "linux" {
 		home, err := os.UserHomeDir()
 		if err == nil {
-			AppDataDir = filepath.Join(home, ".ollama")
+			AppDataDir = filepath.Join(home, ".goobla")
 			LogDir = filepath.Join(AppDataDir, "logs")
 			UpdateStageDir = filepath.Join(AppDataDir, "updates")
 			AppLogFile = filepath.Join(LogDir, "app.log")
@@ -122,7 +122,7 @@ func init() {
 		_, err = os.Stat(LogDir)
 		if errors.Is(err, os.ErrNotExist) {
 			if err := os.MkdirAll(LogDir, 0o755); err != nil {
-				slog.Error(fmt.Sprintf("create ollama dir %s: %v", LogDir, err))
+				slog.Error(fmt.Sprintf("create goobla dir %s: %v", LogDir, err))
 			}
 		}
 	}

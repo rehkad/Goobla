@@ -1,6 +1,6 @@
 # Template
 
-Moogla provides a powerful templating engine backed by Go's built-in templating engine to construct prompts for your large language model. This feature is a valuable tool to get the most out of your models.
+Goobla provides a powerful templating engine backed by Go's built-in templating engine to construct prompts for your large language model. This feature is a valuable tool to get the most out of your models.
 
 ## Basic Template Structure
 
@@ -26,7 +26,7 @@ In this example, we have:
 
 ## Adding templates to your model
 
-By default, models imported into Moogla have a default template of `{{ .Prompt }}`, i.e. user inputs are sent verbatim to the LLM. This is appropriate for text or code completion models but lacks essential markers for chat or instruction models.
+By default, models imported into Goobla have a default template of `{{ .Prompt }}`, i.e. user inputs are sent verbatim to the LLM. This is appropriate for text or code completion models but lacks essential markers for chat or instruction models.
 
 Omitting a template in these models puts the responsibility of correctly templating input onto the user. Adding a template allows users to easily get the best results from the model.
 
@@ -149,7 +149,7 @@ Fill-in-middle support can be added to a model by adding a `{{ .Suffix }}` node 
 
 #### CodeLlama
 
-CodeLlama [7B](https://moogla.com/library/codellama:7b-code) and [13B](https://moogla.com/library/codellama:13b-code) code completion models support fill-in-middle.
+CodeLlama [7B](https://goobla.com/library/codellama:7b-code) and [13B](https://goobla.com/library/codellama:13b-code) code completion models support fill-in-middle.
 
 ```go
 <PRE> {{ .Prompt }} <SUF>{{ .Suffix }} <MID>
@@ -160,7 +160,7 @@ CodeLlama [7B](https://moogla.com/library/codellama:7b-code) and [13B](https://m
 
 #### Codestral
 
-Codestral [22B](https://moogla.com/library/codestral:22b) supports fill-in-middle.
+Codestral [22B](https://goobla.com/library/codestral:22b) supports fill-in-middle.
 
 ```go
 [SUFFIX]{{ .Suffix }}[PREFIX] {{ .Prompt }}

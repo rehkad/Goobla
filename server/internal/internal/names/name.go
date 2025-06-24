@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/moogla/moogla/server/internal/internal/stringsx"
+	"github.com/goobla/goobla/server/internal/internal/stringsx"
 )
 
 const MaxNameLength = 350 + 1 + 80 + 1 + 80 + 1 + 80 // <host>/<namespace>/<model>:<tag>
@@ -77,9 +77,9 @@ func Parse(s string) Name {
 //
 // Examples:
 //
-//	http://moogla.com/bmizerany/smol:latest@digest
-//	https://moogla.com/bmizerany/smol:latest
-//	moogla.com/bmizerany/smol:latest@digest // returns "https" scheme.
+//	http://goobla.com/bmizerany/smol:latest@digest
+//	https://goobla.com/bmizerany/smol:latest
+//	goobla.com/bmizerany/smol:latest@digest // returns "https" scheme.
 //	model@digest
 //	@digest
 func Split(s string) (scheme, name, digest string) {

@@ -34,17 +34,17 @@ import (
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/term"
 
-	"github.com/moogla/moogla/api"
-	"github.com/moogla/moogla/envconfig"
-	"github.com/moogla/moogla/format"
-	"github.com/moogla/moogla/parser"
-	"github.com/moogla/moogla/progress"
-	"github.com/moogla/moogla/readline"
-	"github.com/moogla/moogla/runner"
-	"github.com/moogla/moogla/server"
-	"github.com/moogla/moogla/types/model"
-	"github.com/moogla/moogla/types/syncmap"
-	"github.com/moogla/moogla/version"
+	"github.com/goobla/goobla/api"
+	"github.com/goobla/goobla/envconfig"
+	"github.com/goobla/goobla/format"
+	"github.com/goobla/goobla/parser"
+	"github.com/goobla/goobla/progress"
+	"github.com/goobla/goobla/readline"
+	"github.com/goobla/goobla/runner"
+	"github.com/goobla/goobla/server"
+	"github.com/goobla/goobla/types/model"
+	"github.com/goobla/goobla/types/syncmap"
+	"github.com/goobla/goobla/version"
 )
 
 // ensureThinkingSupport emits a warning if the model does not advertise thinking support
@@ -243,7 +243,7 @@ func CreateHandler(cmd *cobra.Command, args []string) error {
 
 	if err := client.Create(cmd.Context(), req, fn); err != nil {
 		if strings.Contains(err.Error(), "path or Modelfile are required") {
-			return fmt.Errorf("the ollama server must be updated to use `ollama create` with this client")
+			return fmt.Errorf("the goobla server must be updated to use `goobla create` with this client")
 		}
 		return err
 	}
@@ -532,8 +532,8 @@ func PushHandler(cmd *cobra.Command, args []string) error {
 	spinner.Stop()
 
 	destination := n.String()
-	if strings.HasSuffix(n.Host, ".ollama.ai") || strings.HasSuffix(n.Host, ".moogla.com") {
-		destination = "https://moogla.com/" + strings.TrimSuffix(n.DisplayShortest(), ":latest")
+	if strings.HasSuffix(n.Host, ".goobla.ai") || strings.HasSuffix(n.Host, ".goobla.com") {
+		destination = "https://goobla.com/" + strings.TrimSuffix(n.DisplayShortest(), ":latest")
 	}
 	fmt.Printf("\nYou can find your model at:\n\n")
 	fmt.Printf("\t%s\n", destination)
@@ -1322,8 +1322,8 @@ func initializeKeypair() error {
 		return err
 	}
 
-	privKeyPath := filepath.Join(home, ".ollama", "id_ed25519")
-	pubKeyPath := filepath.Join(home, ".ollama", "id_ed25519.pub")
+	privKeyPath := filepath.Join(home, ".goobla", "id_ed25519")
+	pubKeyPath := filepath.Join(home, ".goobla", "id_ed25519.pub")
 
 	_, err = os.Stat(privKeyPath)
 	if os.IsNotExist(err) {
@@ -1372,7 +1372,7 @@ func checkServerHeartbeat(cmd *cobra.Command, _ []string) error {
 			return err
 		}
 		if err := startApp(cmd.Context(), client); err != nil {
-			return fmt.Errorf("ollama server not responding - %w", err)
+			return fmt.Errorf("goobla server not responding - %w", err)
 		}
 	}
 	return nil
@@ -1386,11 +1386,11 @@ func versionHandler(cmd *cobra.Command, _ []string) {
 
 	serverVersion, err := client.Version(cmd.Context())
 	if err != nil {
-		fmt.Println("Warning: could not connect to a running Moogla instance")
+		fmt.Println("Warning: could not connect to a running Goobla instance")
 	}
 
 	if serverVersion != "" {
-		fmt.Printf("ollama version is %s\n", serverVersion)
+		fmt.Printf("goobla version is %s\n", serverVersion)
 	}
 
 	if serverVersion != version.Version {
@@ -1422,7 +1422,7 @@ func NewCLI() *cobra.Command {
 	}
 
 	rootCmd := &cobra.Command{
-		Use:           "moogla",
+		Use:           "goobla",
 		Short:         "Large language model runner",
 		SilenceUsage:  true,
 		SilenceErrors: true,
@@ -1494,7 +1494,7 @@ func NewCLI() *cobra.Command {
 	serveCmd := &cobra.Command{
 		Use:     "serve",
 		Aliases: []string{"start"},
-		Short:   "Start ollama",
+		Short:   "Start goobla",
 		Args:    cobra.ExactArgs(0),
 		RunE:    RunServer,
 	}
@@ -1563,7 +1563,7 @@ func NewCLI() *cobra.Command {
 
 	envVars := envconfig.AsMap()
 
-	envs := []envconfig.EnvVar{envVars["MOOGLA_HOST"]}
+	envs := []envconfig.EnvVar{envVars["GOOBLA_HOST"]}
 
 	for _, cmd := range []*cobra.Command{
 		createCmd,
@@ -1580,24 +1580,24 @@ func NewCLI() *cobra.Command {
 	} {
 		switch cmd {
 		case runCmd:
-			appendEnvDocs(cmd, []envconfig.EnvVar{envVars["MOOGLA_HOST"], envVars["MOOGLA_NOHISTORY"]})
+			appendEnvDocs(cmd, []envconfig.EnvVar{envVars["GOOBLA_HOST"], envVars["GOOBLA_NOHISTORY"]})
 		case serveCmd:
 			appendEnvDocs(cmd, []envconfig.EnvVar{
-				envVars["MOOGLA_DEBUG"],
-				envVars["MOOGLA_HOST"],
-				envVars["MOOGLA_KEEP_ALIVE"],
-				envVars["MOOGLA_MAX_LOADED_MODELS"],
-				envVars["MOOGLA_MAX_QUEUE"],
-				envVars["MOOGLA_MODELS"],
-				envVars["MOOGLA_NUM_PARALLEL"],
-				envVars["MOOGLA_NOPRUNE"],
-				envVars["MOOGLA_ORIGINS"],
-				envVars["MOOGLA_SCHED_SPREAD"],
-				envVars["MOOGLA_FLASH_ATTENTION"],
-				envVars["MOOGLA_KV_CACHE_TYPE"],
-				envVars["MOOGLA_LLM_LIBRARY"],
-				envVars["MOOGLA_GPU_OVERHEAD"],
-				envVars["MOOGLA_LOAD_TIMEOUT"],
+				envVars["GOOBLA_DEBUG"],
+				envVars["GOOBLA_HOST"],
+				envVars["GOOBLA_KEEP_ALIVE"],
+				envVars["GOOBLA_MAX_LOADED_MODELS"],
+				envVars["GOOBLA_MAX_QUEUE"],
+				envVars["GOOBLA_MODELS"],
+				envVars["GOOBLA_NUM_PARALLEL"],
+				envVars["GOOBLA_NOPRUNE"],
+				envVars["GOOBLA_ORIGINS"],
+				envVars["GOOBLA_SCHED_SPREAD"],
+				envVars["GOOBLA_FLASH_ATTENTION"],
+				envVars["GOOBLA_KV_CACHE_TYPE"],
+				envVars["GOOBLA_LLM_LIBRARY"],
+				envVars["GOOBLA_GPU_OVERHEAD"],
+				envVars["GOOBLA_LOAD_TIMEOUT"],
 			})
 		default:
 			appendEnvDocs(cmd, envs)

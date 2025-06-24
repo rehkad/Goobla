@@ -4,7 +4,7 @@ package main
 // go build -ldflags="-H windowsgui" .
 
 import (
-	"github.com/moogla/moogla/app/lifecycle"
+	"github.com/goobla/goobla/app/lifecycle"
 )
 
 func main() {

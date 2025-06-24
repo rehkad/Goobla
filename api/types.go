@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/moogla/moogla/envconfig"
-	"github.com/moogla/moogla/types/model"
+	"github.com/goobla/goobla/envconfig"
+	"github.com/goobla/goobla/types/model"
 )
 
 // StatusError is an error with an HTTP status code and message.
@@ -32,7 +32,7 @@ func (e StatusError) Error() string {
 		return e.ErrorMessage
 	default:
 		// this should not happen
-		return "something went wrong, please see the Moogla server logs for details"
+		return "something went wrong, please see the Goobla server logs for details"
 	}
 }
 
@@ -43,8 +43,8 @@ type ImageData []byte
 // have to specify the Model and Prompt fields, all the other fields have
 // reasonable defaults for basic uses.
 type GenerateRequest struct {
-	// Model is the model name; it should be a name familiar to Moogla from
-	// the library at https://moogla.com/library
+	// Model is the model name; it should be a name familiar to Goobla from
+	// the library at https://goobla.com/library
 	Model string `json:"model"`
 
 	// Prompt is the textual prompt to send to the model.

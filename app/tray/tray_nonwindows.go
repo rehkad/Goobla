@@ -5,9 +5,9 @@ package tray
 import (
 	"errors"
 
-	"github.com/moogla/moogla/app/tray/commontray"
+	"github.com/goobla/goobla/app/tray/commontray"
 )
 
-func InitPlatformTray(icon, updateIcon []byte) (commontray.MooglaTray, error) {
+func InitPlatformTray(icon, updateIcon []byte) (commontray.GooblaTray, error) {
 	return nil, errors.New("not implemented")
 }

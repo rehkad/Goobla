@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/moogla/moogla/api"
+	"github.com/goobla/goobla/api"
 )
 
 func dotProduct[V float32 | float64](v1, v2 []V) V {

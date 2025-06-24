@@ -9,9 +9,9 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/moogla/moogla/api"
-	"github.com/moogla/moogla/llm"
-	"github.com/moogla/moogla/template"
+	"github.com/goobla/goobla/api"
+	"github.com/goobla/goobla/llm"
+	"github.com/goobla/goobla/template"
 )
 
 type tokenizeFunc func(context.Context, string) ([]int, error)

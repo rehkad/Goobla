@@ -21,14 +21,14 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/moogla/moogla/api"
-	"github.com/moogla/moogla/envconfig"
-	"github.com/moogla/moogla/fs/gguf"
-	"github.com/moogla/moogla/parser"
-	"github.com/moogla/moogla/template"
-	"github.com/moogla/moogla/thinking"
-	"github.com/moogla/moogla/types/model"
-	"github.com/moogla/moogla/version"
+	"github.com/goobla/goobla/api"
+	"github.com/goobla/goobla/envconfig"
+	"github.com/goobla/goobla/fs/gguf"
+	"github.com/goobla/goobla/parser"
+	"github.com/goobla/goobla/template"
+	"github.com/goobla/goobla/thinking"
+	"github.com/goobla/goobla/types/model"
+	"github.com/goobla/goobla/version"
 )
 
 var (
@@ -309,19 +309,19 @@ func GetModel(name string) (*Model, error) {
 		}
 
 		switch layer.MediaType {
-		case "application/vnd.ollama.image.model":
+		case "application/vnd.goobla.image.model":
 			model.ModelPath = filename
 			model.ParentModel = layer.From
-		case "application/vnd.ollama.image.embed":
+		case "application/vnd.goobla.image.embed":
 			// Deprecated in versions  > 0.1.2
 			// TODO: remove this warning in a future version
 			slog.Info("WARNING: model contains embeddings, but embeddings in modelfiles have been deprecated and will be ignored.")
-		case "application/vnd.ollama.image.adapter":
+		case "application/vnd.goobla.image.adapter":
 			model.AdapterPaths = append(model.AdapterPaths, filename)
-		case "application/vnd.ollama.image.projector":
+		case "application/vnd.goobla.image.projector":
 			model.ProjectorPaths = append(model.ProjectorPaths, filename)
-		case "application/vnd.ollama.image.prompt",
-			"application/vnd.ollama.image.template":
+		case "application/vnd.goobla.image.prompt",
+			"application/vnd.goobla.image.template":
 			bts, err := os.ReadFile(filename)
 			if err != nil {
 				return nil, err
@@ -331,14 +331,14 @@ func GetModel(name string) (*Model, error) {
 			if err != nil {
 				return nil, err
 			}
-		case "application/vnd.ollama.image.system":
+		case "application/vnd.goobla.image.system":
 			bts, err := os.ReadFile(filename)
 			if err != nil {
 				return nil, err
 			}
 
 			model.System = string(bts)
-		case "application/vnd.ollama.image.params":
+		case "application/vnd.goobla.image.params":
 			params, err := os.Open(filename)
 			if err != nil {
 				return nil, err
@@ -349,7 +349,7 @@ func GetModel(name string) (*Model, error) {
 			if err = json.NewDecoder(params).Decode(&model.Options); err != nil {
 				return nil, err
 			}
-		case "application/vnd.ollama.image.messages":
+		case "application/vnd.goobla.image.messages":
 			msgs, err := os.Open(filename)
 			if err != nil {
 				return nil, err
@@ -359,7 +359,7 @@ func GetModel(name string) (*Model, error) {
 			if err = json.NewDecoder(msgs).Decode(&model.Messages); err != nil {
 				return nil, err
 			}
-		case "application/vnd.ollama.image.license":
+		case "application/vnd.goobla.image.license":
 			bts, err := os.ReadFile(filename)
 			if err != nil {
 				return nil, err
@@ -788,7 +788,7 @@ func makeRequest(ctx context.Context, method string, requestURL *url.URL, header
 		}
 	}
 
-	req.Header.Set("User-Agent", fmt.Sprintf("ollama/%s (%s %s) Go/%s", version.Version, runtime.GOARCH, runtime.GOOS, runtime.Version()))
+	req.Header.Set("User-Agent", fmt.Sprintf("goobla/%s (%s %s) Go/%s", version.Version, runtime.GOARCH, runtime.GOOS, runtime.Version()))
 
 	if s := req.Header.Get("Content-Length"); s != "" {
 		contentLength, err := strconv.ParseInt(s, 10, 64)

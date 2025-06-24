@@ -3,9 +3,9 @@ package llama4
 import (
 	"math"
 
-	"github.com/moogla/moogla/fs"
-	"github.com/moogla/moogla/ml"
-	"github.com/moogla/moogla/ml/nn"
+	"github.com/goobla/goobla/fs"
+	"github.com/goobla/goobla/ml"
+	"github.com/goobla/goobla/ml/nn"
 	"log/slog"
 )
 

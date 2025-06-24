@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"runtime"
 
-	"github.com/moogla/moogla/app/assets"
-	"github.com/moogla/moogla/app/tray/commontray"
+	"github.com/goobla/goobla/app/assets"
+	"github.com/goobla/goobla/app/tray/commontray"
 )
 
-func NewTray() (commontray.MooglaTray, error) {
+func NewTray() (commontray.GooblaTray, error) {
 	extension := ".png"
 	if runtime.GOOS == "windows" {
 		extension = ".ico"

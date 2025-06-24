@@ -13,7 +13,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/moogla/moogla/server/internal/testutil"
+	"github.com/goobla/goobla/server/internal/testutil"
 )
 
 func init() {

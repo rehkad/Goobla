@@ -1,9 +1,9 @@
 # OpenAI compatibility
 
 > [!NOTE]
-> OpenAI compatibility is experimental and is subject to major adjustments including breaking changes. For fully-featured access to the Moogla API, see the Moogla [Python library](https://github.com/moogla/moogla-python), [JavaScript library](https://github.com/moogla/moogla-js) and [REST API](https://github.com/moogla/moogla/blob/main/docs/api.md).
+> OpenAI compatibility is experimental and is subject to major adjustments including breaking changes. For fully-featured access to the Goobla API, see the Goobla [Python library](https://github.com/goobla/goobla-python), [JavaScript library](https://github.com/goobla/goobla-js) and [REST API](https://github.com/goobla/goobla/blob/main/docs/api.md).
 
-Moogla provides experimental compatibility with parts of the [OpenAI API](https://platform.openai.com/docs/api-reference) to help connect existing applications to Moogla.
+Goobla provides experimental compatibility with parts of the [OpenAI API](https://platform.openai.com/docs/api-reference) to help connect existing applications to Goobla.
 
 ## Usage
 
@@ -16,7 +16,7 @@ client = OpenAI(
     base_url='http://localhost:11434/v1/',
 
     # required but ignored
-    api_key='moogla',
+    api_key='goobla',
 )
 
 chat_completion = client.chat.completions.create(
@@ -67,7 +67,7 @@ embeddings = client.embeddings.create(
 from pydantic import BaseModel
 from openai import OpenAI
 
-client = OpenAI(base_url="http://localhost:11434/v1", api_key="moogla")
+client = OpenAI(base_url="http://localhost:11434/v1", api_key="goobla")
 
 # Define the schema for the response
 class FriendInfo(BaseModel):
@@ -83,7 +83,7 @@ try:
         temperature=0,
         model="llama3.1:8b",
         messages=[
-            {"role": "user", "content": "I have two friends. The first is Moogla 22 years old busy saving the world, and the second is Alonso 23 years old and wants to hang out. Return a list of friends in JSON format"}
+            {"role": "user", "content": "I have two friends. The first is Goobla 22 years old busy saving the world, and the second is Alonso 23 years old and wants to hang out. Return a list of friends in JSON format"}
         ],
         response_format=FriendList,
     )
@@ -106,7 +106,7 @@ const openai = new OpenAI({
   baseURL: 'http://localhost:11434/v1/',
 
   // required but ignored
-  apiKey: 'moogla',
+  apiKey: 'goobla',
 })
 
 const chatCompletion = await openai.chat.completions.create({
@@ -287,14 +287,14 @@ curl http://localhost:11434/v1/embeddings \
 #### Notes
 
 - `created` corresponds to when the model was last modified
-- `owned_by` corresponds to the Moogla username, defaulting to `"library"`
+- `owned_by` corresponds to the Goobla username, defaulting to `"library"`
 
 ### `/v1/models/{model}`
 
 #### Notes
 
 - `created` corresponds to when the model was last modified
-- `owned_by` corresponds to the Moogla username, defaulting to `"library"`
+- `owned_by` corresponds to the Goobla username, defaulting to `"library"`
 
 ### `/v1/embeddings`
 
@@ -312,18 +312,18 @@ curl http://localhost:11434/v1/embeddings \
 
 ## Models
 
-Before using a model, pull it locally `moogla pull`:
+Before using a model, pull it locally `goobla pull`:
 
 ```shell
-moogla pull llama3.2
+goobla pull llama3.2
 ```
 
 ### Default model names
 
-For tooling that relies on default OpenAI model names such as `gpt-3.5-turbo`, use `moogla cp` to copy an existing model name to a temporary name:
+For tooling that relies on default OpenAI model names such as `gpt-3.5-turbo`, use `goobla cp` to copy an existing model name to a temporary name:
 
 ```shell
-moogla cp llama3.2 gpt-3.5-turbo
+goobla cp llama3.2 gpt-3.5-turbo
 ```
 
 Afterwards, this new model name can be specified the `model` field:
@@ -351,7 +351,7 @@ FROM <some model>
 PARAMETER num_ctx <context size>
 ```
 
-Use the `moogla create mymodel` command to create a new model with the updated context size. Call the API with the updated model name:
+Use the `goobla create mymodel` command to create a new model with the updated context size. Call the API with the updated model name:
 
 ```shell
 curl http://localhost:11434/v1/chat/completions \

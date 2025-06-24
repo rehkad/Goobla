@@ -9,7 +9,7 @@
 #include <set>
 
 struct llama_vocab;
-struct ollama_vocab {
+struct goobla_vocab {
     std::map<uint32_t, std::string> token_to_piece_map;
     std::set<uint32_t> special_eog_ids;
 
@@ -125,7 +125,7 @@ struct llama_grammar_trigger_pattern {
 struct llama_grammar {
     // note: allow null vocab for testing (not great)
     const llama_vocab * vocab;
-    const ollama_vocab * o_vocab;
+    const goobla_vocab * o_vocab;
 
     const llama_grammar_rules  rules;  // TODO: shared ptr
           llama_grammar_stacks stacks;
@@ -153,14 +153,14 @@ struct llama_grammar {
 // note: needed for tests (not great)
 struct llama_grammar * llama_grammar_init_impl(
         const struct llama_vocab * vocab,
-        const struct ollama_vocab * ollama_vocab,
+        const struct goobla_vocab * goobla_vocab,
         const llama_grammar_element ** rules,
         size_t n_rules,
         size_t start_rule_index);
 
 struct llama_grammar * llama_grammar_init_impl(
         const struct llama_vocab * vocab,
-        const struct ollama_vocab * ollama_vocab,
+        const struct goobla_vocab * goobla_vocab,
                       const char * grammar_str,
                       const char * grammar_root,
                               bool lazy,

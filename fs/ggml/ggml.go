@@ -9,7 +9,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/moogla/moogla/fs/util/bufioutil"
+	"github.com/goobla/goobla/fs/util/bufioutil"
 )
 
 type GGML struct {
@@ -121,7 +121,7 @@ func (kv KV) Floats(key string, defaultValue ...[]float32) []float32 {
 	return keyValue(kv, key, &array[float32]{values: append(defaultValue, []float32(nil))[0]}).values
 }
 
-func (kv KV) MooglaEngineRequired() bool {
+func (kv KV) GooblaEngineRequired() bool {
 	return slices.Contains([]string{
 		"gemma3",
 		"mistral3",
@@ -517,8 +517,8 @@ func (f GGML) GraphSize(context, batch uint64, numParallel int, kvCacheType stri
 				embedding*embeddingHeadsK*heads*9/16,
 		)
 
-		// Gemma2 also has sliding window attention but we only have an optimized implementation in the Moogla
-		// engine. Gemma3 always uses the Moogla engine.
+		// Gemma2 also has sliding window attention but we only have an optimized implementation in the Goobla
+		// engine. Gemma3 always uses the Goobla engine.
 		if f.KV().Architecture() == "gemma3" {
 			const gemma3GlobalCacheCount = 6
 			slidingWindow := (uint64(numParallel) * uint64(f.KV().Uint("attention.sliding_window"))) + batch

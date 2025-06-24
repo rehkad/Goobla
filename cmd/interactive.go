@@ -14,11 +14,11 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/moogla/moogla/api"
-	"github.com/moogla/moogla/envconfig"
-	"github.com/moogla/moogla/readline"
-	"github.com/moogla/moogla/types/errtypes"
-	"github.com/moogla/moogla/types/model"
+	"github.com/goobla/goobla/api"
+	"github.com/goobla/goobla/envconfig"
+	"github.com/goobla/goobla/readline"
+	"github.com/goobla/goobla/types/errtypes"
+	"github.com/goobla/goobla/types/model"
 )
 
 type MultilineState int
@@ -79,7 +79,7 @@ func generateInteractive(cmd *cobra.Command, opts runOptions) error {
 		fmt.Fprintln(os.Stderr, "")
 		fmt.Fprintln(os.Stderr, "  Ctrl + l            Clear the screen")
 		fmt.Fprintln(os.Stderr, "  Ctrl + c            Stop the model from responding")
-		fmt.Fprintln(os.Stderr, "  Ctrl + d            Exit ollama (/bye)")
+		fmt.Fprintln(os.Stderr, "  Ctrl + d            Exit goobla (/bye)")
 		fmt.Fprintln(os.Stderr, "")
 	}
 
@@ -223,7 +223,7 @@ func generateInteractive(cmd *cobra.Command, opts runOptions) error {
 
 			client, err := api.ClientFromEnvironment()
 			if err != nil {
-				fmt.Println("error: couldn't connect to ollama server")
+				fmt.Println("error: couldn't connect to goobla server")
 				return err
 			}
 
@@ -359,7 +359,7 @@ func generateInteractive(cmd *cobra.Command, opts runOptions) error {
 			if len(args) > 1 {
 				client, err := api.ClientFromEnvironment()
 				if err != nil {
-					fmt.Println("error: couldn't connect to ollama server")
+					fmt.Println("error: couldn't connect to goobla server")
 					return err
 				}
 				req := &api.ShowRequest{

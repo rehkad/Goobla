@@ -229,7 +229,7 @@ func TestKeyValue(t *testing.T) {
 		t.Errorf("unexpected strings (-got +want):\n%s", diff)
 	}
 
-	if diff := cmp.Diff(kv.Strings("default.strings", []string{"ollama"}), []string{"ollama"}); diff != "" {
+	if diff := cmp.Diff(kv.Strings("default.strings", []string{"goobla"}), []string{"goobla"}); diff != "" {
 		t.Errorf("unexpected strings (-got +want):\n%s", diff)
 	}
 
