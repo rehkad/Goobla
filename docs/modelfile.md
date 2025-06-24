@@ -254,5 +254,6 @@ MESSAGE assistant yes
 
 - the **`Modelfile` is not case sensitive**. In the examples, uppercase instructions are used to make it easier to distinguish it from arguments.
 - Instructions can be in any order. In the examples, the `FROM` instruction is first to keep it easily readable.
+- Embedding layers in a `Modelfile` are no longer supported. Any existing embedding entries will be ignored during model creation.
 
 [1]: https://goobla.com/library

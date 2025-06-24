@@ -313,9 +313,7 @@ func GetModel(name string) (*Model, error) {
 			model.ModelPath = filename
 			model.ParentModel = layer.From
 		case "application/vnd.goobla.image.embed":
-			// Deprecated in versions  > 0.1.2
-			// TODO: remove this warning in a future version
-			slog.Info("WARNING: model contains embeddings, but embeddings in modelfiles have been deprecated and will be ignored.")
+		// Deprecated in versions > 0.1.2. Embedding layers in Modelfiles are no longer supported and will be ignored.
 		case "application/vnd.goobla.image.adapter":
 			model.AdapterPaths = append(model.AdapterPaths, filename)
 		case "application/vnd.goobla.image.projector":
