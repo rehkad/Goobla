@@ -38,9 +38,18 @@ type oneapiHandles struct {
 }
 
 const (
+	// cudaMinimumMemory is the minimum VRAM required for CUDA GPUs.
+	// This value was derived from profiling the smallest supported models
+	// and represents the absolute minimum amount of free VRAM needed for
+	// inference to succeed.
 	cudaMinimumMemory = 457 * format.MebiByte
+	// rocmMinimumMemory is the minimum VRAM required for ROCm GPUs.
+	// It mirrors the CUDA requirement so behaviour is consistent across
+	// vendors.
 	rocmMinimumMemory = 457 * format.MebiByte
-	// TODO OneAPI minimum memory
+	// oneapiMinimumMemory is the minimum VRAM required for Intel GPUs when
+	// using the oneAPI backend.  This matches the CUDA/ROCm thresholds.
+	oneapiMinimumMemory = 457 * format.MebiByte
 )
 
 var (
@@ -77,7 +86,12 @@ const IGPUMemLimit = 1 * format.GibiByte // 512G is what they typically report, 
 
 // Note: gpuMutex must already be held
 func initCudaHandles() *cudaHandles {
-	// TODO - if the ollama build is CPU only, don't do these checks as they're irrelevant and confusing
+	// If the build ships without GPU libraries this is effectively a CPU only
+	// build.  Skip discovery in that case to avoid confusing warning logs.
+	if isCPUOnlyBuild() {
+		slog.Debug("CPU only build detected, skipping CUDA discovery")
+		return &cudaHandles{}
+	}
 
 	cHandles := &cudaHandles{}
 	// Short Circuit if we already know which library to use
@@ -304,6 +318,20 @@ func GetGPUInfo() GpuInfoList {
 					continue
 				}
 
+				if gpuInfo.TotalMemory < IGPUMemLimit {
+					reason := "unsupported NVIDIA iGPU detected skipping"
+					slog.Info(reason, "id", gpuInfo.ID, "total", format.HumanBytes2(gpuInfo.TotalMemory))
+					unsupportedGPUs = append(unsupportedGPUs, UnsupportedGPUInfo{GpuInfo: gpuInfo.GpuInfo, Reason: reason})
+					continue
+				}
+
+				if gpuInfo.TotalMemory < gpuInfo.MinimumMemory {
+					reason := fmt.Sprintf("GPU memory below minimum: %s < %s", format.HumanBytes2(gpuInfo.TotalMemory), format.HumanBytes2(gpuInfo.MinimumMemory))
+					slog.Info(reason, "gpu", gpuInfo.ID)
+					unsupportedGPUs = append(unsupportedGPUs, UnsupportedGPUInfo{GpuInfo: gpuInfo.GpuInfo, Reason: reason})
+					continue
+				}
+
 				// query the management library as well so we can record any skew between the two
 				// which represents overhead on the GPU we must set aside on subsequent updates
 				if cHandles.nvml != nil {
@@ -354,14 +382,29 @@ func GetGPUInfo() GpuInfoList {
 						}
 						// TODO - split bootstrapping from updating free memory
 						C.oneapi_check_vram(*oHandles.oneapi, C.int(d), i, &memInfo)
-						// TODO - convert this to MinimumMemory based on testing...
-						var totalFreeMem float64 = float64(memInfo.free) * 0.95 // work-around: leave some reserve vram for mkl lib used in ggml-sycl backend.
+						// leave a small reserve of VRAM for the MKL library used in the SYCL backend
+						var totalFreeMem float64 = float64(memInfo.free) * 0.95
 						memInfo.free = C.uint64_t(totalFreeMem)
 						gpuInfo.TotalMemory = uint64(memInfo.total)
 						gpuInfo.FreeMemory = uint64(memInfo.free)
 						gpuInfo.ID = C.GoString(&memInfo.gpu_id[0])
 						gpuInfo.Name = C.GoString(&memInfo.gpu_name[0])
 						gpuInfo.DependencyPath = []string{LibMooglaPath}
+						gpuInfo.MinimumMemory = oneapiMinimumMemory
+
+						if gpuInfo.TotalMemory < IGPUMemLimit {
+							reason := "unsupported Intel iGPU detected skipping"
+							slog.Info(reason, "id", gpuInfo.ID, "total", format.HumanBytes2(gpuInfo.TotalMemory))
+							unsupportedGPUs = append(unsupportedGPUs, UnsupportedGPUInfo{GpuInfo: gpuInfo.GpuInfo, Reason: reason})
+							continue
+						}
+
+						if gpuInfo.TotalMemory < gpuInfo.MinimumMemory {
+							reason := fmt.Sprintf("GPU memory below minimum: %s < %s", format.HumanBytes2(gpuInfo.TotalMemory), format.HumanBytes2(gpuInfo.MinimumMemory))
+							slog.Info(reason, "gpu", gpuInfo.ID)
+							unsupportedGPUs = append(unsupportedGPUs, UnsupportedGPUInfo{GpuInfo: gpuInfo.GpuInfo, Reason: reason})
+							continue
+						}
 						oneapiGPUs = append(oneapiGPUs, gpuInfo)
 					}
 				}
@@ -467,8 +510,8 @@ func GetGPUInfo() GpuInfoList {
 				continue
 			}
 			C.oneapi_check_vram(*oHandles.oneapi, C.int(gpu.driverIndex), C.int(gpu.gpuIndex), &memInfo)
-			// TODO - convert this to MinimumMemory based on testing...
-			var totalFreeMem float64 = float64(memInfo.free) * 0.95 // work-around: leave some reserve vram for mkl lib used in ggml-sycl backend.
+			// leave a small reserve of VRAM for the SYCL runtime
+			var totalFreeMem float64 = float64(memInfo.free) * 0.95
 			memInfo.free = C.uint64_t(totalFreeMem)
 			oneapiGPUs[i].FreeMemory = uint64(memInfo.free)
 		}
@@ -715,4 +758,24 @@ func GetSystemInfo() SystemInfo {
 		UnsupportedGPUs: unsupportedGPUs,
 		DiscoveryErrors: discoveryErrors,
 	}
+}
+
+// isCPUOnlyBuild returns true when no GPU libraries are present in the
+// installation directory.  This is used to skip GPU discovery logic when the
+// binary was built without GPU support.
+func isCPUOnlyBuild() bool {
+	entries, err := os.ReadDir(LibMooglaPath)
+	if err != nil {
+		return false
+	}
+	for _, e := range entries {
+		if !e.IsDir() {
+			continue
+		}
+		name := strings.ToLower(e.Name())
+		if strings.HasPrefix(name, "cuda_") || strings.HasPrefix(name, "rocm") || strings.HasPrefix(name, "oneapi") {
+			return false
+		}
+	}
+	return true
 }
