@@ -1,14 +1,21 @@
 package lifecycle
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"log/slog"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"time"
 )
+
+// osExit allows tests to stub out os.Exit.
+var osExit = os.Exit
+var execCommand = exec.Command
 
 func DoUpgrade(cancel context.CancelFunc, done chan int) error {
 	files, err := filepath.Glob(filepath.Join(UpdateStageDir, "*", "*.exe")) // TODO generalize for multiplatform
@@ -48,10 +55,34 @@ func DoUpgrade(cancel context.CancelFunc, done chan int) error {
 
 	slog.Debug(fmt.Sprintf("starting installer: %s %v", installerExe, installArgs))
 	os.Chdir(filepath.Dir(UpgradeLogFile)) //nolint:errcheck
-	cmd := exec.Command(installerExe, installArgs...)
+	cmd := execCommand(installerExe, installArgs...)
+
+	var stderr bytes.Buffer
+	cmd.Stdout = io.Discard
+	cmd.Stderr = &stderr
 
 	if err := cmd.Start(); err != nil {
+		if stderr.Len() > 0 {
+			slog.Error("installer stderr", "output", stderr.String())
+		}
 		return fmt.Errorf("unable to start goobla app %w", err)
+	}
+
+	var waitErr error
+	doneWait := make(chan error, 1)
+	go func() { doneWait <- cmd.Wait() }()
+	select {
+	case waitErr = <-doneWait:
+		exitCode := 0
+		if exitErr, ok := waitErr.(*exec.ExitError); ok {
+			exitCode = exitErr.ExitCode()
+		}
+		if stderr.Len() > 0 {
+			slog.Error("installer stderr", "output", stderr.String())
+		}
+		return fmt.Errorf("installer exited with code %d", exitCode)
+	case <-time.After(200 * time.Millisecond):
+		// assume running
 	}
 
 	if cmd.Process != nil {
@@ -60,15 +91,17 @@ func DoUpgrade(cancel context.CancelFunc, done chan int) error {
 			slog.Error(fmt.Sprintf("failed to release server process: %s", err))
 		}
 	} else {
-		// TODO - some details about why it didn't start, or is this a pedantic error case?
+		if stderr.Len() > 0 {
+			slog.Error("installer stderr", "output", stderr.String())
+		}
 		return errors.New("installer process did not start")
 	}
 
-	// TODO should we linger for a moment and check to make sure it's actually running by checking the pid?
+	// lingering check done via Wait above
 
 	slog.Info("Installer started in background, exiting")
 
-	os.Exit(0)
+	osExit(0)
 	// Not reached
 	return nil
 }
