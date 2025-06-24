@@ -7,9 +7,11 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/fs"
 	"log/slog"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/moogla/moogla/types/model"
 )
@@ -129,49 +131,53 @@ func Manifests(continueOnError bool) (map[model.Name]*Manifest, error) {
 		return nil, err
 	}
 
-	// TODO(mxyng): use something less brittle
-	matches, err := filepath.Glob(filepath.Join(manifests, "*", "*", "*", "*"))
-	if err != nil {
-		return nil, err
+	ms := make(map[model.Name]*Manifest)
+
+	fsys := os.DirFS(manifests)
+	walkFn := func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			if continueOnError {
+				slog.Warn("walk error", "path", path, "error", err)
+				return nil
+			}
+			return err
+		}
+
+		if d.IsDir() {
+			if path == "." {
+				return nil
+			}
+			parts := strings.Split(path, string(filepath.Separator))
+			if len(parts) > 3 { // host/namespace/model
+				return fs.SkipDir
+			}
+			return nil
+		}
+
+		n := model.ParseNameFromFilepath(path)
+		if !n.IsValid() {
+			if continueOnError {
+				slog.Warn("bad manifest name", "path", path)
+				return nil
+			}
+			return fmt.Errorf("%s %w", path, err)
+		}
+
+		m, err := ParseNamedManifest(n)
+		if err != nil {
+			if continueOnError {
+				slog.Warn("bad manifest", "name", n, "error", err)
+				return nil
+			}
+			return fmt.Errorf("%s %w", n, err)
+		}
+
+		ms[n] = m
+		return nil
 	}
 
-	ms := make(map[model.Name]*Manifest)
-	for _, match := range matches {
-		fi, err := os.Stat(match)
-		if err != nil {
-			return nil, err
-		}
-
-		if !fi.IsDir() {
-			rel, err := filepath.Rel(manifests, match)
-			if err != nil {
-				if !continueOnError {
-					return nil, fmt.Errorf("%s %w", match, err)
-				}
-				slog.Warn("bad filepath", "path", match, "error", err)
-				continue
-			}
-
-			n := model.ParseNameFromFilepath(rel)
-			if !n.IsValid() {
-				if !continueOnError {
-					return nil, fmt.Errorf("%s %w", rel, err)
-				}
-				slog.Warn("bad manifest name", "path", rel)
-				continue
-			}
-
-			m, err := ParseNamedManifest(n)
-			if err != nil {
-				if !continueOnError {
-					return nil, fmt.Errorf("%s %w", n, err)
-				}
-				slog.Warn("bad manifest", "name", n, "error", err)
-				continue
-			}
-
-			ms[n] = m
-		}
+	if err := fs.WalkDir(fsys, ".", walkFn); err != nil {
+		return nil, err
 	}
 
 	return ms, nil
