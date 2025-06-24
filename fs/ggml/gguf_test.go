@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"math/rand/v2"
 	"os"
+	"runtime"
 	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"golang.org/x/sync/errgroup"
 )
 
 func TestWriteGGUF(t *testing.T) {
@@ -79,5 +81,42 @@ func TestWriteGGUF(t *testing.T) {
 				t.Errorf("Mismatch (-want +got):\n%s", diff)
 			}
 		})
+	}
+}
+
+func TestWriteGGUFConcurrency(t *testing.T) {
+	oldAvail := availableMemory
+	oldSetLimit := groupSetLimit
+	defer func() {
+		availableMemory = oldAvail
+		groupSetLimit = oldSetLimit
+	}()
+
+	// Force available memory to be less than the estimate so the limit is reduced.
+	availableMemory = func() uint64 { return tensorSize }
+
+	var limit int
+	groupSetLimit = func(g *errgroup.Group, n int) {
+		limit = n
+		g.SetLimit(n)
+	}
+
+	w, err := os.CreateTemp(t.TempDir(), "concurrency*.bin")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer w.Close()
+
+	ts := []*Tensor{
+		{Name: "a", Kind: 0, Shape: []uint64{1}, WriterTo: bytes.NewBuffer([]byte{0})},
+		{Name: "b", Kind: 0, Shape: []uint64{1}, WriterTo: bytes.NewBuffer([]byte{0})},
+	}
+
+	if err := WriteGGUF(w, KV{}, ts); err != nil {
+		t.Fatal(err)
+	}
+
+	if limit >= runtime.GOMAXPROCS(0) {
+		t.Fatalf("limit not reduced: %d", limit)
 	}
 }

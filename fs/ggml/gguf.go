@@ -14,6 +14,9 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/moogla/moogla/discover"
+	"github.com/moogla/moogla/format"
+
 	"golang.org/x/sync/errgroup"
 )
 
@@ -85,6 +88,27 @@ const (
 	ggufTypeInt64
 	ggufTypeFloat64
 )
+
+// tensorSize is the approximate amount of memory used by each goroutine when
+// writing tensors. It mirrors the buffer size used when loading tensors.
+const tensorSize = 128 * format.KibiByte
+
+// availableMemory reports the current free system memory. It can be overridden
+// in tests.
+var availableMemory = func() uint64 {
+	mem, err := discover.GetCPUMem()
+	if err != nil {
+		slog.Warn("failed to query system memory", "error", err)
+		return 0
+	}
+	return mem.FreeMemory + mem.FreeSwap
+}
+
+// groupSetLimit is a wrapper around errgroup.Group.SetLimit so it can be
+// intercepted in tests.
+var groupSetLimit = func(g *errgroup.Group, n int) {
+	g.SetLimit(n)
+}
 
 type gguf struct {
 	*containerGGUF
@@ -557,8 +581,21 @@ func WriteGGUF(f *os.File, kv KV, ts []*Tensor) error {
 	offset += ggufPadding(offset, int64(alignment))
 
 	var g errgroup.Group
-	g.SetLimit(runtime.GOMAXPROCS(0))
-	// TODO consider reducing if tensors size * gomaxprocs is larger than free memory
+	limit := runtime.GOMAXPROCS(0)
+	mem := availableMemory()
+	if mem > 0 {
+		need := uint64(len(ts)) * tensorSize
+		if need > mem {
+			memLimit := int(mem / tensorSize)
+			if memLimit < 1 {
+				memLimit = 1
+			}
+			if memLimit < limit {
+				limit = memLimit
+			}
+		}
+	}
+	groupSetLimit(&g, limit)
 	for _, t := range ts {
 		t := t
 		w := io.NewOffsetWriter(f, offset+int64(t.Offset))
