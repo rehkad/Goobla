@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/goobla/goobla/api"
+	"github.com/goobla/goobla/fs/ggml"
 	"github.com/goobla/goobla/llm"
 	"github.com/goobla/goobla/template"
 )
@@ -22,9 +23,12 @@ type tokenizeFunc func(context.Context, string) ([]int, error)
 func chatPrompt(ctx context.Context, m *Model, tokenize tokenizeFunc, opts *api.Options, msgs []api.Message, tools []api.Tool, think *bool) (prompt string, images []llm.ImageData, _ error) {
 	var system []api.Message
 
-	// TODO: Ideally we would compute this from the projector metadata but some pieces are implementation dependent
-	// Clip images are represented as 768 tokens, each an embedding
 	imageNumTokens := 768
+	if len(m.ProjectorPaths) > 0 {
+		if tokens := projectorImageTokens(m.ProjectorPaths[0]); tokens > 0 {
+			imageNumTokens = tokens
+		}
+	}
 
 	n := len(msgs) - 1
 	// in reverse, find all messages that fit into context window
@@ -109,4 +113,67 @@ func chatPrompt(ctx context.Context, m *Model, tokenize tokenizeFunc, opts *api.
 	}
 
 	return b.String(), images, nil
+}
+
+func projectorImageTokens(path string) int {
+	const defaultTokens = 768
+	ggmlData, err := llm.LoadModel(path, 0)
+	if err != nil {
+		slog.Debug("unable to load projector", "path", path, "error", err)
+		return defaultTokens
+	}
+
+	kv := ggmlData.KV()
+	if kv.String("general.architecture") != "clip" {
+		return defaultTokens
+	}
+
+	patchSize := kv.Uint("clip.vision.patch_size")
+	imageSize := kv.Uint("clip.vision.image_size")
+	if patchSize == 0 || imageSize == 0 {
+		return defaultTokens
+	}
+
+	nPatches := (imageSize / patchSize) * (imageSize / patchSize)
+	switch kv.String("clip.projector_type") {
+	case "ldp", "ldpv2", "adapter":
+		nPatches /= 4
+	case "resampler":
+		switch kv.Uint("clip.minicpmv_version") {
+		case 2:
+			nPatches = 96
+		case 3, 4:
+			nPatches = 64
+		}
+	case "qwen2vl_merger", "qwen2.5vl_merger":
+		ps := patchSize * 2
+		x := imageSize / ps
+		if imageSize%ps > 0 {
+			x++
+		}
+		nPatches = x * x
+	case "gemma3":
+		scale := kv.Uint("clip.vision.projector.scale_factor", 4)
+		n := imageSize / patchSize
+		n = n / scale
+		nPatches = n * n
+	case "idefics3", "internvl":
+		scale := kv.Uint("clip.vision.projector.scale_factor", 1)
+		if scale > 1 {
+			nPatches /= scale * scale
+		}
+	case "pixtral":
+		merge := kv.Uint("clip.vision.spatial_merge_size")
+		if merge == 0 {
+			merge = 1
+		}
+		nX := imageSize / patchSize / merge
+		nY := imageSize / patchSize / merge
+		nPatches = nY*nX + nY - 1
+	}
+
+	if nPatches == 0 {
+		return defaultTokens
+	}
+	return int(nPatches)
 }

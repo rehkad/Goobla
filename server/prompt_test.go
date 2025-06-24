@@ -24,7 +24,15 @@ func TestChatPrompt(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	visionModel := Model{Template: tmpl, ProjectorPaths: []string{"vision"}}
+	projPath, _ := createBinFile(t, map[string]any{
+		"general.type":           "projector",
+		"general.architecture":   "clip",
+		"clip.projector_type":    "mlp",
+		"clip.vision.image_size": uint32(336),
+		"clip.vision.patch_size": uint32(14),
+	}, nil)
+
+	visionModel := Model{Template: tmpl, ProjectorPaths: []string{projPath}}
 
 	cases := []struct {
 		name  string
@@ -200,6 +208,20 @@ func TestChatPrompt(t *testing.T) {
 			expect: expect{
 				prompt: "[img-0][img-1]Compare these two pictures of hotdogs ",
 				images: [][]byte{[]byte("one hotdog"), []byte("two hotdogs")},
+			},
+		},
+		{
+			name:  "projector token count",
+			model: visionModel,
+			limit: 600,
+			msgs: []api.Message{
+				{Role: "user", Content: "You're a test, Harry!"},
+				{Role: "assistant", Content: "I-I'm a what?"},
+				{Role: "user", Content: "A test. And a thumping good one at that, I'd wager.", Images: []api.ImageData{[]byte("something")}},
+			},
+			expect: expect{
+				prompt: "You're a test, Harry! I-I'm a what? [img-0]A test. And a thumping good one at that, I'd wager. ",
+				images: [][]byte{[]byte("something")},
 			},
 		},
 	}
