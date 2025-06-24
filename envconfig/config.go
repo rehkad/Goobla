@@ -186,6 +186,9 @@ var (
 	ContextLength = Uint("GOOBLA_CONTEXT_LENGTH", 4096)
 	// Auth enables authentication between the Goobla client and server
 	UseAuth = Bool("GOOBLA_AUTH")
+	// PprofAddr configures the pprof server address. Set to "off" to disable
+	// pprof or specify a custom address (e.g. 127.0.0.1:6060).
+	PprofAddr = String("GOOBLA_PPROF")
 )
 
 func String(s string) func() string {
@@ -274,6 +277,7 @@ func AsMap() map[string]EnvVar {
 		"GOOBLA_MULTIUSER_CACHE": {"GOOBLA_MULTIUSER_CACHE", MultiUserCache(), "Optimize prompt caching for multi-user scenarios"},
 		"GOOBLA_CONTEXT_LENGTH":  {"GOOBLA_CONTEXT_LENGTH", ContextLength(), "Context length to use unless otherwise specified (default: 4096)"},
 		"GOOBLA_NEW_ENGINE":      {"GOOBLA_NEW_ENGINE", NewEngine(), "Enable the new Goobla engine"},
+		"GOOBLA_PPROF":           {"GOOBLA_PPROF", PprofAddr(), "Bind pprof to this address or 'off' to disable"},
 
 		// Informational
 		"HTTP_PROXY":  {"HTTP_PROXY", String("HTTP_PROXY")(), "HTTP proxy"},
