@@ -14,8 +14,7 @@ func GetStarted() error {
 	var err error
 	bannerScript := filepath.Join(AppDir, "goobla_welcome.ps1")
 	args := []string{
-		// TODO once we're signed, the execution policy bypass should be removed
-		"powershell", "-noexit", "-ExecutionPolicy", "Bypass", "-nologo", "-file", bannerScript,
+		"powershell", "-noexit", "-nologo", "-file", bannerScript,
 	}
 	args[0], err = exec.LookPath(args[0])
 	if err != nil {

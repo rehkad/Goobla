@@ -52,9 +52,12 @@ If you want to build the installer, youll need to install
 - https://jrsoftware.org/isinfo.php
 
 
-In the top directory of this repo, run the following powershell script
-to build the goobla CLI, goobla app, and goobla installer.
+In the top directory of this repo, run the following PowerShell script
+to build the Goobla CLI, Goobla app, and Goobla installer.
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\build_windows.ps1
+./scripts/build_windows.ps1
 ```
+
+The script is code signed so it runs under the default execution policy; using
+`-ExecutionPolicy Bypass` is no longer required.
