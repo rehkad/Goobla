@@ -112,7 +112,7 @@ type ChatCompletionChunk struct {
 	Usage             *Usage        `json:"usage,omitempty"`
 }
 
-// TODO (https://github.com/goobla/goobla/issues/5259): support []string, []int and [][]int
+// Supports using string, []string, []int, or [][]int for the Prompt field.
 
 type CompletionRequest struct {
 	Model            string         `json:"model"`
@@ -537,6 +537,20 @@ func FromCompleteRequest(r CompletionRequest) (api.GenerateRequest, error) {
 	switch p := r.Prompt.(type) {
 	case string:
 		prompt = p
+	case []string:
+		if len(p) > 0 {
+			var sb strings.Builder
+			for _, s := range p {
+				sb.WriteString(s)
+			}
+			prompt = sb.String()
+		}
+	case []int:
+		context = append(context, p...)
+	case [][]int:
+		if len(p) > 0 {
+			context = append(context, p[0]...)
+		}
 	case []any:
 		if len(p) == 0 {
 			prompt = ""

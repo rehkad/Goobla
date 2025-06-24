@@ -280,7 +280,7 @@ curl http://localhost:11434/v1/embeddings \
 
 #### Notes
 
-- `prompt` currently only accepts a string
+- `prompt` may be provided as a string, a slice of strings, a slice of token IDs (`[]int`), or a nested slice of token IDs (`[][]int`)
 
 ### `/v1/models`
 
