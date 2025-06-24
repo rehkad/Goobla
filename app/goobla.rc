@@ -15,10 +15,10 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "FileDescription", "Moogla"
-            VALUE "InternalName", "Moogla"
-            VALUE "OriginalFilename", "ollama app.exe"
-            VALUE "ProductName", "Moogla"
+            VALUE "FileDescription", "Goobla"
+            VALUE "InternalName", "Goobla"
+            VALUE "OriginalFilename", "goobla app.exe"
+            VALUE "ProductName", "Goobla"
         END
     END
 
