@@ -4,6 +4,12 @@
 
 Goobla on macOS and Windows will automatically download updates. Click on the taskbar or menubar item and then click "Restart to update" to apply the update. Updates can also be installed by downloading the latest version [manually](https://goobla.com/download/).
 
+The updater downloads different files depending on your operating system:
+
+- **Windows:** `GooblaSetup.exe`
+- **macOS:** `Goobla.app`
+- **Linux:** `install.sh`
+
 On Linux, re-run the install script:
 
 ```shell

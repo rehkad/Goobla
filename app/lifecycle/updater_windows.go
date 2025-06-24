@@ -8,12 +8,18 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 func DoUpgrade(cancel context.CancelFunc, done chan int) error {
-	files, err := filepath.Glob(filepath.Join(UpdateStageDir, "*", "*.exe")) // TODO generalize for multiplatform
-	if err != nil {
-		return fmt.Errorf("failed to lookup downloads: %s", err)
+	patterns := []string{"*.exe", "*.app", "*.sh"}
+	var files []string
+	for _, p := range patterns {
+		m, err := filepath.Glob(filepath.Join(UpdateStageDir, "*", p))
+		if err != nil {
+			return fmt.Errorf("failed to lookup downloads: %w", err)
+		}
+		files = append(files, m...)
 	}
 	if len(files) == 0 {
 		return errors.New("no update downloads found")
@@ -21,9 +27,9 @@ func DoUpgrade(cancel context.CancelFunc, done chan int) error {
 		// Shouldn't happen
 		slog.Warn(fmt.Sprintf("multiple downloads found, using first one %v", files))
 	}
-	installerExe := files[0]
+	installerFile := files[0]
 
-	slog.Info("starting upgrade with " + installerExe)
+	slog.Info("starting upgrade with " + installerFile)
 	slog.Info("upgrade log file " + UpgradeLogFile)
 
 	// make the upgrade show progress, but non interactive
@@ -46,9 +52,19 @@ func DoUpgrade(cancel context.CancelFunc, done chan int) error {
 		slog.Warn("done chan was nil, not actually waiting")
 	}
 
-	slog.Debug(fmt.Sprintf("starting installer: %s %v", installerExe, installArgs))
+	slog.Debug(fmt.Sprintf("starting installer: %s %v", installerFile, installArgs))
 	os.Chdir(filepath.Dir(UpgradeLogFile)) //nolint:errcheck
-	cmd := exec.Command(installerExe, installArgs...)
+	var cmd *exec.Cmd
+	switch strings.ToLower(filepath.Ext(installerFile)) {
+	case ".exe":
+		cmd = exec.Command(installerFile, installArgs...)
+	case ".app":
+		cmd = exec.Command("open", installerFile)
+	case ".sh":
+		cmd = exec.Command("sh", installerFile)
+	default:
+		return fmt.Errorf("unsupported installer type %s", installerFile)
+	}
 
 	if err := cmd.Start(); err != nil {
 		return fmt.Errorf("unable to start goobla app %w", err)
