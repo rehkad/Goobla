@@ -21,6 +21,8 @@ import (
 	"testing"
 	"unicode"
 
+	"log/slog"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/go-cmp/cmp"
 	"github.com/moogla/moogla/api"
@@ -518,7 +520,7 @@ func TestRoutes(t *testing.T) {
 	}
 
 	s := &Server{}
-	router, err := s.GenerateRoutes(rc)
+	router, err := s.GenerateRoutes(slog.New(slog.NewTextHandler(io.Discard, nil)), rc)
 	if err != nil {
 		t.Fatalf("failed to generate routes: %v", err)
 	}
