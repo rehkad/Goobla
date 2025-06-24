@@ -24,11 +24,26 @@ type Trace struct {
 	// A function assigned must be safe for concurrent use. The function is
 	// called synchronously and so should not block or take long to run.
 	Update func(_ *Layer, n int64, _ error)
+
+	// Commit is called when a push successfully completes the final commit
+	// step.
+	//
+	// The err argument is the error returned by the commit request. If
+	// err is nil, the push succeeded.
+	//
+	// A function assigned must be safe for concurrent use.
+	Commit func(error)
 }
 
 func (t *Trace) update(l *Layer, n int64, err error) {
 	if t.Update != nil {
 		t.Update(l, n, err)
+	}
+}
+
+func (t *Trace) commit(err error) {
+	if t.Commit != nil {
+		t.Commit(err)
 	}
 }
 
@@ -52,6 +67,12 @@ func WithTrace(ctx context.Context, t *Trace) context.Context {
 				old.update(l, n, err)
 			}
 			t.update(l, n, err)
+		},
+		Commit: func(err error) {
+			if old != nil {
+				old.commit(err)
+			}
+			t.commit(err)
 		},
 	}
 	return context.WithValue(ctx, traceKey{}, composed)

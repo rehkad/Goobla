@@ -431,8 +431,8 @@ func (r *Registry) Push(ctx context.Context, name string, p *PushParams) error {
 	res, err := r.send(ctx, "PUT", path, bytes.NewReader(m.Data))
 	if err == nil {
 		res.Body.Close()
+		t.commit(nil)
 	}
-	// TODO(bmizerany): add a "commit" trace event
 	return err
 }
 
