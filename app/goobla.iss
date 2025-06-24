@@ -128,7 +128,7 @@ Type: filesandordirs; Name: "{%LOCALAPPDATA}\Goobla"
 Type: filesandordirs; Name: "{%LOCALAPPDATA}\Programs\Goobla"
 Type: filesandordirs; Name: "{%USERPROFILE}\.goobla\models"
 Type: filesandordirs; Name: "{%USERPROFILE}\.goobla\history"
-; NOTE: if the user has a custom MOOGLA_MODELS it will be preserved
+; NOTE: if the user has a custom GOOBLA_MODELS it will be preserved
 
 [InstallDelete]
 Type: filesandordirs; Name: "{%TEMP}\goobla*"
