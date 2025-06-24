@@ -1323,9 +1323,8 @@ Download a model from the goobla library. Cancelled pulls are resumed from where
 
 ### Parameters
 
-- `model`: name of the model to pull
-- `insecure`: (optional) allow insecure connections to the library. Only use this if you are pulling from your own library during development.
-- `stream`: (optional) if `false` the response will be returned as a single response object, rather than a stream of objects
+ - `model`: name of the model to pull
+ - `stream`: (optional) if `false` the response will be returned as a single response object, rather than a stream of objects
 
 ### Examples
 
@@ -1395,9 +1394,8 @@ Upload a model to a model library. Requires registering for goobla.ai and adding
 
 ### Parameters
 
-- `model`: name of the model to push in the form of `<namespace>/<model>:<tag>`
-- `insecure`: (optional) allow insecure connections to the library. Only use this if you are pushing to your library during development.
-- `stream`: (optional) if `false` the response will be returned as a single response object, rather than a stream of objects
+ - `model`: name of the model to push in the form of `<namespace>/<model>:<tag>`
+ - `stream`: (optional) if `false` the response will be returned as a single response object, rather than a stream of objects
 
 ### Examples
 

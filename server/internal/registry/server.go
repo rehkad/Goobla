@@ -190,16 +190,6 @@ type params struct {
 	// Use [model()] to get the model name for both old and new API requests.
 	Model string `json:"model"`
 
-	// AllowNonTLS is a flag that indicates a client using HTTP
-	// is doing so, deliberately.
-	//
-	// Deprecated: This field is ignored and only present for this
-	// deprecation message. It should be removed in a future release.
-	//
-	// Users can simply use http to show intent to communicate insecurely,
-	// without awkward and confusing flags such as this.
-	AllowNonTLS bool `json:"insecure"`
-
 	// Stream, if true, will make the server send progress updates in a
 	// streaming of JSON objects. If false, the server will send a single
 	// JSON object with the final status as "success", or an error object
