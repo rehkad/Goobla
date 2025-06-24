@@ -1,6 +1,6 @@
 #!powershell
 #
-# powershell -ExecutionPolicy Bypass -File .\scripts\build_windows.ps1
+# ./scripts/build_windows.ps1
 #
 # gcloud auth application-default login
 
