@@ -11,15 +11,15 @@ import (
 )
 
 var (
-	AppName    = "ollama app"
-	CLIName    = "moogla"
-	AppDir     = "/opt/Moogla"
-	AppDataDir = "/opt/Moogla"
-	// TODO - should there be a distinct log dir?
+	AppName          = "ollama app"
+	CLIName          = "moogla"
+	AppDir           = "/opt/Moogla"
+	AppDataDir       = "/opt/Moogla"
+	LogDir           = "/tmp"
 	UpdateStageDir   = "/tmp"
-	AppLogFile       = "/tmp/ollama_app.log"
-	ServerLogFile    = "/tmp/ollama.log"
-	UpgradeLogFile   = "/tmp/ollama_update.log"
+	AppLogFile       = filepath.Join(LogDir, "app.log")
+	ServerLogFile    = filepath.Join(LogDir, "server.log")
+	UpgradeLogFile   = filepath.Join(LogDir, "upgrade.log")
 	Installer        = "MooglaSetup.exe"
 	LogRotationCount = 5
 )
@@ -31,10 +31,11 @@ func init() {
 		// Logs, configs, downloads go to LOCALAPPDATA
 		localAppData := os.Getenv("LOCALAPPDATA")
 		AppDataDir = filepath.Join(localAppData, "Moogla")
+		LogDir = AppDataDir
 		UpdateStageDir = filepath.Join(AppDataDir, "updates")
-		AppLogFile = filepath.Join(AppDataDir, "app.log")
-		ServerLogFile = filepath.Join(AppDataDir, "server.log")
-		UpgradeLogFile = filepath.Join(AppDataDir, "upgrade.log")
+		AppLogFile = filepath.Join(LogDir, "app.log")
+		ServerLogFile = filepath.Join(LogDir, "server.log")
+		UpgradeLogFile = filepath.Join(LogDir, "upgrade.log")
 
 		exe, err := os.Executable()
 		if err != nil {
@@ -76,9 +77,53 @@ func init() {
 			}
 		}
 	} else if runtime.GOOS == "darwin" {
-		// TODO
 		AppName += ".app"
-		// } else if runtime.GOOS == "linux" {
-		// TODO
+		home, err := os.UserHomeDir()
+		if err == nil {
+			AppDataDir = filepath.Join(home, ".ollama")
+			LogDir = filepath.Join(AppDataDir, "logs")
+			UpdateStageDir = filepath.Join(AppDataDir, "updates")
+			AppLogFile = filepath.Join(LogDir, "app.log")
+			ServerLogFile = filepath.Join(LogDir, "server.log")
+			UpgradeLogFile = filepath.Join(LogDir, "upgrade.log")
+		}
+
+		exe, err := os.Executable()
+		if err != nil {
+			slog.Warn("error discovering executable directory", "error", err)
+		} else {
+			AppDir = filepath.Dir(exe)
+		}
+
+		_, err = os.Stat(LogDir)
+		if errors.Is(err, os.ErrNotExist) {
+			if err := os.MkdirAll(LogDir, 0o755); err != nil {
+				slog.Error(fmt.Sprintf("create ollama dir %s: %v", LogDir, err))
+			}
+		}
+	} else if runtime.GOOS == "linux" {
+		home, err := os.UserHomeDir()
+		if err == nil {
+			AppDataDir = filepath.Join(home, ".ollama")
+			LogDir = filepath.Join(AppDataDir, "logs")
+			UpdateStageDir = filepath.Join(AppDataDir, "updates")
+			AppLogFile = filepath.Join(LogDir, "app.log")
+			ServerLogFile = filepath.Join(LogDir, "server.log")
+			UpgradeLogFile = filepath.Join(LogDir, "upgrade.log")
+		}
+
+		exe, err := os.Executable()
+		if err != nil {
+			slog.Warn("error discovering executable directory", "error", err)
+		} else {
+			AppDir = filepath.Dir(exe)
+		}
+
+		_, err = os.Stat(LogDir)
+		if errors.Is(err, os.ErrNotExist) {
+			if err := os.MkdirAll(LogDir, 0o755); err != nil {
+				slog.Error(fmt.Sprintf("create ollama dir %s: %v", LogDir, err))
+			}
+		}
 	}
 }
