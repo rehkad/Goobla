@@ -28,7 +28,7 @@ func createBinFile(t *testing.T, kv map[string]any, ti []*ggml.Tensor) (string, 
 	t.Helper()
 	t.Setenv("GOOBLA_MODELS", cmp.Or(os.Getenv("GOOBLA_MODELS"), t.TempDir()))
 
-	modelDir := envconfig.Models()
+	modelDir, _ := envconfig.Models()
 
 	f, err := os.CreateTemp(t.TempDir(), "")
 	if err != nil {
