@@ -446,19 +446,6 @@ func RunHandler(cmd *cobra.Command, args []string) error {
 
 	opts.MultiModal = slices.Contains(info.Capabilities, model.CapabilityVision)
 
-	// TODO: remove the projector info and vision info checks below,
-	// these are left in for backwards compatibility with older servers
-	// that don't have the capabilities field in the model info
-	if len(info.ProjectorInfo) != 0 {
-		opts.MultiModal = true
-	}
-	for k := range info.ModelInfo {
-		if strings.Contains(k, ".vision.") {
-			opts.MultiModal = true
-			break
-		}
-	}
-
 	opts.ParentModel = info.Details.ParentModel
 
 	if interactive {
