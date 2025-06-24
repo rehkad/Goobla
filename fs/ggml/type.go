@@ -53,7 +53,7 @@ const (
 )
 
 // ParseFileType parses the provided GGUF file type
-// Only Ollama supported types are considered valid
+// Only Moogla supported types are considered valid
 func ParseFileType(s string) (FileType, error) {
 	switch s {
 	case "F32":
@@ -225,7 +225,7 @@ const (
 )
 
 // ParseFileType parses the provided GGUF file type
-// Only Ollama supported types are considered valid
+// Only Moogla supported types are considered valid
 func ParseTensorType(s string) (TensorType, error) {
 	switch s {
 	case "F32":

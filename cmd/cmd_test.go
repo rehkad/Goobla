@@ -235,7 +235,7 @@ Weigh anchor!
 
 	t.Run("license", func(t *testing.T) {
 		var b bytes.Buffer
-		license := "MIT License\nCopyright (c) Ollama\n"
+		license := "MIT License\nCopyright (c) Moogla\n"
 		if err := showInfo(&api.ShowResponse{
 			Details: api.ModelDetails{
 				Family:            "test",
@@ -254,7 +254,7 @@ Weigh anchor!
 
   License
     MIT License             
-    Copyright (c) Ollama    
+    Copyright (c) Moogla    
 
 `
 		if diff := cmp.Diff(expect, b.String()); diff != "" {

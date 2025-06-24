@@ -198,7 +198,7 @@ curl http://localhost:11434/api/generate -d '{
 ```shell
 curl -X POST http://localhost:11434/api/generate -H "Content-Type: application/json" -d '{
   "model": "llama3.1:8b",
-  "prompt": "Ollama is 22 years old and is busy saving the world. Respond using JSON",
+  "prompt": "Moogla is 22 years old and is busy saving the world. Respond using JSON",
   "stream": false,
   "format": {
     "type": "object",
@@ -613,7 +613,7 @@ curl http://localhost:11434/api/chat -d '{
 ```shell
 curl -X POST http://localhost:11434/api/chat -H "Content-Type: application/json" -d '{
   "model": "llama3.1",
-  "messages": [{"role": "user", "content": "Ollama is 22 years old and busy saving the world. Return a JSON object with the age and availability."}],
+  "messages": [{"role": "user", "content": "Moogla is 22 years old and busy saving the world. Return a JSON object with the age and availability."}],
   "stream": false,
   "format": {
     "type": "object",
@@ -1054,7 +1054,7 @@ A stream of JSON objects is returned:
 
 #### Create a model from a Safetensors directory
 
-The `files` parameter should include a dictionary of files for the safetensors model which includes the file names and SHA256 digest of each file. Use [/api/blobs/:digest](#push-a-blob) to first push each of the files to the server before calling this API. Files will remain in the cache until the Ollama server is restarted.
+The `files` parameter should include a dictionary of files for the safetensors model which includes the file names and SHA256 digest of each file. Use [/api/blobs/:digest](#push-a-blob) to first push each of the files to the server before calling this API. Files will remain in the cache until the Moogla server is restarted.
 
 ##### Request
 
@@ -1091,7 +1091,7 @@ A stream of JSON objects is returned:
 HEAD /api/blobs/:digest
 ```
 
-Ensures that the file blob (Binary Large Object) used with create a model exists on the server. This checks your Ollama server and not ollama.com.
+Ensures that the file blob (Binary Large Object) used with create a model exists on the server. This checks your Moogla server and not ollama.com.
 
 ### Query Parameters
 
@@ -1115,7 +1115,7 @@ Return 200 OK if the blob exists, 404 Not Found if it does not.
 POST /api/blobs/:digest
 ```
 
-Push a file to the Ollama server to create a "blob" (Binary Large Object).
+Push a file to the Moogla server to create a "blob" (Binary Large Object).
 
 ### Query Parameters
 
@@ -1611,7 +1611,7 @@ curl http://localhost:11434/api/embeddings -d '{
 GET /api/version
 ```
 
-Retrieve the Ollama version
+Retrieve the Moogla version
 
 ### Examples
 

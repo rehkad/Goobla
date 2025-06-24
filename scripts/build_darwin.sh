@@ -73,7 +73,7 @@ _build_macapp() {
         npm run --prefix macapp make
     fi
 
-    mv ./macapp/out/make/zip/darwin/universal/Ollama-darwin-universal-$VERSION.zip dist/Ollama-darwin.zip
+    mv ./macapp/out/make/zip/darwin/universal/Moogla-darwin-universal-$VERSION.zip dist/Moogla-darwin.zip
 }
 
 if [ "$#" -eq 0 ]; then

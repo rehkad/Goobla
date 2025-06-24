@@ -3,12 +3,12 @@
 package wintray
 
 const (
-	firstTimeTitle   = "Ollama is running"
+	firstTimeTitle   = "Moogla is running"
 	firstTimeMessage = "Click here to get started"
 	updateTitle      = "Update available"
-	updateMessage    = "Ollama version %s is ready to install"
+	updateMessage    = "Moogla version %s is ready to install"
 
-	quitMenuTitle            = "Quit Ollama"
+	quitMenuTitle            = "Quit Moogla"
 	updateAvailableMenuTitle = "An update is available"
 	updateMenuTitle          = "Restart to update"
 	diagLogsMenuTitle        = "View logs"

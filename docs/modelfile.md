@@ -1,9 +1,9 @@
-# Ollama Model File
+# Moogla Model File
 
 > [!NOTE]
 > `Modelfile` syntax is in development
 
-A model file is the blueprint to create and share models with Ollama.
+A model file is the blueprint to create and share models with Moogla.
 
 ## Table of Contents
 
@@ -36,7 +36,7 @@ INSTRUCTION arguments
 | Instruction                         | Description                                                    |
 | ----------------------------------- | -------------------------------------------------------------- |
 | [`FROM`](#from-required) (required) | Defines the base model to use.                                 |
-| [`PARAMETER`](#parameter)           | Sets the parameters for how Ollama will run the model.         |
+| [`PARAMETER`](#parameter)           | Sets the parameters for how Moogla will run the model.         |
 | [`TEMPLATE`](#template)             | The full prompt template to be sent to the model.              |
 | [`SYSTEM`](#system)                 | Specifies the system message that will be set in the template. |
 | [`ADAPTER`](#adapter)               | Defines the (Q)LoRA adapters to apply to the model.            |

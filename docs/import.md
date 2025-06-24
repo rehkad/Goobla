@@ -30,7 +30,7 @@ Lastly, test the model:
 ollama run my-model
 ```
 
-Ollama supports importing adapters based on several different model architectures including:
+Moogla supports importing adapters based on several different model architectures including:
 
   * Llama (including Llama 2, Llama 3, Llama 3.1, and Llama 3.2);
   * Mistral (including Mistral 1, Mistral 2, and Mixtral); and
@@ -65,7 +65,7 @@ Lastly, test the model:
 ollama run my-model
 ```
 
-Ollama supports importing models for several different architectures including:
+Moogla supports importing models for several different architectures including:
 
   * Llama (including Llama 2, Llama 3, Llama 3.1, and Llama 3.2);
   * Mistral (including Mistral 1, Mistral 2, and Mixtral);
@@ -75,7 +75,7 @@ Ollama supports importing models for several different architectures including:
 This includes importing foundation models as well as any fine tuned models which have been _fused_ with a foundation model.
 ## Importing a GGUF based model or adapter
 
-If you have a GGUF based model or adapter it is possible to import it into Ollama. You can obtain a GGUF model or adapter by:
+If you have a GGUF based model or adapter it is possible to import it into Moogla. You can obtain a GGUF model or adapter by:
 
   * converting a Safetensors model with the `convert_hf_to_gguf.py` from Llama.cpp; 
   * converting a Safetensors adapter with the `convert_lora_to_gguf.py` from Llama.cpp; or
@@ -96,7 +96,7 @@ ADAPTER /path/to/file.gguf
 
 When importing a GGUF adapter, it's important to use the same base model as the base model that the adapter was created with. You can use:
 
- * a model from Ollama
+ * a model from Moogla
  * a GGUF file
  * a Safetensors based model 
 
@@ -110,7 +110,7 @@ ollama create my-model
 
 Quantizing a model allows you to run models faster and with less memory consumption but at reduced accuracy. This allows you to run a model on more modest hardware.
 
-Ollama can quantize FP16 and FP32 based models into different quantization levels using the `-q/--quantize` flag with the `ollama create` command.
+Moogla can quantize FP16 and FP32 based models into different quantization levels using the `-q/--quantize` flag with the `ollama create` command.
 
 First, create a Modelfile with the FP16 or FP32 based model you wish to quantize.
 
@@ -144,19 +144,19 @@ success
 
 You can share any model you have created by pushing it to [ollama.com](https://ollama.com) so that other users can try it out.
 
-First, use your browser to go to the [Ollama Sign-Up](https://ollama.com/signup) page. If you already have an account, you can skip this step.
+First, use your browser to go to the [Moogla Sign-Up](https://ollama.com/signup) page. If you already have an account, you can skip this step.
 
 <img src="images/signup.png" alt="Sign-Up" width="40%">
 
 The `Username` field will be used as part of your model's name (e.g. `jmorganca/mymodel`), so make sure you are comfortable with the username that you have selected.
 
-Now that you have created an account and are signed-in, go to the [Ollama Keys Settings](https://ollama.com/settings/keys) page.
+Now that you have created an account and are signed-in, go to the [Moogla Keys Settings](https://ollama.com/settings/keys) page.
 
-Follow the directions on the page to determine where your Ollama Public Key is located.
+Follow the directions on the page to determine where your Moogla Public Key is located.
 
-<img src="images/ollama-keys.png" alt="Ollama Keys" width="80%">
+<img src="images/ollama-keys.png" alt="Moogla Keys" width="80%">
 
-Click on the `Add Ollama Public Key` button, and copy and paste the contents of your Ollama Public Key into the text field.
+Click on the `Add Moogla Public Key` button, and copy and paste the contents of your Moogla Public Key into the text field.
 
 To push a model to [ollama.com](https://ollama.com), first make sure that it is named correctly with your username. You may have to use the `ollama cp` command to copy
 your model to give it the correct name. Once you're happy with your model's name, use the `ollama push` command to push it to [ollama.com](https://ollama.com).

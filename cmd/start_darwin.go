@@ -19,7 +19,7 @@ func startApp(ctx context.Context, client *api.Client) error {
 	if err != nil {
 		return err
 	}
-	r := regexp.MustCompile(`^.*/Ollama\s?\d*.app`)
+	r := regexp.MustCompile(`^.*/Moogla\s?\d*.app`)
 	m := r.FindStringSubmatch(link)
 	if len(m) != 1 {
 		return errors.New("could not find ollama app")

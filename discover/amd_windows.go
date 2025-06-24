@@ -162,7 +162,7 @@ func AMDValidateLibDir() (string, error) {
 	}
 
 	// Installer payload (if we're running from some other location)
-	rocmTargetDir := filepath.Join(LibOllamaPath, "rocm")
+	rocmTargetDir := filepath.Join(LibMooglaPath, "rocm")
 	if rocmLibUsable(rocmTargetDir) {
 		slog.Debug("detected ollama installed ROCm at " + rocmTargetDir)
 		return rocmTargetDir, nil

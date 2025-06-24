@@ -1,17 +1,17 @@
-; Inno Setup Installer for Ollama
+; Inno Setup Installer for Moogla
 ;
 ; To build the installer use the build script invoked from the top of the source tree
 ; 
 ; powershell -ExecutionPolicy Bypass -File .\scripts\build_windows.ps
 
 
-#define MyAppName "Ollama"
+#define MyAppName "Moogla"
 #if GetEnv("PKG_VERSION") != ""
   #define MyAppVersion GetEnv("PKG_VERSION")
 #else
   #define MyAppVersion "0.0.0"
 #endif
-#define MyAppPublisher "Ollama"
+#define MyAppPublisher "Moogla"
 #define MyAppURL "https://ollama.com/"
 #define MyAppExeName "ollama app.exe"
 #define MyIcon ".\assets\app.ico"
@@ -34,7 +34,7 @@ DefaultDirName={localappdata}\Programs\{#MyAppName}
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
-OutputBaseFilename="OllamaSetup"
+OutputBaseFilename="MooglaSetup"
 SetupIconFile={#MyIcon}
 UninstallDisplayIcon={uninstallexe}
 Compression=lzma2
@@ -53,7 +53,7 @@ RestartIfNeededByRun=no
 ; https://jrsoftware.org/ishelp/index.php?topic=setup_wizardimagefile
 WizardSmallImageFile=.\assets\setup.bmp
 
-; Ollama requires Windows 10 22H2 or newer for proper unicode rendering
+; Moogla requires Windows 10 22H2 or newer for proper unicode rendering
 ; TODO: consider setting this to 10.0.19045
 MinVersion=10.0.10240
 
@@ -78,7 +78,7 @@ SignTool=MySignTool
 SignedUninstaller=yes
 #endif
 
-SetupMutex=OllamaSetupMutex
+SetupMutex=MooglaSetupMutex
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -124,20 +124,20 @@ Filename: "{cmd}"; Parameters: "/c timeout 5"; Flags: runhidden
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{%TEMP}\ollama*"
-Type: filesandordirs; Name: "{%LOCALAPPDATA}\Ollama"
-Type: filesandordirs; Name: "{%LOCALAPPDATA}\Programs\Ollama"
+Type: filesandordirs; Name: "{%LOCALAPPDATA}\Moogla"
+Type: filesandordirs; Name: "{%LOCALAPPDATA}\Programs\Moogla"
 Type: filesandordirs; Name: "{%USERPROFILE}\.ollama\models"
 Type: filesandordirs; Name: "{%USERPROFILE}\.ollama\history"
 ; NOTE: if the user has a custom OLLAMA_MODELS it will be preserved
 
 [InstallDelete]
 Type: filesandordirs; Name: "{%TEMP}\ollama*"
-Type: filesandordirs; Name: "{%LOCALAPPDATA}\Programs\Ollama"
+Type: filesandordirs; Name: "{%LOCALAPPDATA}\Programs\Moogla"
 
 [Messages]
-WizardReady=Ollama
+WizardReady=Moogla
 ReadyLabel1=%nLet's get you up and running with your own large language models.
-SetupAppRunningError=Another Ollama installer is running.%n%nPlease cancel or finish the other installer, then click OK to continue with this install, or Cancel to exit.
+SetupAppRunningError=Another Moogla installer is running.%n%nPlease cancel or finish the other installer, then click OK to continue with this install, or Cancel to exit.
 
 
 ;FinishedHeadingLabel=Run your first model
