@@ -292,10 +292,12 @@ func (s *Server) GenerateHandler(c *gin.Context) {
 		}
 	}
 
+	var sbRaw strings.Builder
+	var sbThinking strings.Builder
+	var sbContent strings.Builder
+
 	ch := make(chan any)
 	go func() {
-		// TODO (jmorganca): avoid building the response twice both here and below
-		var sb strings.Builder
 		defer close(ch)
 		if err := r.Completion(c.Request.Context(), llm.CompletionRequest{
 			Prompt:  prompt,
@@ -320,9 +322,13 @@ func (s *Server) GenerateHandler(c *gin.Context) {
 				thinking, content := thinkingState.AddContent(cr.Content)
 				res.Thinking = thinking
 				res.Response = content
+				sbThinking.WriteString(thinking)
+				sbContent.WriteString(content)
+			} else {
+				sbContent.WriteString(cr.Content)
 			}
 
-			if _, err := sb.WriteString(cr.Content); err != nil {
+			if _, err := sbRaw.WriteString(cr.Content); err != nil {
 				ch <- gin.H{"error": err.Error()}
 			}
 
@@ -332,7 +338,7 @@ func (s *Server) GenerateHandler(c *gin.Context) {
 				res.LoadDuration = checkpointLoaded.Sub(checkpointStart)
 
 				if !req.Raw {
-					tokens, err := r.Tokenize(c.Request.Context(), prompt+sb.String())
+					tokens, err := r.Tokenize(c.Request.Context(), prompt+sbRaw.String())
 					if err != nil {
 						ch <- gin.H{"error": err.Error()}
 						return
@@ -349,13 +355,9 @@ func (s *Server) GenerateHandler(c *gin.Context) {
 
 	if req.Stream != nil && !*req.Stream {
 		var r api.GenerateResponse
-		var sbThinking strings.Builder
-		var sbContent strings.Builder
 		for rr := range ch {
 			switch t := rr.(type) {
 			case api.GenerateResponse:
-				sbThinking.WriteString(t.Thinking)
-				sbContent.WriteString(t.Response)
 				r = t
 			case gin.H:
 				msg, ok := t["error"].(string)
