@@ -1,4 +1,4 @@
-package ollamarunner
+package mooglarunner
 
 import (
 	"errors"
@@ -7,10 +7,10 @@ import (
 	"math"
 	"time"
 
-	"github.com/ollama/ollama/kvcache"
-	"github.com/ollama/ollama/ml"
-	"github.com/ollama/ollama/model"
-	"github.com/ollama/ollama/model/input"
+	"github.com/moogla/moogla/kvcache"
+	"github.com/moogla/moogla/ml"
+	"github.com/moogla/moogla/model"
+	"github.com/moogla/moogla/model/input"
 )
 
 type InputCache struct {

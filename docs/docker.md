@@ -75,4 +75,4 @@ docker exec -it ollama ollama run llama3.2
 
 ### Try different models
 
-More models can be found on the [Moogla library](https://ollama.com/library).
+More models can be found on the [Moogla library](https://moogla.com/library).

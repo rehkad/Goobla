@@ -5,7 +5,7 @@
 To install Moogla, run the following command:
 
 ```shell
-curl -fsSL https://ollama.com/install.sh | sh
+curl -fsSL https://moogla.com/install.sh | sh
 ```
 
 ## Manual install
@@ -16,7 +16,7 @@ curl -fsSL https://ollama.com/install.sh | sh
 Download and extract the package:
 
 ```shell
-curl -L https://ollama.com/download/ollama-linux-amd64.tgz -o ollama-linux-amd64.tgz
+curl -L https://moogla.com/download/ollama-linux-amd64.tgz -o ollama-linux-amd64.tgz
 sudo tar -C /usr -xzf ollama-linux-amd64.tgz
 ```
 
@@ -37,7 +37,7 @@ ollama -v
 If you have an AMD GPU, also download and extract the additional ROCm package:
 
 ```shell
-curl -L https://ollama.com/download/ollama-linux-amd64-rocm.tgz -o ollama-linux-amd64-rocm.tgz
+curl -L https://moogla.com/download/ollama-linux-amd64-rocm.tgz -o ollama-linux-amd64-rocm.tgz
 sudo tar -C /usr -xzf ollama-linux-amd64-rocm.tgz
 ```
 
@@ -46,7 +46,7 @@ sudo tar -C /usr -xzf ollama-linux-amd64-rocm.tgz
 Download and extract the ARM64-specific package:
 
 ```shell
-curl -L https://ollama.com/download/ollama-linux-arm64.tgz -o ollama-linux-arm64.tgz
+curl -L https://moogla.com/download/ollama-linux-arm64.tgz -o ollama-linux-arm64.tgz
 sudo tar -C /usr -xzf ollama-linux-arm64.tgz
 ```
 
@@ -127,7 +127,7 @@ Alternatively, create an override file manually in `/etc/systemd/system/ollama.s
 
 ```ini
 [Service]
-Environment="OLLAMA_DEBUG=1"
+Environment="MOOGLA_DEBUG=1"
 ```
 
 ## Updating
@@ -135,24 +135,24 @@ Environment="OLLAMA_DEBUG=1"
 Update Moogla by running the install script again:
 
 ```shell
-curl -fsSL https://ollama.com/install.sh | sh
+curl -fsSL https://moogla.com/install.sh | sh
 ```
 
 Or by re-downloading Moogla:
 
 ```shell
-curl -L https://ollama.com/download/ollama-linux-amd64.tgz -o ollama-linux-amd64.tgz
+curl -L https://moogla.com/download/ollama-linux-amd64.tgz -o ollama-linux-amd64.tgz
 sudo tar -C /usr -xzf ollama-linux-amd64.tgz
 ```
 
 ## Installing specific versions
 
-Use `OLLAMA_VERSION` environment variable with the install script to install a specific version of Moogla, including pre-releases. You can find the version numbers in the [releases page](https://github.com/ollama/ollama/releases).
+Use `MOOGLA_VERSION` environment variable with the install script to install a specific version of Moogla, including pre-releases. You can find the version numbers in the [releases page](https://github.com/moogla/moogla/releases).
 
 For example:
 
 ```shell
-curl -fsSL https://ollama.com/install.sh | OLLAMA_VERSION=0.5.7 sh
+curl -fsSL https://moogla.com/install.sh | MOOGLA_VERSION=0.5.7 sh
 ```
 
 ## Viewing logs

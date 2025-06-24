@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"runtime"
 
-	"github.com/ollama/ollama/app/assets"
-	"github.com/ollama/ollama/app/tray/commontray"
+	"github.com/moogla/moogla/app/assets"
+	"github.com/moogla/moogla/app/tray/commontray"
 )
 
 func NewTray() (commontray.MooglaTray, error) {

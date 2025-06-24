@@ -20,7 +20,7 @@ jobs:
       - name: Set environment
         id: goflags
         run: |
-          echo GOFLAGS="'-ldflags=-w -s \"-X=github.com/ollama/ollama/version.Version=${GITHUB_REF_NAME#v}\" \"-X=github.com/ollama/ollama/server.mode=release\"'" >>$GITHUB_OUTPUT
+          echo GOFLAGS="'-ldflags=-w -s \"-X=github.com/moogla/moogla/version.Version=${GITHUB_REF_NAME#v}\" \"-X=github.com/moogla/moogla/server.mode=release\"'" >>$GITHUB_OUTPUT
 
   darwin-build:
     runs-on: macos-13
@@ -259,7 +259,7 @@ jobs:
           Expand-Archive -Path "${{ runner.temp }}\plugin.zip" -DestinationPath "${{ runner.temp }}\plugin\"
           & "${{ runner.temp }}\plugin\*\kmscng.msi" /quiet
 
-          echo "${{ vars.OLLAMA_CERT }}" >ollama_inc.crt
+          echo "${{ vars.MOOGLA_CERT }}" >ollama_inc.crt
       - uses: actions/download-artifact@v4
         with:
           pattern: build-windows-*

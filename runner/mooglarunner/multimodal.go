@@ -1,10 +1,10 @@
-package ollamarunner
+package mooglarunner
 
 import (
 	"errors"
 
-	"github.com/ollama/ollama/ml"
-	"github.com/ollama/ollama/model/input"
+	"github.com/moogla/moogla/ml"
+	"github.com/moogla/moogla/model/input"
 )
 
 // Tensors can't be used across multiple compute graphs. This is a problem

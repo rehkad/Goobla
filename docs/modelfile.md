@@ -111,9 +111,9 @@ FROM llama3.2
 ```
 
 A list of available base models:
-<https://github.com/ollama/ollama#model-library>
+<https://github.com/moogla/moogla#model-library>
 Additional models can be found at:
-<https://ollama.com/library>
+<https://moogla.com/library>
 
 #### Build from a Safetensors model
 
@@ -255,4 +255,4 @@ MESSAGE assistant yes
 - the **`Modelfile` is not case sensitive**. In the examples, uppercase instructions are used to make it easier to distinguish it from arguments.
 - Instructions can be in any order. In the examples, the `FROM` instruction is first to keep it easily readable.
 
-[1]: https://ollama.com/library
+[1]: https://moogla.com/library

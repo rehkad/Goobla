@@ -9,15 +9,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/ollama/ollama/api"
-	"github.com/ollama/ollama/types/model"
+	"github.com/moogla/moogla/api"
+	"github.com/moogla/moogla/types/model"
 )
 
 func TestDelete(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	p := t.TempDir()
-	t.Setenv("OLLAMA_MODELS", p)
+	t.Setenv("MOOGLA_MODELS", p)
 
 	var s Server
 
@@ -83,7 +83,7 @@ func TestDeleteDuplicateLayers(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	p := t.TempDir()
-	t.Setenv("OLLAMA_MODELS", p)
+	t.Setenv("MOOGLA_MODELS", p)
 	var s Server
 
 	n := model.ParseName("test")

@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ollama/ollama/api"
+	"github.com/moogla/moogla/api"
 	"github.com/stretchr/testify/require"
 )
 

@@ -45,7 +45,7 @@ case "$KERN" in
     *) ;;
 esac
 
-VER_PARAM="${OLLAMA_VERSION:+?version=$OLLAMA_VERSION}"
+VER_PARAM="${MOOGLA_VERSION:+?version=$MOOGLA_VERSION}"
 
 SUDO=
 if [ "$(id -u)" -ne 0 ]; then
@@ -69,23 +69,23 @@ fi
 for BINDIR in /usr/local/bin /usr/bin /bin; do
     echo $PATH | grep -q $BINDIR && break || continue
 done
-OLLAMA_INSTALL_DIR=$(dirname ${BINDIR})
+MOOGLA_INSTALL_DIR=$(dirname ${BINDIR})
 
-if [ -d "$OLLAMA_INSTALL_DIR/lib/ollama" ] ; then
-    status "Cleaning up old version at $OLLAMA_INSTALL_DIR/lib/ollama"
-    $SUDO rm -rf "$OLLAMA_INSTALL_DIR/lib/ollama"
+if [ -d "$MOOGLA_INSTALL_DIR/lib/ollama" ] ; then
+    status "Cleaning up old version at $MOOGLA_INSTALL_DIR/lib/ollama"
+    $SUDO rm -rf "$MOOGLA_INSTALL_DIR/lib/ollama"
 fi
-status "Installing ollama to $OLLAMA_INSTALL_DIR"
+status "Installing ollama to $MOOGLA_INSTALL_DIR"
 $SUDO install -o0 -g0 -m755 -d $BINDIR
-$SUDO install -o0 -g0 -m755 -d "$OLLAMA_INSTALL_DIR/lib/ollama"
+$SUDO install -o0 -g0 -m755 -d "$MOOGLA_INSTALL_DIR/lib/ollama"
 status "Downloading Linux ${ARCH} bundle"
 curl --fail --show-error --location --progress-bar \
-    "https://ollama.com/download/ollama-linux-${ARCH}.tgz${VER_PARAM}" | \
-    $SUDO tar -xzf - -C "$OLLAMA_INSTALL_DIR"
+    "https://moogla.com/download/ollama-linux-${ARCH}.tgz${VER_PARAM}" | \
+    $SUDO tar -xzf - -C "$MOOGLA_INSTALL_DIR"
 
-if [ "$OLLAMA_INSTALL_DIR/bin/ollama" != "$BINDIR/ollama" ] ; then
+if [ "$MOOGLA_INSTALL_DIR/bin/ollama" != "$BINDIR/ollama" ] ; then
     status "Making ollama accessible in the PATH in $BINDIR"
-    $SUDO ln -sf "$OLLAMA_INSTALL_DIR/ollama" "$BINDIR/ollama"
+    $SUDO ln -sf "$MOOGLA_INSTALL_DIR/ollama" "$BINDIR/ollama"
 fi
 
 # Check for NVIDIA JetPack systems with additional downloads
@@ -93,13 +93,13 @@ if [ -f /etc/nv_tegra_release ] ; then
     if grep R36 /etc/nv_tegra_release > /dev/null ; then
         status "Downloading JetPack 6 components"
         curl --fail --show-error --location --progress-bar \
-            "https://ollama.com/download/ollama-linux-${ARCH}-jetpack6.tgz${VER_PARAM}" | \
-            $SUDO tar -xzf - -C "$OLLAMA_INSTALL_DIR"
+            "https://moogla.com/download/ollama-linux-${ARCH}-jetpack6.tgz${VER_PARAM}" | \
+            $SUDO tar -xzf - -C "$MOOGLA_INSTALL_DIR"
     elif grep R35 /etc/nv_tegra_release > /dev/null ; then
         status "Downloading JetPack 5 components"
         curl --fail --show-error --location --progress-bar \
-            "https://ollama.com/download/ollama-linux-${ARCH}-jetpack5.tgz${VER_PARAM}" | \
-            $SUDO tar -xzf - -C "$OLLAMA_INSTALL_DIR"
+            "https://moogla.com/download/ollama-linux-${ARCH}-jetpack5.tgz${VER_PARAM}" | \
+            $SUDO tar -xzf - -C "$MOOGLA_INSTALL_DIR"
     else
         warning "Unsupported JetPack version detected.  GPU may not be supported"
     fi
@@ -224,8 +224,8 @@ fi
 if check_gpu lspci amdgpu || check_gpu lshw amdgpu; then
     status "Downloading Linux ROCm ${ARCH} bundle"
     curl --fail --show-error --location --progress-bar \
-        "https://ollama.com/download/ollama-linux-${ARCH}-rocm.tgz${VER_PARAM}" | \
-        $SUDO tar -xzf - -C "$OLLAMA_INSTALL_DIR"
+        "https://moogla.com/download/ollama-linux-${ARCH}-rocm.tgz${VER_PARAM}" | \
+        $SUDO tar -xzf - -C "$MOOGLA_INSTALL_DIR"
 
     install_success
     status "AMD GPU ready."

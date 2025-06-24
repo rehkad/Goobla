@@ -1,4 +1,4 @@
-package ollamarunner
+package mooglarunner
 
 import (
 	"errors"
@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ollama/ollama/ml"
-	"github.com/ollama/ollama/model/input"
+	"github.com/moogla/moogla/ml"
+	"github.com/moogla/moogla/model/input"
 )
 
 func TestCountCommon(t *testing.T) {

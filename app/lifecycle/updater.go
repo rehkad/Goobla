@@ -19,12 +19,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ollama/ollama/auth"
-	"github.com/ollama/ollama/version"
+	"github.com/moogla/moogla/auth"
+	"github.com/moogla/moogla/version"
 )
 
 var (
-	UpdateCheckURLBase  = "https://ollama.com/api/update"
+	UpdateCheckURLBase  = "https://moogla.com/api/update"
 	UpdateDownloaded    = false
 	UpdateCheckInterval = 60 * 60 * time.Second
 )

@@ -23,20 +23,20 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/go-cmp/cmp"
-	"github.com/ollama/ollama/api"
-	"github.com/ollama/ollama/fs/ggml"
-	"github.com/ollama/ollama/openai"
-	"github.com/ollama/ollama/server/internal/client/ollama"
-	"github.com/ollama/ollama/types/model"
-	"github.com/ollama/ollama/version"
+	"github.com/moogla/moogla/api"
+	"github.com/moogla/moogla/fs/ggml"
+	"github.com/moogla/moogla/openai"
+	"github.com/moogla/moogla/server/internal/client/moogla"
+	"github.com/moogla/moogla/types/model"
+	"github.com/moogla/moogla/version"
 )
 
 func createTestFile(t *testing.T, name string) (string, string) {
 	t.Helper()
 
-	modelDir := os.Getenv("OLLAMA_MODELS")
+	modelDir := os.Getenv("MOOGLA_MODELS")
 	if modelDir == "" {
-		t.Fatalf("OLLAMA_MODELS not specified")
+		t.Fatalf("MOOGLA_MODELS not specified")
 	}
 
 	f, err := os.CreateTemp(t.TempDir(), name)
@@ -500,15 +500,15 @@ func TestRoutes(t *testing.T) {
 	}
 
 	modelsDir := t.TempDir()
-	t.Setenv("OLLAMA_MODELS", modelsDir)
+	t.Setenv("MOOGLA_MODELS", modelsDir)
 
 	rc := &ollama.Registry{
 		// This is a temporary measure to allow us to move forward,
-		// surfacing any code contacting ollama.com we do not intended
+		// surfacing any code contacting moogla.com we do not intended
 		// to.
 		//
 		// Currently, this only handles DELETE /api/delete, which
-		// should not make any contact with the ollama.com registry, so
+		// should not make any contact with the moogla.com registry, so
 		// be clear about that.
 		//
 		// Tests that do need to contact the registry here, will be
@@ -564,7 +564,7 @@ func casingShuffle(s string) string {
 }
 
 func TestManifestCaseSensitivity(t *testing.T) {
-	t.Setenv("OLLAMA_MODELS", t.TempDir())
+	t.Setenv("MOOGLA_MODELS", t.TempDir())
 
 	r := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -594,7 +594,7 @@ func TestManifestCaseSensitivity(t *testing.T) {
 	checkManifestList := func() {
 		t.Helper()
 
-		mandir := filepath.Join(os.Getenv("OLLAMA_MODELS"), "manifests/")
+		mandir := filepath.Join(os.Getenv("MOOGLA_MODELS"), "manifests/")
 		var entries []string
 		t.Logf("dir entries:")
 		fsys := os.DirFS(mandir)
@@ -691,7 +691,7 @@ func TestManifestCaseSensitivity(t *testing.T) {
 }
 
 func TestShow(t *testing.T) {
-	t.Setenv("OLLAMA_MODELS", t.TempDir())
+	t.Setenv("MOOGLA_MODELS", t.TempDir())
 
 	var s Server
 

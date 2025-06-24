@@ -5,8 +5,8 @@ import (
 	"image"
 	"math"
 
-	"github.com/ollama/ollama/fs"
-	"github.com/ollama/ollama/model/imageproc"
+	"github.com/moogla/moogla/fs"
+	"github.com/moogla/moogla/model/imageproc"
 )
 
 // ImageProcessor contains configuration for the Qwen 2.5 VL image processing

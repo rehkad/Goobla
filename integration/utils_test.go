@@ -22,9 +22,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ollama/ollama/api"
-	"github.com/ollama/ollama/app/lifecycle"
-	"github.com/ollama/ollama/format"
+	"github.com/moogla/moogla/api"
+	"github.com/moogla/moogla/app/lifecycle"
+	"github.com/moogla/moogla/format"
 	"github.com/stretchr/testify/require"
 )
 
@@ -53,7 +53,7 @@ func FindPort() string {
 
 func GetTestEndpoint() (*api.Client, string) {
 	defaultPort := "11434"
-	ollamaHost := os.Getenv("OLLAMA_HOST")
+	ollamaHost := os.Getenv("MOOGLA_HOST")
 
 	scheme, hostport, ok := strings.Cut(ollamaHost, "://")
 	if !ok {
@@ -73,7 +73,7 @@ func GetTestEndpoint() (*api.Client, string) {
 		}
 	}
 
-	if os.Getenv("OLLAMA_TEST_EXISTING") == "" && port == defaultPort {
+	if os.Getenv("MOOGLA_TEST_EXISTING") == "" && port == defaultPort {
 		port = FindPort()
 	}
 
@@ -110,9 +110,9 @@ func startServer(t *testing.T, ctx context.Context, ollamaHost string) error {
 		return nil
 	}
 
-	if tmp := os.Getenv("OLLAMA_HOST"); tmp != ollamaHost {
-		slog.Info("setting env", "OLLAMA_HOST", ollamaHost)
-		t.Setenv("OLLAMA_HOST", ollamaHost)
+	if tmp := os.Getenv("MOOGLA_HOST"); tmp != ollamaHost {
+		slog.Info("setting env", "MOOGLA_HOST", ollamaHost)
+		t.Setenv("MOOGLA_HOST", ollamaHost)
 	}
 
 	slog.Info("starting server", "url", ollamaHost)
@@ -197,7 +197,7 @@ var serverProcMutex sync.Mutex
 // Starts the server if needed
 func InitServerConnection(ctx context.Context, t *testing.T) (*api.Client, string, func()) {
 	client, testEndpoint := GetTestEndpoint()
-	if os.Getenv("OLLAMA_TEST_EXISTING") == "" {
+	if os.Getenv("MOOGLA_TEST_EXISTING") == "" {
 		serverProcMutex.Lock()
 		fp, err := os.CreateTemp("", "ollama-server-*.log")
 		if err != nil {
@@ -209,7 +209,7 @@ func InitServerConnection(ctx context.Context, t *testing.T) (*api.Client, strin
 	}
 
 	return client, testEndpoint, func() {
-		if os.Getenv("OLLAMA_TEST_EXISTING") == "" {
+		if os.Getenv("MOOGLA_TEST_EXISTING") == "" {
 			defer serverProcMutex.Unlock()
 			if t.Failed() {
 				fp, err := os.Open(lifecycle.ServerLogFile)
@@ -350,7 +350,7 @@ func GenerateRequests() ([]api.GenerateRequest, [][]string) {
 
 func skipUnderMinVRAM(t *testing.T, gb uint64) {
 	// TODO use info API in the future
-	if s := os.Getenv("OLLAMA_MAX_VRAM"); s != "" {
+	if s := os.Getenv("MOOGLA_MAX_VRAM"); s != "" {
 		maxVram, err := strconv.ParseUint(s, 10, 64)
 		require.NoError(t, err)
 		// Don't hammer on small VRAM cards...

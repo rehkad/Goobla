@@ -1,7 +1,7 @@
 // Package api implements the client-side API for code wishing to interact
 // with the ollama service. The methods of the [Client] type correspond to
 // the ollama REST API as described in [the API documentation].
-// The ollama command-line client itself uses this package to interact with
+// The moogla.command-line client itself uses this package to interact with
 // the backend service.
 //
 // # Examples
@@ -9,8 +9,8 @@
 // Several examples of using this package are available [in the GitHub
 // repository].
 //
-// [the API documentation]: https://github.com/ollama/ollama/blob/main/docs/api.md
-// [in the GitHub repository]: https://github.com/ollama/ollama/tree/main/api/examples
+// [the API documentation]: https://github.com/moogla/moogla/blob/main/docs/api.md
+// [in the GitHub repository]: https://github.com/moogla/moogla/tree/main/api/examples
 package api
 
 import (
@@ -27,10 +27,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/ollama/ollama/auth"
-	"github.com/ollama/ollama/envconfig"
-	"github.com/ollama/ollama/format"
-	"github.com/ollama/ollama/version"
+	"github.com/moogla/moogla/auth"
+	"github.com/moogla/moogla/envconfig"
+	"github.com/moogla/moogla/format"
+	"github.com/moogla/moogla/version"
 )
 
 // Client encapsulates client state for interacting with the ollama
@@ -57,7 +57,7 @@ func checkError(resp *http.Response, body []byte) error {
 }
 
 // ClientFromEnvironment creates a new [Client] using configuration from the
-// environment variable OLLAMA_HOST, which points to the network host and
+// environment variable MOOGLA_HOST, which points to the network host and
 // port on which the ollama service is listening. The format of this variable
 // is:
 //
@@ -110,7 +110,7 @@ func (c *Client) do(ctx context.Context, method, path string, reqData, respData 
 	requestURL := c.base.JoinPath(path)
 
 	var token string
-	if envconfig.UseAuth() || c.base.Hostname() == "ollama.com" {
+	if envconfig.UseAuth() || c.base.Hostname() == "moogla.com" {
 		now := strconv.FormatInt(time.Now().Unix(), 10)
 		chal := fmt.Sprintf("%s,%s?ts=%s", method, path, now)
 		token, err = getAuthorizationToken(ctx, chal)
@@ -175,7 +175,7 @@ func (c *Client) stream(ctx context.Context, method, path string, data any, fn f
 	requestURL := c.base.JoinPath(path)
 
 	var token string
-	if envconfig.UseAuth() || c.base.Hostname() == "ollama.com" {
+	if envconfig.UseAuth() || c.base.Hostname() == "moogla.com" {
 		var err error
 		now := strconv.FormatInt(time.Now().Unix(), 10)
 		chal := fmt.Sprintf("%s,%s?ts=%s", method, path, now)
@@ -327,7 +327,7 @@ type CreateProgressFunc func(ProgressResponse) error
 // Create creates a model from a [Modelfile]. fn is a progress function that
 // behaves similarly to other methods (see [Client.Pull]).
 //
-// [Modelfile]: https://github.com/ollama/ollama/blob/main/docs/modelfile.md
+// [Modelfile]: https://github.com/moogla/moogla/blob/main/docs/modelfile.md
 func (c *Client) Create(ctx context.Context, req *CreateRequest, fn CreateProgressFunc) error {
 	return c.stream(ctx, http.MethodPost, "/api/create", req, func(bts []byte) error {
 		var resp ProgressResponse
