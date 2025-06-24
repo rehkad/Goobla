@@ -207,7 +207,7 @@ func (c *DiskCache) Resolve(name string) (Digest, error) {
 // guarantees write integrity by enforcing size limits and content validation
 // before allowing the file to reach its final state.
 func (c *DiskCache) Put(d Digest, r io.Reader, size int64) error {
-	return c.copyNamedFile(c.GetFile(d), r, d, size)
+	return c.copyNamedFile(c.GetFile(d), r, d, size, true)
 }
 
 // Import imports a blob from the provided reader into the cache. It reads the
@@ -299,7 +299,7 @@ func (c *DiskCache) Link(name string, d Digest) error {
 	}
 
 	// Copy manifest to cache directory.
-	return c.copyNamedFile(manifest, f, d, info.Size())
+	return c.copyNamedFile(manifest, f, d, info.Size(), true)
 }
 
 // Unlink unlinks the manifest by name from the cache. If the name is not
@@ -454,14 +454,28 @@ func (w *checkWriter) Write(p []byte) (int, error) {
 
 // copyNamedFile copies file into name, expecting it to have the given Digest
 // and size, if that file is not present already.
-func (c *DiskCache) copyNamedFile(name string, file io.Reader, out Digest, size int64) error {
+func (c *DiskCache) copyNamedFile(name string, file io.Reader, out Digest, size int64, verify bool) error {
 	info, err := os.Stat(name)
 	if err == nil && info.Size() == size {
-		// File already exists with correct size. This is good enough.
-		// We can skip expensive hash checks.
-		//
-		// TODO: Do the hash check, but give caller a way to skip it.
-		return nil
+		if verify {
+			f, err := os.Open(name)
+			if err == nil {
+				h := sha256.New()
+				if _, err := io.Copy(h, f); err == nil {
+					var d Digest
+					h.Sum(d.sum[:0])
+					if d == out {
+						f.Close()
+						return nil
+					}
+				}
+				f.Close()
+			}
+			// if verification fails we fall through and rewrite the file
+		} else {
+			// File already exists with correct size. Skip hash check.
+			return nil
+		}
 	}
 
 	// Copy file to cache directory.
