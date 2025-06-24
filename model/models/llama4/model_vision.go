@@ -6,6 +6,7 @@ import (
 	"github.com/moogla/moogla/fs"
 	"github.com/moogla/moogla/ml"
 	"github.com/moogla/moogla/ml/nn"
+	"log/slog"
 )
 
 type VisionAttention struct {
@@ -217,7 +218,9 @@ func (m *VisionModel) Forward(ctx ml.Context, pixelValues ml.Tensor) ml.Tensor {
 // which in turn mimics Python's // operator.
 func floorDiv[T int | int16 | int32 | int64 | uint | uint16 | uint32 | uint64](a, b T) T {
 	if b == 0 {
-		panic("division by zero")
+		slog.Error("division by zero in floorDiv")
+		var zero T
+		return zero
 	}
 
 	if (a >= 0 && b > 0) || (a <= 0 && b < 0) || a%b == 0 {

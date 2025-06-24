@@ -11,6 +11,7 @@ import (
 	"github.com/moogla/moogla/ml/nn"
 	"github.com/moogla/moogla/model"
 	"github.com/moogla/moogla/model/input"
+	"log/slog"
 )
 
 type Model struct {
@@ -183,6 +184,6 @@ func (m *Model) Forward(ctx ml.Context, batch input.Batch) (ml.Tensor, error) {
 
 func init() {
 	if err := model.Register("llama4", New); err != nil {
-		panic(err)
+		slog.Error("failed to register llama4 model", "error", err)
 	}
 }
