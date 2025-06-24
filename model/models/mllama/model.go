@@ -114,5 +114,7 @@ func (m *Model) Forward(ctx ml.Context, batch input.Batch) (ml.Tensor, error) {
 }
 
 func init() {
-	model.Register("mllama", New)
+	if err := model.Register("mllama", New); err != nil {
+		panic(err)
+	}
 }

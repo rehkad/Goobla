@@ -160,5 +160,7 @@ func New(c fs.Config) (model.Model, error) {
 }
 
 func init() {
-	model.Register("qwen2", New)
+	if err := model.Register("qwen2", New); err != nil {
+		panic(err)
+	}
 }

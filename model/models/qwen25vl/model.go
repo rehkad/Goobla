@@ -146,5 +146,7 @@ func (m *Model) Forward(ctx ml.Context, batch input.Batch) (ml.Tensor, error) {
 }
 
 func init() {
-	model.Register("qwen25vl", New)
+	if err := model.Register("qwen25vl", New); err != nil {
+		panic(err)
+	}
 }
