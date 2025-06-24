@@ -66,6 +66,20 @@ func TestGetTensorNewType(t *testing.T) {
 			expected:    fsggml.TensorTypeQ5_K,
 		},
 		{
+			name: "attn_v.weight_70b_boost",
+			qs: quantizeState{
+				is70B:  true,
+				iAttnV: 0,
+				nAttnV: 2,
+			},
+			kv:          map[string]any{},
+			newType:     fsggml.TensorTypeQ4_K,
+			tensor_name: "blk.0.attn_v.weight",
+			shape:       []uint64{256},
+			ftype:       fsggml.FileTypeF32,
+			expected:    fsggml.TensorTypeQ5_K,
+		},
+		{
 			name: "attn_v.weight_8_expert",
 			qs:   quantizeState{},
 			kv: map[string]any{
