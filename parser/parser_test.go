@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"unicode/utf16"
@@ -822,4 +823,34 @@ func TestCreateRequestFiles(t *testing.T) {
 			t.Errorf("mismatch (-got +want):\n%s", diff)
 		}
 	}
+}
+
+func TestFilesForModelConfigDiscovery(t *testing.T) {
+	dir := t.TempDir()
+
+	// create a dummy model file so filesForModel succeeds
+	model := filepath.Join(dir, "model.gguf")
+	if err := os.WriteFile(model, []byte{0xff, 0x00, 0x01}, 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	rootConfig := filepath.Join(dir, "config.json")
+	if err := os.WriteFile(rootConfig, []byte("{}"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	nestedDir := filepath.Join(dir, "nested")
+	if err := os.Mkdir(nestedDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	nestedConfig := filepath.Join(nestedDir, "config.json")
+	if err := os.WriteFile(nestedConfig, []byte("{}"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	files, err := filesForModel(dir)
+	require.NoError(t, err)
+
+	expected := []string{model, rootConfig, nestedConfig}
+	assert.ElementsMatch(t, expected, files)
 }

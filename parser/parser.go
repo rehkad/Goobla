@@ -278,15 +278,32 @@ func filesForModel(path string) ([]string, error) {
 	}
 
 	// add configuration files, json files are detected as text/plain
-	js, err := glob(filepath.Join(path, "*.json"), "text/plain")
-	if err != nil {
-		return nil, err
-	}
-	files = append(files, js...)
+	jsonFiles := func(dir string) ([]string, error) {
+		patterns := []string{
+			filepath.Join(dir, "*.json"),
+			filepath.Join(dir, "**/*.json"),
+		}
 
-	// bert models require a nested config.json
-	// TODO(mxyng): merge this with the glob above
-	js, err = glob(filepath.Join(path, "**/*.json"), "text/plain")
+		seen := make(map[string]struct{})
+		var results []string
+		for _, pattern := range patterns {
+			matches, err := glob(pattern, "text/plain")
+			if err != nil {
+				return nil, err
+			}
+
+			for _, m := range matches {
+				if _, ok := seen[m]; !ok {
+					seen[m] = struct{}{}
+					results = append(results, m)
+				}
+			}
+		}
+
+		return results, nil
+	}
+
+	js, err := jsonFiles(path)
 	if err != nil {
 		return nil, err
 	}
