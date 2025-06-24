@@ -16,6 +16,12 @@ Get up and running with large language models.
 
 [Download](https://goobla.com/download/GooblaSetup.exe)
 
+### Homebrew (macOS & Linux)
+
+```shell
+brew install goobla
+```
+
 ### Linux
 
 ```shell
