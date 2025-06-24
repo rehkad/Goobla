@@ -1,6 +1,7 @@
 package sample
 
 import (
+	"encoding/json"
 	"errors"
 	"math"
 	"math/rand/v2"
@@ -23,6 +24,27 @@ type Sampler struct {
 	minP        float32
 	temperature float32
 	grammar     *GrammarSampler
+}
+
+// Config specifies the sampling options used to build a Sampler.  It is
+// intended to be populated via JSON and passed to [NewSampler].
+type Config struct {
+	Temperature float32 `json:"temperature,omitempty"`
+	TopK        int     `json:"top_k,omitempty"`
+	TopP        float32 `json:"top_p,omitempty"`
+	MinP        float32 `json:"min_p,omitempty"`
+	Seed        int     `json:"seed,omitempty"`
+}
+
+// UnmarshalJSON implements json.Unmarshaler so a Sampler can be constructed
+// directly from its JSON configuration.
+func (s *Sampler) UnmarshalJSON(b []byte) error {
+	var cfg Config
+	if err := json.Unmarshal(b, &cfg); err != nil {
+		return err
+	}
+	*s = NewSampler(cfg, nil)
+	return nil
 }
 
 func (s *Sampler) Sample(logits []float32) (int32, error) {
@@ -126,40 +148,43 @@ func (s *Sampler) sample(tokens []token) (token, error) {
 	return tokens[idx], nil
 }
 
+// NewSampler returns a sampler configured with the provided options.  The
+// configuration is typically populated via JSON and passed through [Config].
+//
 // TODO(parthsareen): update sampler interface to use json unmarshal https://github.com/moogla/moogla/issues/9278
-func NewSampler(temperature float32, topK int, topP float32, minP float32, seed int, grammar *GrammarSampler) Sampler {
+func NewSampler(cfg Config, grammar *GrammarSampler) Sampler {
 	var rng *rand.Rand
-	if seed != -1 {
+	if cfg.Seed != -1 {
 		// PCG requires two parameters: sequence and stream
 		// Use original seed for sequence
-		sequence := uint64(seed)
+		sequence := uint64(cfg.Seed)
 		// Use golden ratio hash to generate statistically independent seeds
 		rng = rand.New(rand.NewPCG(sequence, sequence^0x9E3779B9))
 	}
-	if temperature < 0.0 {
-		temperature = 0.0
+	if cfg.Temperature < 0.0 {
+		cfg.Temperature = 0.0
 	}
 
-	if topP < 0.0 {
-		topP = 0.0
+	if cfg.TopP < 0.0 {
+		cfg.TopP = 0.0
 	}
-	if topP >= 1.0 {
-		topP = 1.0
+	if cfg.TopP >= 1.0 {
+		cfg.TopP = 1.0
 	}
 
-	if minP < 0.0 {
-		minP = 0.0
+	if cfg.MinP < 0.0 {
+		cfg.MinP = 0.0
 	}
-	if minP >= 1.0 {
-		minP = 1.0
+	if cfg.MinP >= 1.0 {
+		cfg.MinP = 1.0
 	}
 
 	return Sampler{
 		rng:         rng,
-		topK:        topK,
-		topP:        topP,
-		minP:        minP,
-		temperature: temperature,
+		topK:        cfg.TopK,
+		topP:        cfg.TopP,
+		minP:        cfg.MinP,
+		temperature: cfg.Temperature,
 		grammar:     grammar,
 	}
 }

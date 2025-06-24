@@ -16,7 +16,10 @@ func BenchmarkWeightedSampler(b *testing.B) {
 				logits[i] = float32(rand.Float64()*10 - 5)
 			}
 
-			sampler := NewSampler(0.8, 0, 0, 0, 42, nil)
+			var sampler Sampler
+			if err := json.Unmarshal([]byte(`{"temperature":0.8,"seed":42}`), &sampler); err != nil {
+				b.Fatal(err)
+			}
 			b.ResetTimer()
 			for b.Loop() {
 				sampler.Sample(logits)
@@ -25,19 +28,15 @@ func BenchmarkWeightedSampler(b *testing.B) {
 	}
 
 	configs := []struct {
-		name        string
-		temperature float32
-		topK        int
-		topP        float32
-		minP        float32
-		seed        int
+		name string
+		json string
 	}{
-		{"Greedy", 0, -1, 0, 0, -1},
-		{"Temperature", 0.8, -1, 0, 0, -1},
-		{"TopK", 0.8, 50, 0, 0, -1},
-		{"TopP", 0.8, -1, 0.9, 0, -1},
-		{"MinP", 0.8, -1, 0, 0.05, -1},
-		{"WithSeed", 0.8, 50, 0, 0, 42},
+		{"Greedy", `{"temperature":0}`},
+		{"Temperature", `{"temperature":0.8}`},
+		{"TopK", `{"temperature":0.8,"top_k":50}`},
+		{"TopP", `{"temperature":0.8,"top_p":0.9}`},
+		{"MinP", `{"temperature":0.8,"min_p":0.05}`},
+		{"WithSeed", `{"temperature":0.8,"top_k":50,"seed":42}`},
 	}
 
 	// Fixed size for common vocab size
@@ -49,7 +48,10 @@ func BenchmarkWeightedSampler(b *testing.B) {
 
 	for _, tc := range configs {
 		b.Run("Config"+tc.name, func(b *testing.B) {
-			sampler := NewSampler(tc.temperature, tc.topK, tc.topP, tc.minP, tc.seed, nil)
+			var sampler Sampler
+			if err := json.Unmarshal([]byte(tc.json), &sampler); err != nil {
+				b.Fatal(err)
+			}
 			sampler.Sample(logits)
 
 			b.ResetTimer()
@@ -62,7 +64,10 @@ func BenchmarkWeightedSampler(b *testing.B) {
 
 	// Test with combined transforms separately - topK influences performance greatly
 	b.Run("TransformCombined", func(b *testing.B) {
-		sampler := NewSampler(0.8, 50, 0.9, 0.05, 42, nil)
+		var sampler Sampler
+		if err := json.Unmarshal([]byte(`{"temperature":0.8,"top_k":50,"top_p":0.9,"min_p":0.05,"seed":42}`), &sampler); err != nil {
+			b.Fatal(err)
+		}
 		b.ResetTimer()
 
 		for b.Loop() {
@@ -81,7 +86,10 @@ func BenchmarkGreedySampler(b *testing.B) {
 				logits[i] = float32(rand.Float64()*10 - 5)
 			}
 
-			sampler := NewSampler(0, -1, 0, 0, -1, nil)
+			var sampler Sampler
+			if err := json.Unmarshal([]byte(`{"temperature":0}`), &sampler); err != nil {
+				b.Fatal(err)
+			}
 			b.ResetTimer()
 
 			for b.Loop() {
