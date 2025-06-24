@@ -3,7 +3,7 @@
 ### CPU only
 
 ```shell
-docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
+docker run -d -v moogla:/root/.moogla -p 11434:11434 --name moogla moogla/moogla
 ```
 
 ### Nvidia GPU
@@ -51,7 +51,7 @@ sudo systemctl restart docker
 #### Start the container
 
 ```shell
-docker run -d --gpus=all -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
+docker run -d --gpus=all -v moogla:/root/.moogla -p 11434:11434 --name moogla moogla/moogla
 ```
 
 > [!NOTE]  
@@ -62,7 +62,7 @@ docker run -d --gpus=all -v ollama:/root/.ollama -p 11434:11434 --name ollama ol
 To run Moogla using Docker with AMD GPUs, use the `rocm` tag and the following command:
 
 ```shell
-docker run -d --device /dev/kfd --device /dev/dri -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama:rocm
+docker run -d --device /dev/kfd --device /dev/dri -v moogla:/root/.moogla -p 11434:11434 --name moogla moogla/moogla:rocm
 ```
 
 ### Run model locally
@@ -70,7 +70,7 @@ docker run -d --device /dev/kfd --device /dev/dri -v ollama:/root/.ollama -p 114
 Now you can run a model:
 
 ```shell
-docker exec -it ollama ollama run llama3.2
+docker exec -it moogla moogla run llama3.2
 ```
 
 ### Try different models

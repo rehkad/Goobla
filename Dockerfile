@@ -87,22 +87,22 @@ COPY . .
 ARG GOFLAGS="'-ldflags=-w -s'"
 ENV CGO_ENABLED=1
 RUN --mount=type=cache,target=/root/.cache/go-build \
-    go build -trimpath -buildmode=pie -o /bin/ollama .
+    go build -trimpath -buildmode=pie -o /bin/moogla .
 
 FROM --platform=linux/amd64 scratch AS amd64
-COPY --from=cuda-12 dist/lib/ollama /lib/ollama
+COPY --from=cuda-12 dist/lib/moogla /lib/moogla
 
 FROM --platform=linux/arm64 scratch AS arm64
-COPY --from=cuda-12 dist/lib/ollama /lib/ollama/cuda_sbsa
-COPY --from=jetpack-5 dist/lib/ollama /lib/ollama/cuda_jetpack5
-COPY --from=jetpack-6 dist/lib/ollama /lib/ollama/cuda_jetpack6
+COPY --from=cuda-12 dist/lib/moogla /lib/moogla/cuda_sbsa
+COPY --from=jetpack-5 dist/lib/moogla /lib/moogla/cuda_jetpack5
+COPY --from=jetpack-6 dist/lib/moogla /lib/moogla/cuda_jetpack6
 
 FROM scratch AS rocm
-COPY --from=rocm-6 dist/lib/ollama /lib/ollama
+COPY --from=rocm-6 dist/lib/moogla /lib/moogla
 
 FROM ${FLAVOR} AS archive
-COPY --from=cpu dist/lib/ollama /lib/ollama
-COPY --from=build /bin/ollama /bin/ollama
+COPY --from=cpu dist/lib/moogla /lib/moogla
+COPY --from=build /bin/moogla /bin/moogla
 
 FROM ubuntu:20.04
 RUN apt-get update \
@@ -111,11 +111,11 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=archive /bin /usr/bin
 ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-COPY --from=archive /lib/ollama /usr/lib/ollama
+COPY --from=archive /lib/moogla /usr/lib/moogla
 ENV LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64
 ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV MOOGLA_HOST=0.0.0.0:11434
 EXPOSE 11434
-ENTRYPOINT ["/bin/ollama"]
+ENTRYPOINT ["/bin/moogla"]
 CMD ["serve"]

@@ -149,11 +149,11 @@ go test ./...
 
 ## Library detection
 
-Moogla looks for acceleration libraries in the following paths relative to the `ollama` executable:
+Moogla looks for acceleration libraries in the following paths relative to the `moogla` executable:
 
-* `./lib/ollama` (Windows)
-* `../lib/ollama` (Linux)
+* `./lib/moogla` (Windows)
+* `../lib/moogla` (Linux)
 * `.` (macOS)
-* `build/lib/ollama` (for development)
+* `build/lib/moogla` (for development)
 
 If the libraries are not found, Moogla will not run with any acceleration libraries.

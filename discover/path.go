@@ -7,9 +7,9 @@ import (
 )
 
 // LibPath is a path to lookup dynamic libraries
-// in development it's usually 'build/lib/ollama'
-// in distribution builds it's 'lib/ollama' on Windows
-// '../lib/ollama' on Linux and the executable's directory on macOS
+// in development it's usually 'build/lib/moogla'
+// in distribution builds it's 'lib/moogla' on Windows
+// '../lib/moogla' on Linux and the executable's directory on macOS
 // note: distribution builds, additional GPU-specific libraries are
 // found in subdirectories of the returned path, such as
 // 'cuda_v12', 'rocm', etc.

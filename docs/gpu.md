@@ -98,7 +98,7 @@ This table shows some example GPUs that map to these LLVM targets:
 AMD is working on enhancing ROCm v6 to broaden support for families of GPUs in a
 future release which should increase support for more GPUs.
 
-Reach out on [Discord](https://discord.gg/ollama) or file an
+Reach out on [Discord](https://discord.gg/moogla) or file an
 [issue](https://github.com/moogla/moogla/issues) for additional help.
 
 ### GPU Selection

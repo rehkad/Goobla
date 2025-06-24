@@ -4,7 +4,7 @@ This app builds upon Moogla to provide a desktop experience for running models.
 
 ## Developing
 
-First, build the `ollama` binary:
+First, build the `moogla` binary:
 
 ```shell
 cd ..

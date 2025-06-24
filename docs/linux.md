@@ -11,25 +11,25 @@ curl -fsSL https://moogla.com/install.sh | sh
 ## Manual install
 
 > [!NOTE]
-> If you are upgrading from a prior version, you should remove the old libraries with `sudo rm -rf /usr/lib/ollama` first.
+> If you are upgrading from a prior version, you should remove the old libraries with `sudo rm -rf /usr/lib/moogla` first.
 
 Download and extract the package:
 
 ```shell
-curl -L https://moogla.com/download/ollama-linux-amd64.tgz -o ollama-linux-amd64.tgz
-sudo tar -C /usr -xzf ollama-linux-amd64.tgz
+curl -L https://moogla.com/download/moogla-linux-amd64.tgz -o moogla-linux-amd64.tgz
+sudo tar -C /usr -xzf moogla-linux-amd64.tgz
 ```
 
 Start Moogla:
 
 ```shell
-ollama serve
+moogla serve
 ```
 
 In another terminal, verify that Moogla is running:
 
 ```shell
-ollama -v
+moogla -v
 ```
 
 ### AMD GPU install
@@ -37,8 +37,8 @@ ollama -v
 If you have an AMD GPU, also download and extract the additional ROCm package:
 
 ```shell
-curl -L https://moogla.com/download/ollama-linux-amd64-rocm.tgz -o ollama-linux-amd64-rocm.tgz
-sudo tar -C /usr -xzf ollama-linux-amd64-rocm.tgz
+curl -L https://moogla.com/download/moogla-linux-amd64-rocm.tgz -o moogla-linux-amd64-rocm.tgz
+sudo tar -C /usr -xzf moogla-linux-amd64-rocm.tgz
 ```
 
 ### ARM64 install
@@ -46,8 +46,8 @@ sudo tar -C /usr -xzf ollama-linux-amd64-rocm.tgz
 Download and extract the ARM64-specific package:
 
 ```shell
-curl -L https://moogla.com/download/ollama-linux-arm64.tgz -o ollama-linux-arm64.tgz
-sudo tar -C /usr -xzf ollama-linux-arm64.tgz
+curl -L https://moogla.com/download/moogla-linux-arm64.tgz -o moogla-linux-arm64.tgz
+sudo tar -C /usr -xzf moogla-linux-arm64.tgz
 ```
 
 ### Adding Moogla as a startup service (recommended)
@@ -55,11 +55,11 @@ sudo tar -C /usr -xzf ollama-linux-arm64.tgz
 Create a user and group for Moogla:
 
 ```shell
-sudo useradd -r -s /bin/false -U -m -d /usr/share/ollama ollama
-sudo usermod -a -G ollama $(whoami)
+sudo useradd -r -s /bin/false -U -m -d /usr/share/moogla moogla
+sudo usermod -a -G moogla $(whoami)
 ```
 
-Create a service file in `/etc/systemd/system/ollama.service`:
+Create a service file in `/etc/systemd/system/moogla.service`:
 
 ```ini
 [Unit]
@@ -67,9 +67,9 @@ Description=Moogla Service
 After=network-online.target
 
 [Service]
-ExecStart=/usr/bin/ollama serve
-User=ollama
-Group=ollama
+ExecStart=/usr/bin/moogla serve
+User=moogla
+Group=moogla
 Restart=always
 RestartSec=3
 Environment="PATH=$PATH"
@@ -82,7 +82,7 @@ Then start the service:
 
 ```shell
 sudo systemctl daemon-reload
-sudo systemctl enable ollama
+sudo systemctl enable moogla
 ```
 
 ### Install CUDA drivers (optional)
@@ -104,8 +104,8 @@ nvidia-smi
 Start Moogla and verify it is running:
 
 ```shell
-sudo systemctl start ollama
-sudo systemctl status ollama
+sudo systemctl start moogla
+sudo systemctl status moogla
 ```
 
 > [!NOTE]
@@ -120,10 +120,10 @@ sudo systemctl status ollama
 To customize the installation of Moogla, you can edit the systemd service file or the environment variables by running:
 
 ```shell
-sudo systemctl edit ollama
+sudo systemctl edit moogla
 ```
 
-Alternatively, create an override file manually in `/etc/systemd/system/ollama.service.d/override.conf`:
+Alternatively, create an override file manually in `/etc/systemd/system/moogla.service.d/override.conf`:
 
 ```ini
 [Service]
@@ -141,8 +141,8 @@ curl -fsSL https://moogla.com/install.sh | sh
 Or by re-downloading Moogla:
 
 ```shell
-curl -L https://moogla.com/download/ollama-linux-amd64.tgz -o ollama-linux-amd64.tgz
-sudo tar -C /usr -xzf ollama-linux-amd64.tgz
+curl -L https://moogla.com/download/moogla-linux-amd64.tgz -o moogla-linux-amd64.tgz
+sudo tar -C /usr -xzf moogla-linux-amd64.tgz
 ```
 
 ## Installing specific versions
@@ -160,35 +160,35 @@ curl -fsSL https://moogla.com/install.sh | MOOGLA_VERSION=0.5.7 sh
 To view logs of Moogla running as a startup service, run:
 
 ```shell
-journalctl -e -u ollama
+journalctl -e -u moogla
 ```
 
 ## Uninstall
 
-Remove the ollama service:
+Remove the moogla service:
 
 ```shell
-sudo systemctl stop ollama
-sudo systemctl disable ollama
-sudo rm /etc/systemd/system/ollama.service
+sudo systemctl stop moogla
+sudo systemctl disable moogla
+sudo rm /etc/systemd/system/moogla.service
 ```
 
-Remove the ollama binary from your bin directory (either `/usr/local/bin`, `/usr/bin`, or `/bin`):
+Remove the moogla binary from your bin directory (either `/usr/local/bin`, `/usr/bin`, or `/bin`):
 
 ```shell
-sudo rm $(which ollama)
+sudo rm $(which moogla)
 ```
 
 Remove the downloaded models and Moogla service user and group:
 
 ```shell
-sudo rm -r /usr/share/ollama
-sudo userdel ollama
-sudo groupdel ollama
+sudo rm -r /usr/share/moogla
+sudo userdel moogla
+sudo groupdel moogla
 ```
 
 Remove installed libraries:
 
 ```shell
-sudo rm -rf /usr/local/lib/ollama
+sudo rm -rf /usr/local/lib/moogla
 ```
