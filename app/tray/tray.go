@@ -8,7 +8,7 @@ import (
 	"github.com/ollama/ollama/app/tray/commontray"
 )
 
-func NewTray() (commontray.OllamaTray, error) {
+func NewTray() (commontray.MooglaTray, error) {
 	extension := ".png"
 	if runtime.GOOS == "windows" {
 		extension = ".ico"

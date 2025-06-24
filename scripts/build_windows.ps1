@@ -60,7 +60,7 @@ function checkEnv() {
     } else {
         $script:PKG_VERSION="0.0.0"
     }
-    write-host "Building Ollama $script:VERSION with package version $script:PKG_VERSION"
+    write-host "Building Moogla $script:VERSION with package version $script:PKG_VERSION"
 
     # Note: Windows Kits 10 signtool crashes with GCP's plugin
     if ($null -eq $env:SIGN_TOOL) {
@@ -78,7 +78,7 @@ function checkEnv() {
 }
 
 
-function buildOllama() {
+function buildMoogla() {
     mkdir -Force -path "${script:DIST_DIR}\"
     if ($script:ARCH -ne "arm64") {
         Remove-Item -ea 0 -recurse -force -path "${script:SRC_DIR}\dist\windows-${script:ARCH}"
@@ -131,7 +131,7 @@ function buildOllama() {
 }
 
 function buildApp() {
-    write-host "Building Ollama App"
+    write-host "Building Moogla App"
     cd "${script:SRC_DIR}\app"
     & windres -l 0 -o ollama.syso ollama.rc
     & go build -trimpath -ldflags "-s -w -H windowsgui -X=github.com/ollama/ollama/version.Version=$script:VERSION -X=github.com/ollama/ollama/server.mode=release" -o "${script:SRC_DIR}\dist\windows-${script:TARGET_ARCH}-app.exe" .
@@ -176,7 +176,7 @@ function gatherDependencies() {
 
 function sign() {
     if ("${env:KEY_CONTAINER}") {
-        write-host "Signing Ollama executables, scripts and libraries"
+        write-host "Signing Moogla executables, scripts and libraries"
         & "${script:SignTool}" sign /v /fd sha256 /t http://timestamp.digicert.com /f "${script:OLLAMA_CERT}" `
             /csp "Google Cloud KMS Provider" /kc ${env:KEY_CONTAINER} `
             $(get-childitem -path "${script:SRC_DIR}\dist" -r -include @('ollama_welcome.ps1')) `
@@ -192,7 +192,7 @@ function buildInstaller() {
         write-host "Inno Setup not present, skipping installer build"
         return
     }
-    write-host "Building Ollama Installer"
+    write-host "Building Moogla Installer"
     cd "${script:SRC_DIR}\app"
     $env:PKG_VERSION=$script:PKG_VERSION
     if ("${env:KEY_CONTAINER}") {
@@ -231,7 +231,7 @@ function distZip() {
 checkEnv
 try {
     if ($($args.count) -eq 0) {
-        buildOllama
+        buildMoogla
         buildApp
         gatherDependencies
         sign

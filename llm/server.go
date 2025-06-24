@@ -91,7 +91,7 @@ type llmServer struct {
 	llamaModel     *llama.Model
 	llamaModelLock sync.Mutex
 
-	// textProcessor handles text encoding/decoding for the model in the Ollama engine
+	// textProcessor handles text encoding/decoding for the model in the Moogla engine
 	// nil if this server is running the llama.cpp based engine
 	textProcessor model.TextProcessor
 
@@ -262,9 +262,9 @@ func NewLlamaServer(gpus discover.GpuInfoList, modelPath string, f *ggml.GGML, a
 	}
 
 	libs := make(map[string]string)
-	if entries, err := os.ReadDir(discover.LibOllamaPath); err == nil {
+	if entries, err := os.ReadDir(discover.LibMooglaPath); err == nil {
 		for _, entry := range entries {
-			libs[entry.Name()] = filepath.Join(discover.LibOllamaPath, entry.Name())
+			libs[entry.Name()] = filepath.Join(discover.LibMooglaPath, entry.Name())
 		}
 	}
 
@@ -300,11 +300,11 @@ func NewLlamaServer(gpus discover.GpuInfoList, modelPath string, f *ggml.GGML, a
 
 	var llamaModel *llama.Model
 	var textProcessor model.TextProcessor
-	if envconfig.NewEngine() || f.KV().OllamaEngineRequired() {
+	if envconfig.NewEngine() || f.KV().MooglaEngineRequired() {
 		textProcessor, err = model.NewTextProcessor(modelPath)
 		if err != nil {
 			// To prepare for opt-out mode, instead of treating this as an error, we fallback to the old runner
-			slog.Debug("model not yet supported by Ollama engine, switching to compatibility mode", "model", modelPath, "error", err)
+			slog.Debug("model not yet supported by Moogla engine, switching to compatibility mode", "model", modelPath, "error", err)
 		}
 	}
 	if textProcessor == nil {
@@ -355,12 +355,12 @@ func NewLlamaServer(gpus discover.GpuInfoList, modelPath string, f *ggml.GGML, a
 
 		// Note: we always put our dependency paths first
 		// since these are the exact version we compiled/linked against
-		libraryPaths := []string{discover.LibOllamaPath}
+		libraryPaths := []string{discover.LibMooglaPath}
 		if libraryPath, ok := os.LookupEnv(pathEnv); ok {
 			libraryPaths = append(libraryPaths, filepath.SplitList(libraryPath)...)
 		}
 
-		ggmlPaths := []string{discover.LibOllamaPath}
+		ggmlPaths := []string{discover.LibMooglaPath}
 		if len(compatible) > 0 {
 			c := compatible[0]
 			if libpath, ok := libs[c]; ok {
@@ -377,7 +377,7 @@ func NewLlamaServer(gpus discover.GpuInfoList, modelPath string, f *ggml.GGML, a
 		}
 
 		// finally, add the root library path
-		libraryPaths = append(libraryPaths, discover.LibOllamaPath)
+		libraryPaths = append(libraryPaths, discover.LibMooglaPath)
 
 		s := &llmServer{
 			port:          port,
@@ -463,7 +463,7 @@ func NewLlamaServer(gpus discover.GpuInfoList, modelPath string, f *ggml.GGML, a
 			if err != nil && s.status != nil && s.status.LastErrMsg != "" {
 				slog.Error("llama runner terminated", "error", err)
 				if strings.Contains(s.status.LastErrMsg, "unknown model") {
-					s.status.LastErrMsg = "this model is not supported by your version of Ollama. You may need to upgrade"
+					s.status.LastErrMsg = "this model is not supported by your version of Moogla. You may need to upgrade"
 				}
 				s.done <- errors.New(s.status.LastErrMsg)
 			} else {

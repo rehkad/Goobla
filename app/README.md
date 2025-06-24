@@ -1,4 +1,4 @@
-# Ollama App
+# Moogla App
 
 ## Linux
 

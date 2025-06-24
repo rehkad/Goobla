@@ -1,4 +1,4 @@
-// Package registry implements an http.Handler for handling local Ollama API
+// Package registry implements an http.Handler for handling local Moogla API
 // model management requests. See [Local] for details.
 package registry
 
@@ -21,7 +21,7 @@ import (
 	"github.com/ollama/ollama/server/internal/internal/backoff"
 )
 
-// Local implements an http.Handler for handling local Ollama API model
+// Local implements an http.Handler for handling local Moogla API model
 // management requests, such as pushing, pulling, and deleting models.
 //
 // It can be arranged for all unknown requests to be passed through to a

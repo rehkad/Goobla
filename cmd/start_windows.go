@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	Installer = "OllamaSetup.exe"
+	Installer = "MooglaSetup.exe"
 )
 
 func startApp(ctx context.Context, client *api.Client) error {
@@ -35,7 +35,7 @@ func startApp(ctx context.Context, client *api.Client) error {
 	if errors.Is(err, os.ErrNotExist) {
 		// Try the standard install location
 		localAppData := os.Getenv("LOCALAPPDATA")
-		appExe = filepath.Join(localAppData, "Ollama", AppName)
+		appExe = filepath.Join(localAppData, "Moogla", AppName)
 		_, err := os.Stat(appExe)
 		if errors.Is(err, os.ErrNotExist) {
 			// Finally look in the path

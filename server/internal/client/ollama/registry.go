@@ -1,4 +1,4 @@
-// Package ollama provides a client for interacting with an Ollama registry
+// Package ollama provides a client for interacting with an Moogla registry
 // which pushes and pulls model manifests and layers as defined by the
 // [ollama.com/manifest].
 package ollama
@@ -91,7 +91,7 @@ func DefaultCache() (*blob.DiskCache, error) {
 	return defaultCache()
 }
 
-// Error is the standard error returned by Ollama APIs. It can represent a
+// Error is the standard error returned by Moogla APIs. It can represent a
 // single or multiple error response.
 //
 // Single error responses have the following format:
@@ -185,7 +185,7 @@ func CompleteName(name string) string {
 }
 
 // Registry is a client for performing push and pull operations against an
-// Ollama registry.
+// Moogla registry.
 type Registry struct {
 	// Cache is the cache used to store models. If nil, [DefaultCache] is
 	// used.
@@ -1030,10 +1030,10 @@ func (r *Registry) send(ctx context.Context, method, path string, body io.Reader
 	return sendRequest(r.client(), req)
 }
 
-// makeAuthToken creates an Ollama auth token for the given private key.
+// makeAuthToken creates an Moogla auth token for the given private key.
 //
 // NOTE: This format is OLD, overly complex, and should be replaced. We're
-// inheriting it from the original Ollama client and ollama.com
+// inheriting it from the original Moogla client and ollama.com
 // implementations, so we need to support it for now.
 func makeAuthToken(key crypto.PrivateKey) (string, error) {
 	privKey, _ := key.(*ed25519.PrivateKey)
@@ -1075,7 +1075,7 @@ func makeAuthToken(key crypto.PrivateKey) (string, error) {
 	return b.String(), nil
 }
 
-// The original spec for Ollama tokens was to use the SHA256 of the zero
+// The original spec for Moogla tokens was to use the SHA256 of the zero
 // string as part of the signature. I'm not sure why that was, but we still
 // need it to verify the signature.
 var zeroSum = func() string {

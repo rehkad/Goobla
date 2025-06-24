@@ -7,15 +7,15 @@ import (
 )
 
 const (
-	UnknownOllamaKeyErrMsg = "unknown ollama key"
+	UnknownMooglaKeyErrMsg = "unknown ollama key"
 	InvalidModelNameErrMsg = "invalid model name"
 )
 
 // TODO: This should have a structured response from the API
-type UnknownOllamaKey struct {
+type UnknownMooglaKey struct {
 	Key string
 }
 
-func (e *UnknownOllamaKey) Error() string {
-	return fmt.Sprintf("unauthorized: %s %q", UnknownOllamaKeyErrMsg, strings.TrimSpace(e.Key))
+func (e *UnknownMooglaKey) Error() string {
+	return fmt.Sprintf("unauthorized: %s %q", UnknownMooglaKeyErrMsg, strings.TrimSpace(e.Key))
 }

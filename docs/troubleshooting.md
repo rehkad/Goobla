@@ -1,6 +1,6 @@
 # How to troubleshoot issues
 
-Sometimes Ollama may not perform as expected. One of the best ways to figure out what happened is to take a look at the logs. Find the logs on **Mac** by running the command:
+Sometimes Moogla may not perform as expected. One of the best ways to figure out what happened is to take a look at the logs. Find the logs on **Mac** by running the command:
 
 ```shell
 cat ~/.ollama/logs/server.log
@@ -12,7 +12,7 @@ On **Linux** systems with systemd, the logs can be found with this command:
 journalctl -u ollama --no-pager --follow --pager-end 
 ```
 
-When you run Ollama in a **container**, the logs go to stdout/stderr in the container:
+When you run Moogla in a **container**, the logs go to stdout/stderr in the container:
 
 ```shell
 docker logs <container-name>
@@ -22,9 +22,9 @@ docker logs <container-name>
 
 If manually running `ollama serve` in a terminal, the logs will be on that terminal.
 
-When you run Ollama on **Windows**, there are a few different locations. You can view them in the explorer window by hitting `<cmd>+R` and type in:
-- `explorer %LOCALAPPDATA%\Ollama` to view logs.  The most recent server logs will be in `server.log` and older logs will be in `server-#.log` 
-- `explorer %LOCALAPPDATA%\Programs\Ollama` to browse the binaries (The installer adds this to your user PATH)
+When you run Moogla on **Windows**, there are a few different locations. You can view them in the explorer window by hitting `<cmd>+R` and type in:
+- `explorer %LOCALAPPDATA%\Moogla` to view logs.  The most recent server logs will be in `server.log` and older logs will be in `server-#.log` 
+- `explorer %LOCALAPPDATA%\Programs\Moogla` to browse the binaries (The installer adds this to your user PATH)
 - `explorer %HOMEPATH%\.ollama` to browse where models and configuration is stored
 
 To enable additional debug logging to help troubleshoot problems, first **Quit the running app from the tray menu** then in a powershell terminal
@@ -38,7 +38,7 @@ Join the [Discord](https://discord.gg/ollama) for help interpreting the logs.
 
 ## LLM libraries
 
-Ollama includes multiple LLM libraries compiled for different GPUs and CPU vector features. Ollama tries to pick the best one based on the capabilities of your system. If this autodetection has problems, or you run into other problems (e.g. crashes in your GPU) you can workaround this by forcing a specific LLM library. `cpu_avx2` will perform the best, followed by `cpu_avx` an the slowest but most compatible is `cpu`. Rosetta emulation under MacOS will work with the `cpu` library. 
+Moogla includes multiple LLM libraries compiled for different GPUs and CPU vector features. Moogla tries to pick the best one based on the capabilities of your system. If this autodetection has problems, or you run into other problems (e.g. crashes in your GPU) you can workaround this by forcing a specific LLM library. `cpu_avx2` will perform the best, followed by `cpu_avx` an the slowest but most compatible is `cpu`. Rosetta emulation under MacOS will work with the `cpu` library. 
 
 In the server log, you will see a message that looks something like this (varies from release to release):
 
@@ -70,19 +70,19 @@ curl -fsSL https://ollama.com/install.sh | OLLAMA_VERSION=0.5.7 sh
 
 ## Linux docker
 
-If Ollama initially works on the GPU in a docker container, but then switches to running on CPU after some period of time with errors in the server log reporting GPU discovery failures, this can be resolved by disabling systemd cgroup management in Docker.  Edit `/etc/docker/daemon.json` on the host and add `"exec-opts": ["native.cgroupdriver=cgroupfs"]` to the docker configuration.
+If Moogla initially works on the GPU in a docker container, but then switches to running on CPU after some period of time with errors in the server log reporting GPU discovery failures, this can be resolved by disabling systemd cgroup management in Docker.  Edit `/etc/docker/daemon.json` on the host and add `"exec-opts": ["native.cgroupdriver=cgroupfs"]` to the docker configuration.
 
 ## NVIDIA GPU Discovery
 
-When Ollama starts up, it takes inventory of the GPUs present in the system to determine compatibility and how much VRAM is available.  Sometimes this discovery can fail to find your GPUs.  In general, running the latest driver will yield the best results.
+When Moogla starts up, it takes inventory of the GPUs present in the system to determine compatibility and how much VRAM is available.  Sometimes this discovery can fail to find your GPUs.  In general, running the latest driver will yield the best results.
 
 ### Linux NVIDIA Troubleshooting
 
-If you are using a container to run Ollama, make sure you've set up the container runtime first as described in [docker.md](./docker.md)
+If you are using a container to run Moogla, make sure you've set up the container runtime first as described in [docker.md](./docker.md)
 
-Sometimes the Ollama can have difficulties initializing the GPU. When you check the server logs, this can show up as various error codes, such as "3" (not initialized), "46" (device unavailable), "100" (no device), "999" (unknown), or others. The following troubleshooting techniques may help resolve the problem
+Sometimes the Moogla can have difficulties initializing the GPU. When you check the server logs, this can show up as various error codes, such as "3" (not initialized), "46" (device unavailable), "100" (no device), "999" (unknown), or others. The following troubleshooting techniques may help resolve the problem
 
-- If you are using a container, is the container runtime working?  Try `docker run --gpus all ubuntu nvidia-smi` - if this doesn't work, Ollama won't be able to see your NVIDIA GPU.
+- If you are using a container, is the container runtime working?  Try `docker run --gpus all ubuntu nvidia-smi` - if this doesn't work, Moogla won't be able to see your NVIDIA GPU.
 - Is the uvm driver loaded? `sudo nvidia-modprobe -u`
 - Try reloading the nvidia_uvm driver - `sudo rmmod nvidia_uvm` then `sudo modprobe nvidia_uvm`
 - Try rebooting
@@ -95,11 +95,11 @@ If none of those resolve the problem, gather additional information and file an 
 
 ## AMD GPU Discovery
 
-On linux, AMD GPU access typically requires `video` and/or `render` group membership to access the `/dev/kfd` device.  If permissions are not set up correctly, Ollama will detect this and report an error in the server log.
+On linux, AMD GPU access typically requires `video` and/or `render` group membership to access the `/dev/kfd` device.  If permissions are not set up correctly, Moogla will detect this and report an error in the server log.
 
 When running in a container, in some Linux distributions and container runtimes, the ollama process may be unable to access the GPU.  Use `ls -lnd /dev/kfd /dev/dri /dev/dri/*` on the host system to determine the **numeric** group IDs on your system, and pass additional `--group-add ...` arguments to the container so it can access the required devices.   For example, in the following output `crw-rw---- 1 0  44 226,   0 Sep 16 16:55 /dev/dri/card0` the group ID column is `44` 
 
-If you are experiencing problems getting Ollama to correctly discover or use your GPU for inference, the following may help isolate the failure.
+If you are experiencing problems getting Moogla to correctly discover or use your GPU for inference, the following may help isolate the failure.
 - `AMD_LOG_LEVEL=3` Enable info log levels in the AMD HIP/ROCm libraries.  This can help show more detailed error codes that can help troubleshoot problems
 - `OLLAMA_DEBUG=1` During GPU discovery additional information will be reported
 - Check dmesg for any errors from amdgpu or kfd drivers `sudo dmesg | grep -i amdgpu` and `sudo dmesg | grep -i kfd`

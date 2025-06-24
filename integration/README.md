@@ -1,6 +1,6 @@
 # Integration Tests
 
-This directory contains integration tests to exercise Ollama end-to-end to verify behavior
+This directory contains integration tests to exercise Moogla end-to-end to verify behavior
 
 By default, these tests are disabled so `go test ./...` will exercise only unit tests.  To run integration tests you must pass the integration tag.  `go test -tags=integration ./...`
 

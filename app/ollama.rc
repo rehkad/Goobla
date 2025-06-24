@@ -15,10 +15,10 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "FileDescription", "Ollama"
-            VALUE "InternalName", "Ollama"
+            VALUE "FileDescription", "Moogla"
+            VALUE "InternalName", "Moogla"
             VALUE "OriginalFilename", "ollama app.exe"
-            VALUE "ProductName", "Ollama"
+            VALUE "ProductName", "Moogla"
         END
     END
 

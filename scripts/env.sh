@@ -18,6 +18,6 @@ OLLAMA_COMMON_BUILD_ARGS="--build-arg=VERSION \
     --build-arg=GPU_RUNNER_CPU_FLAGS \
     --build-arg=AMDGPU_TARGETS"
 
-echo "Building Ollama"
+echo "Building Moogla"
 echo "VERSION=$VERSION"
 echo "PLATFORM=$PLATFORM"

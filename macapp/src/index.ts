@@ -116,14 +116,14 @@ function updateTray() {
 
   const menu = Menu.buildFromTemplate([
     ...(updateAvailable ? updateItems : []),
-    { role: 'quit', label: 'Quit Ollama', accelerator: 'Command+Q' },
+    { role: 'quit', label: 'Quit Moogla', accelerator: 'Command+Q' },
   ])
 
   if (!tray) {
     tray = new Tray(trayIconPath())
   }
 
-  tray.setToolTip(updateAvailable ? 'An update is available' : 'Ollama')
+  tray.setToolTip(updateAvailable ? 'An update is available' : 'Moogla')
   tray.setContextMenu(menu)
   tray.setImage(trayIconPath())
 
@@ -223,7 +223,7 @@ function init() {
         const chosen = dialog.showMessageBoxSync({
           type: 'question',
           buttons: ['Move to Applications', 'Do Not Move'],
-          message: 'Ollama works best when run from the Applications directory.',
+          message: 'Moogla works best when run from the Applications directory.',
           defaultId: 0,
           cancelId: 1,
         })
@@ -237,7 +237,7 @@ function init() {
                     type: 'info',
                     message: 'Cannot move to Applications directory',
                     detail:
-                      'Another version of Ollama is currently running from your Applications directory. Close it first and try again.',
+                      'Another version of Moogla is currently running from your Applications directory. Close it first and try again.',
                   })
                 }
                 return true

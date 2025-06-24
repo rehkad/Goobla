@@ -1,4 +1,4 @@
-# Ollama Docker image
+# Moogla Docker image
 
 ### CPU only
 
@@ -55,11 +55,11 @@ docker run -d --gpus=all -v ollama:/root/.ollama -p 11434:11434 --name ollama ol
 ```
 
 > [!NOTE]  
-> If you're running on an NVIDIA JetPack system, Ollama can't automatically discover the correct JetPack version. Pass the environment variable JETSON_JETPACK=5 or JETSON_JETPACK=6 to the container to select version 5 or 6.
+> If you're running on an NVIDIA JetPack system, Moogla can't automatically discover the correct JetPack version. Pass the environment variable JETSON_JETPACK=5 or JETSON_JETPACK=6 to the container to select version 5 or 6.
 
 ### AMD GPU
 
-To run Ollama using Docker with AMD GPUs, use the `rocm` tag and the following command:
+To run Moogla using Docker with AMD GPUs, use the `rocm` tag and the following command:
 
 ```shell
 docker run -d --device /dev/kfd --device /dev/dri -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama:rocm
@@ -75,4 +75,4 @@ docker exec -it ollama ollama run llama3.2
 
 ### Try different models
 
-More models can be found on the [Ollama library](https://ollama.com/library).
+More models can be found on the [Moogla library](https://ollama.com/library).

@@ -1,9 +1,9 @@
 # OpenAI compatibility
 
 > [!NOTE]
-> OpenAI compatibility is experimental and is subject to major adjustments including breaking changes. For fully-featured access to the Ollama API, see the Ollama [Python library](https://github.com/ollama/ollama-python), [JavaScript library](https://github.com/ollama/ollama-js) and [REST API](https://github.com/ollama/ollama/blob/main/docs/api.md).
+> OpenAI compatibility is experimental and is subject to major adjustments including breaking changes. For fully-featured access to the Moogla API, see the Moogla [Python library](https://github.com/ollama/ollama-python), [JavaScript library](https://github.com/ollama/ollama-js) and [REST API](https://github.com/ollama/ollama/blob/main/docs/api.md).
 
-Ollama provides experimental compatibility with parts of the [OpenAI API](https://platform.openai.com/docs/api-reference) to help connect existing applications to Ollama.
+Moogla provides experimental compatibility with parts of the [OpenAI API](https://platform.openai.com/docs/api-reference) to help connect existing applications to Moogla.
 
 ## Usage
 
@@ -83,7 +83,7 @@ try:
         temperature=0,
         model="llama3.1:8b",
         messages=[
-            {"role": "user", "content": "I have two friends. The first is Ollama 22 years old busy saving the world, and the second is Alonso 23 years old and wants to hang out. Return a list of friends in JSON format"}
+            {"role": "user", "content": "I have two friends. The first is Moogla 22 years old busy saving the world, and the second is Alonso 23 years old and wants to hang out. Return a list of friends in JSON format"}
         ],
         response_format=FriendList,
     )

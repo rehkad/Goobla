@@ -90,5 +90,5 @@ func Run() {
 	if done != nil {
 		<-done
 	}
-	slog.Info("Ollama app exiting")
+	slog.Info("Moogla app exiting")
 }
