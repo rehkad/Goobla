@@ -29,10 +29,13 @@ func (c *WrapperCache) Init(backend ml.Backend, dtype ml.DType, maxSequences, ca
 	}
 }
 
-func (c *WrapperCache) SetConfig(config ml.CacheConfig) {
+func (c *WrapperCache) SetConfig(config ml.CacheConfig) error {
 	for _, cache := range c.caches {
-		cache.SetConfig(config)
+		if err := cache.SetConfig(config); err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 func (c *WrapperCache) Close() {

@@ -54,7 +54,9 @@ func New(c fs.Config) (model.Model, error) {
 	}
 
 	encoderCache := kvcache.NewEncoderCache()
-	encoderCache.SetConfig(ml.CacheConfig{})
+	if err := encoderCache.SetConfig(ml.CacheConfig{}); err != nil {
+		return nil, err
+	}
 	m.Cache = kvcache.NewWrapperCache(encoderCache, kvcache.NewCausalCache(m.TextModel.Shift))
 
 	return &m, nil

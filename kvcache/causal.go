@@ -149,12 +149,13 @@ func (c *Causal) Init(backend ml.Backend, dtype ml.DType, maxSequences, capacity
 	c.backend = backend
 }
 
-func (c *Causal) SetConfig(config ml.CacheConfig) {
+func (c *Causal) SetConfig(config ml.CacheConfig) error {
 	if c.config != nil {
-		panic("config cannot be changed after being previously set, either by the model or backend")
+		return fmt.Errorf("config cannot be changed after being previously set, either by the model or backend")
 	}
 
 	c.config = &config
+	return nil
 }
 
 func (c *Causal) Close() {
