@@ -9,6 +9,7 @@ import (
 	"strings"
 	"unsafe"
 
+	"github.com/goobla/goobla/format"
 	fsggml "github.com/goobla/goobla/fs/ggml"
 	"github.com/goobla/goobla/ml/backend/ggml"
 )
@@ -52,6 +53,7 @@ type quantizeState struct {
 	iAttnV    int  // Running counter of number of attn_v tensors that have been processed
 	iFfnDown  int  // Running counter of number of ffn_down tensors that have been processed
 	hasOutput bool // used to figure out if a model shares tok_embd with the output weight
+	is70B     bool // true if model parameter size is 70B
 }
 
 func useMoreBits(iLayer, nLayers int) bool {
@@ -77,13 +79,12 @@ func getTensorNewType(kv fsggml.KV, qs *quantizeState, newType fsggml.TensorType
 			newType = fsggml.TensorTypeQ5_K
 		}
 
-		// TODO
-		// if (qs.model.type == LLM_TYPE_70B) {
-		// 	// In the 70B model we have 8 heads sharing the same attn_v weights. As a result, the attn_v.weight tensor is
-		// 	// 8x smaller compared to attn_q.weight. Hence, we can get a nice boost in quantization accuracy with
-		// 	// nearly negligible increase in model size by quantizing this tensor with more bits:
-		// 	if (newType == GGML_TYPE_Q3_K || newType == GGML_TYPE_Q4_K) newType = GGML_TYPE_Q5_K;
-		// }
+		// In the 70B model we have 8 heads sharing the same attn_v weights. As a result, the attn_v.weight tensor is
+		// 8x smaller compared to attn_q.weight. Hence, we can get a nice boost in quantization accuracy with
+		// nearly negligible increase in model size by quantizing this tensor with more bits.
+		if qs.is70B && (newType == fsggml.TensorTypeQ3_K || newType == fsggml.TensorTypeQ4_K) {
+			newType = fsggml.TensorTypeQ5_K
+		}
 
 		if nExperts == 8 {
 			// for the 8-expert model, bumping this to Q8_0 trades just ~128MB
@@ -153,7 +154,7 @@ func quantize(in, out *os.File, orig *fsggml.GGML, newFileType fsggml.FileType, 
 	kv := maps.Clone(orig.KV())
 	kv["general.file_type"] = newFileType
 	// kv["general.quantization_version"] = ggml.QuantizationVersion()
-	qs := &quantizeState{}
+	qs := &quantizeState{is70B: format.HumanNumber(kv.ParameterCount()) == "70B"}
 	// Build up the quantize state so newType can adjust types
 	layerCount := 0
 	for k, l := range orig.Tensors().GroupLayers() {
