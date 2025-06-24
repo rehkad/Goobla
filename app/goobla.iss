@@ -1,19 +1,19 @@
-; Inno Setup Installer for Moogla
+; Inno Setup Installer for Goobla
 ;
 ; To build the installer use the build script invoked from the top of the source tree
 ; 
 ; powershell -ExecutionPolicy Bypass -File .\scripts\build_windows.ps
 
 
-#define MyAppName "Moogla"
+#define MyAppName "Goobla"
 #if GetEnv("PKG_VERSION") != ""
   #define MyAppVersion GetEnv("PKG_VERSION")
 #else
   #define MyAppVersion "0.0.0"
 #endif
-#define MyAppPublisher "Moogla"
-#define MyAppURL "https://moogla.com/"
-#define MyAppExeName "ollama app.exe"
+#define MyAppPublisher "Goobla"
+#define MyAppURL "https://goobla.com/"
+#define MyAppExeName "goobla app.exe"
 #define MyIcon ".\assets\app.ico"
 
 [Setup]
@@ -34,7 +34,7 @@ DefaultDirName={localappdata}\Programs\{#MyAppName}
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
-OutputBaseFilename="MooglaSetup"
+OutputBaseFilename="GooblaSetup"
 SetupIconFile={#MyIcon}
 UninstallDisplayIcon={uninstallexe}
 Compression=lzma2
@@ -53,7 +53,7 @@ RestartIfNeededByRun=no
 ; https://jrsoftware.org/ishelp/index.php?topic=setup_wizardimagefile
 WizardSmallImageFile=.\assets\setup.bmp
 
-; Moogla requires Windows 10 22H2 or newer for proper unicode rendering
+; Goobla requires Windows 10 22H2 or newer for proper unicode rendering
 ; TODO: consider setting this to 10.0.19045
 MinVersion=10.0.10240
 
@@ -78,7 +78,7 @@ SignTool=MySignTool
 SignedUninstaller=yes
 #endif
 
-SetupMutex=MooglaSetupMutex
+SetupMutex=GooblaSetupMutex
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -89,17 +89,17 @@ DialogFontSize=12
 [Files]
 #if DirExists("..\dist\windows-amd64")
 Source: "..\dist\windows-amd64-app.exe"; DestDir: "{app}"; DestName: "{#MyAppExeName}" ;Check: not IsArm64();  Flags: ignoreversion 64bit
-Source: "..\dist\windows-amd64\ollama.exe"; DestDir: "{app}"; Check: not IsArm64(); Flags: ignoreversion 64bit
-Source: "..\dist\windows-amd64\lib\ollama\*"; DestDir: "{app}\lib\ollama\"; Check: not IsArm64(); Flags: ignoreversion 64bit recursesubdirs
+Source: "..\dist\windows-amd64\goobla.exe"; DestDir: "{app}"; Check: not IsArm64(); Flags: ignoreversion 64bit
+Source: "..\dist\windows-amd64\lib\goobla\*"; DestDir: "{app}\lib\goobla\"; Check: not IsArm64(); Flags: ignoreversion 64bit recursesubdirs
 #endif
 
 #if DirExists("..\dist\windows-arm64")
 Source: "..\dist\windows-arm64\vc_redist.arm64.exe"; DestDir: "{tmp}"; Check: IsArm64() and vc_redist_needed(); Flags: deleteafterinstall
 Source: "..\dist\windows-arm64-app.exe"; DestDir: "{app}"; DestName: "{#MyAppExeName}" ;Check: IsArm64();  Flags: ignoreversion 64bit
-Source: "..\dist\windows-arm64\ollama.exe"; DestDir: "{app}"; Check: IsArm64(); Flags: ignoreversion 64bit
+Source: "..\dist\windows-arm64\goobla.exe"; DestDir: "{app}"; Check: IsArm64(); Flags: ignoreversion 64bit
 #endif
 
-Source: "..\dist\ollama_welcome.ps1"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\dist\goobla_welcome.ps1"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\assets\app.ico"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
@@ -115,33 +115,33 @@ Filename: "{cmd}"; Parameters: "/C set PATH={app};%PATH% & ""{app}\{#MyAppExeNam
 
 [UninstallRun]
 ; Filename: "{cmd}"; Parameters: "/C ""taskkill /im ''{#MyAppExeName}'' /f /t"; Flags: runhidden
-; Filename: "{cmd}"; Parameters: "/C ""taskkill /im ollama.exe /f /t"; Flags: runhidden
+; Filename: "{cmd}"; Parameters: "/C ""taskkill /im goobla.exe /f /t"; Flags: runhidden
 Filename: "taskkill"; Parameters: "/im ""{#MyAppExeName}"" /f /t"; Flags: runhidden
-Filename: "taskkill"; Parameters: "/im ""ollama.exe"" /f /t"; Flags: runhidden
+Filename: "taskkill"; Parameters: "/im ""goobla.exe"" /f /t"; Flags: runhidden
 ; HACK!  need to give the server and app enough time to exit
 ; TODO - convert this to a Pascal code script so it waits until they're no longer running, then completes
 Filename: "{cmd}"; Parameters: "/c timeout 5"; Flags: runhidden
 
 [UninstallDelete]
-Type: filesandordirs; Name: "{%TEMP}\ollama*"
-Type: filesandordirs; Name: "{%LOCALAPPDATA}\Moogla"
-Type: filesandordirs; Name: "{%LOCALAPPDATA}\Programs\Moogla"
-Type: filesandordirs; Name: "{%USERPROFILE}\.ollama\models"
-Type: filesandordirs; Name: "{%USERPROFILE}\.ollama\history"
+Type: filesandordirs; Name: "{%TEMP}\goobla*"
+Type: filesandordirs; Name: "{%LOCALAPPDATA}\Goobla"
+Type: filesandordirs; Name: "{%LOCALAPPDATA}\Programs\Goobla"
+Type: filesandordirs; Name: "{%USERPROFILE}\.goobla\models"
+Type: filesandordirs; Name: "{%USERPROFILE}\.goobla\history"
 ; NOTE: if the user has a custom MOOGLA_MODELS it will be preserved
 
 [InstallDelete]
-Type: filesandordirs; Name: "{%TEMP}\ollama*"
-Type: filesandordirs; Name: "{%LOCALAPPDATA}\Programs\Moogla"
+Type: filesandordirs; Name: "{%TEMP}\goobla*"
+Type: filesandordirs; Name: "{%LOCALAPPDATA}\Programs\Goobla"
 
 [Messages]
-WizardReady=Moogla
+WizardReady=Goobla
 ReadyLabel1=%nLet's get you up and running with your own large language models.
-SetupAppRunningError=Another Moogla installer is running.%n%nPlease cancel or finish the other installer, then click OK to continue with this install, or Cancel to exit.
+SetupAppRunningError=Another Goobla installer is running.%n%nPlease cancel or finish the other installer, then click OK to continue with this install, or Cancel to exit.
 
 
 ;FinishedHeadingLabel=Run your first model
-;FinishedLabel=%nRun this command in a PowerShell or cmd terminal.%n%n%n    ollama run llama3.2
+;FinishedLabel=%nRun this command in a PowerShell or cmd terminal.%n%n%n    goobla run llama3.2
 ;ClickFinish=%n
 
 [Registry]
