@@ -238,6 +238,16 @@ goobla stop llama3.2
 
 `goobla serve` is used when you want to start Goobla without running the desktop application.
 
+### Change the bind address
+
+Goobla binds to `127.0.0.1:11434` by default. Set the `GOOBLA_HOST` environment variable to change the bind address:
+
+```shell
+GOOBLA_HOST=0.0.0.0:11434 goobla serve
+```
+
+See the [FAQ](./docs/faq.md#how-can-i-expose-goobla-on-my-network) for more details.
+
 ## Building
 
 See the [developer guide](https://github.com/goobla/goobla/blob/main/docs/development.md)
