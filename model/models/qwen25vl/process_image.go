@@ -43,13 +43,13 @@ func newImageProcessor(c fs.Config) ImageProcessor {
 }
 
 // SmartResize implements the smart resize algorithm
-func (p *ImageProcessor) SmartResize(height, width int) (int, int) {
+func (p *ImageProcessor) SmartResize(height, width int) (int, int, error) {
 	factor := p.factor
 
 	if height < factor || width < factor {
-		panic(fmt.Sprintf("height:%d or width:%d must be larger than factor:%d", height, width, factor))
+		return 0, 0, fmt.Errorf("height:%d or width:%d must be larger than factor:%d", height, width, factor)
 	} else if aspectRatio := max(height, width) / min(height, width); aspectRatio > 200 {
-		panic(fmt.Sprintf("absolute aspect ratio must be smaller than 200, got %v", aspectRatio))
+		return 0, 0, fmt.Errorf("absolute aspect ratio must be smaller than 200, got %v", aspectRatio)
 	}
 
 	round := func(x float64) int { return int(math.RoundToEven(x)) }
@@ -69,7 +69,7 @@ func (p *ImageProcessor) SmartResize(height, width int) (int, int) {
 		wBar = int(math.Ceil(float64(width)*beta/float64(factor))) * factor
 	}
 
-	return hBar, wBar
+	return hBar, wBar, nil
 }
 
 type Grid struct {
@@ -83,7 +83,10 @@ func (p *ImageProcessor) ProcessImage(img image.Image) ([]float32, *Grid, error)
 	origHeight := img.Bounds().Dy()
 
 	// Calculate smart resize dimensions
-	resizedHeight, resizedWidth := p.SmartResize(origHeight, origWidth)
+	resizedHeight, resizedWidth, err := p.SmartResize(origHeight, origWidth)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	// Resize image using existing functions
 	resizedImg := imageproc.Resize(img, image.Point{X: resizedWidth, Y: resizedHeight}, imageproc.ResizeBilinear)

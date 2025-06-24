@@ -12,6 +12,7 @@ import (
 	"github.com/moogla/moogla/ml/nn/rope"
 	"github.com/moogla/moogla/model"
 	"github.com/moogla/moogla/model/input"
+	"log/slog"
 )
 
 type Options struct {
@@ -161,6 +162,6 @@ func New(c fs.Config) (model.Model, error) {
 
 func init() {
 	if err := model.Register("qwen2", New); err != nil {
-		panic(err)
+		slog.Error("failed to register qwen2 model", "error", err)
 	}
 }

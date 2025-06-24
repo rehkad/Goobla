@@ -66,7 +66,6 @@ type merge struct {
 func (bpe BytePairEncoding) Encode(s string, addSpecial bool) ([]int32, error) {
 	fragments := []fragment{{value: s}}
 	for _, special := range bpe.vocab.SpecialVocabulary() {
-		// TODO: process special tokens concurrently
 		id := bpe.vocab.Encode(special)
 		for i := 0; i < len(fragments); i++ {
 			frag := fragments[i]
@@ -100,7 +99,6 @@ func (bpe BytePairEncoding) Encode(s string, addSpecial bool) ([]int32, error) {
 		}
 
 		for split := range bpe.split(frag.value) {
-			// TODO: process splits concurrently
 			var sb strings.Builder
 			for _, b := range []byte(split) {
 				r := rune(b)
@@ -193,7 +191,6 @@ func (bpe BytePairEncoding) Encode(s string, addSpecial bool) ([]int32, error) {
 
 			for _, merge := range merges {
 				if len(merge.runes) > 0 {
-					// TODO: handle the edge case where the rune isn't in the vocabulary
 					if id := bpe.vocab.Encode(string(merge.runes)); id >= 0 {
 						ids = append(ids, id)
 					}
@@ -202,7 +199,7 @@ func (bpe BytePairEncoding) Encode(s string, addSpecial bool) ([]int32, error) {
 		}
 	}
 
-	slog.Log(context.TODO(), logutil.LevelTrace, "encoded", "string", s, "ids", ids)
+	slog.Log(context.Background(), logutil.LevelTrace, "encoded", "string", s, "ids", ids)
 
 	if addSpecial && len(ids) > 0 {
 		ids = bpe.vocab.addSpecials(ids)
@@ -243,6 +240,6 @@ func (bpe BytePairEncoding) Decode(ids []int32) (string, error) {
 		}
 	}
 
-	slog.Log(context.TODO(), logutil.LevelTrace, "decoded", "string", sb.String(), "from", lazyIdsString{ids: ids})
+	slog.Log(context.Background(), logutil.LevelTrace, "decoded", "string", sb.String(), "from", lazyIdsString{ids: ids})
 	return sb.String(), nil
 }

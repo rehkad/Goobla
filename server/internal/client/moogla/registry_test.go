@@ -396,7 +396,9 @@ func TestInsecureSkipVerify(t *testing.T) {
 
 	url = fmt.Sprintf("https+insecure://%s/%s", s.Listener.Addr(), name)
 	_, err = rc.Resolve(t.Context(), url)
-	testutil.Check(t, err)
+	if err == nil {
+		t.Errorf("expected error for unsupported scheme")
+	}
 }
 
 func TestErrorUnmarshal(t *testing.T) {
@@ -503,7 +505,7 @@ func TestParseNameExtended(t *testing.T) {
 		err    string
 	}{
 		{in: "http://m", scheme: "http", name: "m"},
-		{in: "https+insecure://m", scheme: "https+insecure", name: "m"},
+		{in: "https+insecure://m", err: "unsupported scheme"},
 		{in: "http+insecure://m", err: "unsupported scheme"},
 
 		{in: "http://m@sha256:1111111111111111111111111111111111111111111111111111111111111111", scheme: "http", name: "m", digest: "sha256:1111111111111111111111111111111111111111111111111111111111111111"},

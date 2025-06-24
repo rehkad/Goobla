@@ -196,9 +196,8 @@ type params struct {
 	// Deprecated: This field is ignored and only present for this
 	// deprecation message. It should be removed in a future release.
 	//
-	// Users can just use http or https+insecure to show intent to
-	// communicate they want to do insecure things, without awkward and
-	// confusing flags such as this.
+	// Users can simply use http to show intent to communicate insecurely,
+	// without awkward and confusing flags such as this.
 	AllowNonTLS bool `json:"insecure"`
 
 	// Stream, if true, will make the server send progress updates in a

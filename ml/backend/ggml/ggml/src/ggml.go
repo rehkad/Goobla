@@ -46,7 +46,7 @@ func init() {
 //export sink
 func sink(level C.int, text *C.char, _ unsafe.Pointer) {
 	// slog levels zeros INFO and are multiples of 4
-	if slog.Default().Enabled(context.TODO(), slog.Level(int(level-C.GGML_LOG_LEVEL_INFO)*4)) {
+	if slog.Default().Enabled(context.Background(), slog.Level(int(level-C.GGML_LOG_LEVEL_INFO)*4)) {
 		fmt.Fprint(os.Stderr, C.GoString(text))
 	}
 }

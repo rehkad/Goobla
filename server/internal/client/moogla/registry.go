@@ -204,11 +204,8 @@ type Registry struct {
 	//
 	// If nil, [http.DefaultClient] is used.
 	//
-	// As a quick note: If a Registry function that makes a call to a URL
-	// with the "https+insecure" scheme, the client will be cloned and the
-	// transport will be set to skip TLS verification, unless the client's
-	// Transport done not have a Clone method with the same signature as
-	// [http.Transport.Clone], which case, the call will fail.
+	// As a quick note: all requests must use HTTPS or HTTP. TLS verification
+	// is always enforced.
 	HTTPClient *http.Client
 
 	// MaxStreams is the maximum number of concurrent streams to use when
@@ -966,33 +963,6 @@ func (r *Registry) newRequest(ctx context.Context, method, url string, body io.R
 // is parsed from the response body and returned. If any other error occurs, it
 // is returned.
 func sendRequest(c *http.Client, r *http.Request) (_ *http.Response, err error) {
-	if r.URL.Scheme == "https+insecure" {
-		// TODO(bmizerany): clone client.Transport, set
-		// InsecureSkipVerify, etc.
-
-		type cloner interface {
-			Clone() *http.Transport
-		}
-
-		// Attempt to configure the transport to skip TLS verification
-		// if we can clone it, otherwise fall through and let the http
-		// client complain and the scheme being invalid.
-		x, ok := cmp.Or(c.Transport, http.DefaultTransport).(cloner)
-		if ok {
-			tr := x.Clone()
-			tr.TLSClientConfig = cmp.Or(tr.TLSClientConfig, &tls.Config{})
-			tr.TLSClientConfig.InsecureSkipVerify = true
-
-			cc := *c // shallow copy
-			cc.Transport = tr
-			c = &cc
-
-			r = r.Clone(r.Context())
-			r.URL.Scheme = "https"
-
-			// fall through
-		}
-	}
 
 	res, err := c.Do(r)
 	if err != nil {
@@ -1105,7 +1075,6 @@ func (e publicError) Unwrap() error { return e.wrapped }
 var supportedSchemes = []string{
 	"http",
 	"https",
-	"https+insecure",
 }
 
 var supportedSchemesMessage = fmt.Sprintf("supported schemes are %v", strings.Join(supportedSchemes, ", "))
