@@ -153,7 +153,7 @@ func ConvertAdapter(fsys fs.FS, f *os.File, baseKV ggml.KV) error {
 	return writeFile(f, conv.KV(baseKV), conv.Tensors(ts))
 }
 
-// Convert writes an Ollama compatible model to the provided io.WriteSeeker based on configurations
+// Convert writes an Moogla compatible model to the provided io.WriteSeeker based on configurations
 // and files it finds in the input path.
 // Supported input model formats include safetensors.
 // Supported input tokenizers files include tokenizer.json (preferred) and tokenizer.model.

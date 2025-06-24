@@ -93,7 +93,7 @@ jobs:
         with:
           name: dist-darwin
           path: |
-            dist/Ollama-darwin.zip
+            dist/Moogla-darwin.zip
             dist/ollama-darwin.tgz
 
   windows-depends:
@@ -278,7 +278,7 @@ jobs:
         with:
           name: dist-windows
           path: |
-            dist\OllamaSetup.exe
+            dist\MooglaSetup.exe
             dist\ollama-windows-*.zip
 
   linux-build:

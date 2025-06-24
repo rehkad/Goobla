@@ -94,7 +94,7 @@ func InitTray(icon, updateIcon []byte) (*winTray, error) {
 
 func (t *winTray) initInstance() error {
 	const (
-		className  = "OllamaClass"
+		className  = "MooglaClass"
 		windowName = ""
 	)
 

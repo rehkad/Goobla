@@ -2,7 +2,7 @@
 
 ## Install
 
-To install Ollama, run the following command:
+To install Moogla, run the following command:
 
 ```shell
 curl -fsSL https://ollama.com/install.sh | sh
@@ -20,13 +20,13 @@ curl -L https://ollama.com/download/ollama-linux-amd64.tgz -o ollama-linux-amd64
 sudo tar -C /usr -xzf ollama-linux-amd64.tgz
 ```
 
-Start Ollama:
+Start Moogla:
 
 ```shell
 ollama serve
 ```
 
-In another terminal, verify that Ollama is running:
+In another terminal, verify that Moogla is running:
 
 ```shell
 ollama -v
@@ -50,9 +50,9 @@ curl -L https://ollama.com/download/ollama-linux-arm64.tgz -o ollama-linux-arm64
 sudo tar -C /usr -xzf ollama-linux-arm64.tgz
 ```
 
-### Adding Ollama as a startup service (recommended)
+### Adding Moogla as a startup service (recommended)
 
-Create a user and group for Ollama:
+Create a user and group for Moogla:
 
 ```shell
 sudo useradd -r -s /bin/false -U -m -d /usr/share/ollama ollama
@@ -63,7 +63,7 @@ Create a service file in `/etc/systemd/system/ollama.service`:
 
 ```ini
 [Unit]
-Description=Ollama Service
+Description=Moogla Service
 After=network-online.target
 
 [Service]
@@ -99,9 +99,9 @@ nvidia-smi
 
 [Download and Install](https://rocm.docs.amd.com/projects/install-on-linux/en/latest/tutorial/quick-start.html) ROCm v6.
 
-### Start Ollama
+### Start Moogla
 
-Start Ollama and verify it is running:
+Start Moogla and verify it is running:
 
 ```shell
 sudo systemctl start ollama
@@ -117,7 +117,7 @@ sudo systemctl status ollama
 
 ## Customizing
 
-To customize the installation of Ollama, you can edit the systemd service file or the environment variables by running:
+To customize the installation of Moogla, you can edit the systemd service file or the environment variables by running:
 
 ```shell
 sudo systemctl edit ollama
@@ -132,13 +132,13 @@ Environment="OLLAMA_DEBUG=1"
 
 ## Updating
 
-Update Ollama by running the install script again:
+Update Moogla by running the install script again:
 
 ```shell
 curl -fsSL https://ollama.com/install.sh | sh
 ```
 
-Or by re-downloading Ollama:
+Or by re-downloading Moogla:
 
 ```shell
 curl -L https://ollama.com/download/ollama-linux-amd64.tgz -o ollama-linux-amd64.tgz
@@ -147,7 +147,7 @@ sudo tar -C /usr -xzf ollama-linux-amd64.tgz
 
 ## Installing specific versions
 
-Use `OLLAMA_VERSION` environment variable with the install script to install a specific version of Ollama, including pre-releases. You can find the version numbers in the [releases page](https://github.com/ollama/ollama/releases).
+Use `OLLAMA_VERSION` environment variable with the install script to install a specific version of Moogla, including pre-releases. You can find the version numbers in the [releases page](https://github.com/ollama/ollama/releases).
 
 For example:
 
@@ -157,7 +157,7 @@ curl -fsSL https://ollama.com/install.sh | OLLAMA_VERSION=0.5.7 sh
 
 ## Viewing logs
 
-To view logs of Ollama running as a startup service, run:
+To view logs of Moogla running as a startup service, run:
 
 ```shell
 journalctl -e -u ollama
@@ -179,7 +179,7 @@ Remove the ollama binary from your bin directory (either `/usr/local/bin`, `/usr
 sudo rm $(which ollama)
 ```
 
-Remove the downloaded models and Ollama service user and group:
+Remove the downloaded models and Moogla service user and group:
 
 ```shell
 sudo rm -r /usr/share/ollama

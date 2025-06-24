@@ -43,7 +43,7 @@ type ImageData []byte
 // have to specify the Model and Prompt fields, all the other fields have
 // reasonable defaults for basic uses.
 type GenerateRequest struct {
-	// Model is the model name; it should be a name familiar to Ollama from
+	// Model is the model name; it should be a name familiar to Moogla from
 	// the library at https://ollama.com/library
 	Model string `json:"model"`
 

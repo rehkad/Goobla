@@ -1,6 +1,6 @@
 #!/bin/sh
-# This script installs Ollama on Linux.
-# It detects the current operating system architecture and installs the appropriate version of Ollama.
+# This script installs Moogla on Linux.
+# It detects the current operating system architecture and installs the appropriate version of Moogla.
 
 set -eu
 
@@ -106,7 +106,7 @@ if [ -f /etc/nv_tegra_release ] ; then
 fi
 
 install_success() {
-    status 'The Ollama API is now available at 127.0.0.1:11434.'
+    status 'The Moogla API is now available at 127.0.0.1:11434.'
     status 'Install complete. Run "ollama" from the command line.'
 }
 trap install_success EXIT
@@ -133,7 +133,7 @@ configure_systemd() {
     status "Creating ollama systemd service..."
     cat <<EOF | $SUDO tee /etc/systemd/system/ollama.service >/dev/null
 [Unit]
-Description=Ollama Service
+Description=Moogla Service
 After=network-online.target
 
 [Service]
@@ -217,7 +217,7 @@ fi
 
 if ! check_gpu lspci nvidia && ! check_gpu lshw nvidia && ! check_gpu lspci amdgpu && ! check_gpu lshw amdgpu; then
     install_success
-    warning "No NVIDIA/AMD GPU detected. Ollama will run in CPU-only mode."
+    warning "No NVIDIA/AMD GPU detected. Moogla will run in CPU-only mode."
     exit 0
 fi
 

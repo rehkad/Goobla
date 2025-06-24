@@ -13,7 +13,7 @@ import (
 // note: distribution builds, additional GPU-specific libraries are
 // found in subdirectories of the returned path, such as
 // 'cuda_v12', 'rocm', etc.
-var LibOllamaPath string = func() string {
+var LibMooglaPath string = func() string {
 	exe, err := os.Executable()
 	if err != nil {
 		return ""

@@ -8,6 +8,6 @@ import (
 	"github.com/ollama/ollama/app/tray/commontray"
 )
 
-func InitPlatformTray(icon, updateIcon []byte) (commontray.OllamaTray, error) {
+func InitPlatformTray(icon, updateIcon []byte) (commontray.MooglaTray, error) {
 	return nil, errors.New("not implemented")
 }

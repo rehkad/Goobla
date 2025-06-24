@@ -416,7 +416,7 @@ func (c *Client) CreateBlob(ctx context.Context, digest string, r io.Reader) err
 	return c.do(ctx, http.MethodPost, fmt.Sprintf("/api/blobs/%s", digest), r, nil)
 }
 
-// Version returns the Ollama server version as a string.
+// Version returns the Moogla server version as a string.
 func (c *Client) Version(ctx context.Context) (string, error) {
 	var version struct {
 		Version string `json:"version"`

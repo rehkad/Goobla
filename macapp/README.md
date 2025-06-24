@@ -1,6 +1,6 @@
 # Desktop
 
-This app builds upon Ollama to provide a desktop experience for running models.
+This app builds upon Moogla to provide a desktop experience for running models.
 
 ## Developing
 

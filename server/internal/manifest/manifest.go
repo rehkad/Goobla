@@ -1,4 +1,4 @@
-// Package manifest provides documentation for the Ollama manifest format.
+// Package manifest provides documentation for the Moogla manifest format.
 // This package contains no code.
 //
 // # Manifests
@@ -113,6 +113,6 @@
 // # Reserved media types
 //
 // The media type prefix "application/vnd.ollama.image." is reserved for
-// defining new media types for layers known to Ollama. Currently, all other
-// prefixes are ignored by official Ollama registry clients.
+// defining new media types for layers known to Moogla. Currently, all other
+// prefixes are ignored by official Moogla registry clients.
 package manifest

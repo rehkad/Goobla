@@ -5,6 +5,6 @@ import (
 	"github.com/ollama/ollama/app/tray/wintray"
 )
 
-func InitPlatformTray(icon, updateIcon []byte) (commontray.OllamaTray, error) {
+func InitPlatformTray(icon, updateIcon []byte) (commontray.MooglaTray, error) {
 	return wintray.InitTray(icon, updateIcon)
 }
