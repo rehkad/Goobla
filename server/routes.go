@@ -1650,29 +1650,32 @@ func handleScheduleError(c *gin.Context, name string, err error) {
 }
 
 func filterThinkTags(msgs []api.Message, m *Model) []api.Message {
-	if m.Config.ModelFamily == "qwen3" || model.ParseName(m.Name).Model == "deepseek-r1" {
-		finalUserIndex := -1
-		for i, msg := range msgs {
-			if msg.Role == "user" {
-				finalUserIndex = i
-			}
-		}
+	openingTag, closingTag := thinking.InferTags(m.Template.Template)
+	if openingTag == "" || closingTag == "" {
+		return msgs
+	}
 
-		for i, msg := range msgs {
-			if msg.Role == "assistant" && i < finalUserIndex {
-				// TODO(drifkin): this is from before we added proper thinking support.
-				// However, even if thinking is not enabled (and therefore we shouldn't
-				// change the user output), we should probably perform this filtering
-				// for all thinking models (not just qwen3 & deepseek-r1) since it tends
-				// to save tokens and improve quality.
-				thinkingState := &thinking.Parser{
-					OpeningTag: "<think>",
-					ClosingTag: "</think>",
-				}
-				_, content := thinkingState.AddContent(msg.Content)
-				msgs[i].Content = content
-			}
+	finalUserIndex := -1
+	for i, msg := range msgs {
+		if msg.Role == "user" {
+			finalUserIndex = i
 		}
 	}
+
+	for i, msg := range msgs {
+		if msg.Role == "assistant" && i < finalUserIndex {
+			// TODO(drifkin): this is from before we added proper thinking support.
+			// However, even if thinking is not enabled (and therefore we shouldn't
+			// change the user output), we should probably perform this filtering
+			// for all thinking models since it tends to save tokens and improve quality.
+			thinkingState := &thinking.Parser{
+				OpeningTag: openingTag,
+				ClosingTag: closingTag,
+			}
+			_, content := thinkingState.AddContent(msg.Content)
+			msgs[i].Content = content
+		}
+	}
+
 	return msgs
 }

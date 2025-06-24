@@ -27,6 +27,7 @@ import (
 	"github.com/moogla/moogla/fs/ggml"
 	"github.com/moogla/moogla/openai"
 	"github.com/moogla/moogla/server/internal/client/moogla"
+	"github.com/moogla/moogla/template"
 	"github.com/moogla/moogla/types/model"
 	"github.com/moogla/moogla/version"
 )
@@ -761,6 +762,17 @@ func TestNormalize(t *testing.T) {
 }
 
 func TestFilterThinkTags(t *testing.T) {
+	thinkTmpl, err := template.Parse(`
+               {{ if .Thinking }}/think{{ end }}
+               {{- range $i, $_ := .Messages }}
+                       {{- $last := eq (len (slice $.Messages $i)) 1 -}}
+                       {{ if and $last .Thinking }}<think>{{ .Thinking }}</think>{{ end }}
+               {{ end }}
+       `)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	type testCase struct {
 		msgs  []api.Message
 		want  []api.Message
@@ -779,12 +791,10 @@ func TestFilterThinkTags(t *testing.T) {
 				{Role: "user", Content: "What is the answer?"},
 			},
 			model: &Model{
-				Config: ConfigV2{
-					ModelFamily: "qwen3",
-				},
+				Template: thinkTmpl,
 			},
 		},
-		// with newlines inside the think tag aned newlines after
+		// with newlines inside the think tag and newlines after
 		{
 			msgs: []api.Message{
 				{Role: "user", Content: "Hello, world!"},
@@ -797,9 +807,7 @@ func TestFilterThinkTags(t *testing.T) {
 				{Role: "user", Content: "What is the answer?"},
 			},
 			model: &Model{
-				Config: ConfigV2{
-					ModelFamily: "qwen3",
-				},
+				Template: thinkTmpl,
 			},
 		},
 		// should leave thinking tags if it's after the last user message
@@ -819,13 +827,11 @@ func TestFilterThinkTags(t *testing.T) {
 				{Role: "assistant", Content: "<think>thinking yet again</think>hjk"},
 			},
 			model: &Model{
-				Config: ConfigV2{
-					ModelFamily: "qwen3",
-				},
+				Template: thinkTmpl,
 			},
 		},
 		{
-			// shouldn't strip anything because the model family isn't one of the hardcoded ones
+			// shouldn't strip anything because the template lacks thinking tags
 			msgs: []api.Message{
 				{Role: "user", Content: "Hello, world!"},
 				{Role: "assistant", Content: "<think>Thinking... about the answer</think>abc"},
@@ -837,9 +843,7 @@ func TestFilterThinkTags(t *testing.T) {
 				{Role: "user", Content: "What is the answer?"},
 			},
 			model: &Model{
-				Config: ConfigV2{
-					ModelFamily: "llama3",
-				},
+				Template: template.DefaultTemplate,
 			},
 		},
 		{
@@ -857,7 +861,7 @@ func TestFilterThinkTags(t *testing.T) {
 			model: &Model{
 				Name:      "registry.ollama.ai/library/deepseek-r1:latest",
 				ShortName: "deepseek-r1:7b",
-				Config:    ConfigV2{},
+				Template:  thinkTmpl,
 			},
 		},
 	}
