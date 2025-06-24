@@ -115,6 +115,64 @@ func (p *Parser) findTag() (int, bool) {
 // parseToolCall finds the next complete tool call in the buffer
 // incrementing n and advancing the buffer.
 func (p *Parser) parseToolCall() *api.ToolCall {
+	// when the tag is "{" attempt to parse a json object from the
+	// beginning of the buffer and validate it as a tool call
+	if p.tag == "{" {
+		obj, end := findJSONObject(p.buffer)
+		if obj == nil {
+			return nil
+		}
+
+		var data struct {
+			Name      string         `json:"name"`
+			Arguments map[string]any `json:"arguments"`
+		}
+		if err := json.Unmarshal(obj, &data); err != nil {
+			return nil
+		}
+
+		if data.Name == "" {
+			return nil
+		}
+
+		var tool *api.Tool
+		for i := range p.tools {
+			if p.tools[i].Function.Name == data.Name {
+				tool = &p.tools[i]
+				break
+			}
+		}
+		if tool == nil {
+			return nil
+		}
+
+		args := data.Arguments
+		if len(tool.Function.Parameters.Properties) > 0 {
+			if args == nil {
+				return nil
+			}
+			for key := range args {
+				if _, ok := tool.Function.Parameters.Properties[key]; !ok {
+					return nil
+				}
+			}
+		} else {
+			args = map[string]any{}
+		}
+
+		tc := &api.ToolCall{
+			Function: api.ToolCallFunction{
+				Name:      tool.Function.Name,
+				Arguments: args,
+				Index:     p.n,
+			},
+		}
+
+		p.n++
+		p.buffer = p.buffer[end:]
+		return tc
+	}
+
 	var tool *api.Tool
 	var end int = len(p.buffer)
 	var i int
@@ -245,6 +303,30 @@ func (p *Parser) findArguments(tool api.Tool) (map[string]any, int) {
 		return result, end
 	}
 
+	return nil, 0
+}
+
+// findJSONObject returns the first complete JSON object found in the buffer and
+// the index where that object ends. If a complete object is not found nil is
+// returned.
+func findJSONObject(buf []byte) ([]byte, int) {
+	var braces int
+	start := -1
+	for i, c := range buf {
+		if c == '{' {
+			if braces == 0 {
+				start = i
+			}
+			braces++
+		} else if c == '}' {
+			if braces > 0 {
+				braces--
+				if braces == 0 {
+					return buf[start : i+1], i + 1
+				}
+			}
+		}
+	}
 	return nil, 0
 }
 
