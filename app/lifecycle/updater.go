@@ -148,10 +148,9 @@ func DownloadNewRelease(ctx context.Context, updateResp UpdateResponse) error {
 	}
 	defer resp.Body.Close()
 	etag = strings.Trim(resp.Header.Get("etag"), "\"")
-	if etag == "" {
-		slog.Debug("no etag detected, falling back to filename based dedup") // TODO probably can get rid of this redundant log
-		etag = "_"
-	}
+       if etag == "" {
+               etag = "_"
+       }
 
 	stageFilename = filepath.Join(UpdateStageDir, etag, filename)
 
