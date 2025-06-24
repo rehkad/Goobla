@@ -449,7 +449,69 @@ func TestExpireRunner(t *testing.T) {
 	s.loadedMu.Unlock()
 }
 
-// TODO - add one scenario that triggers the bogus finished event with positive ref count
+func TestBogusFinishedEvent(t *testing.T) {
+	ctx, done := context.WithTimeout(t.Context(), 500*time.Millisecond)
+	defer done()
+
+	scenario1 := newScenarioRequest(t, ctx, "goobla-model-bogus", 10, nil)
+	scenario2 := newScenarioRequest(t, ctx, "goobla-model-bogus", 10, nil)
+	scenario2.req.model = scenario1.req.model
+	scenario2.f = scenario1.f
+
+	s := InitScheduler(ctx)
+	s.getGpuFn = getGpuFn
+	s.getCpuFn = getCpuFn
+	s.newServerFn = scenario1.newServer
+
+	successCh1, errCh1 := s.GetRunner(scenario1.ctx, scenario1.req.model, scenario1.req.opts, scenario1.req.sessionDuration)
+	successCh2, errCh2 := s.GetRunner(scenario2.ctx, scenario2.req.model, scenario2.req.opts, scenario2.req.sessionDuration)
+	require.Len(t, s.pendingReqCh, 2)
+
+	s.Run(ctx)
+
+	var resp1, resp2 *runnerRef
+	for resp1 == nil || resp2 == nil {
+		select {
+		case r := <-successCh1:
+			resp1 = r
+		case r := <-successCh2:
+			resp2 = r
+		case err := <-errCh1:
+			t.Fatal(err.Error())
+		case err := <-errCh2:
+			t.Fatal(err.Error())
+		case <-ctx.Done():
+			t.Fatal("timeout")
+		}
+	}
+
+	require.Equal(t, resp1, resp2)
+	s.loadedMu.Lock()
+	runner := s.loaded[scenario1.req.model.ModelPath]
+	require.Equal(t, uint(2), runner.refCount)
+	require.Len(t, s.loaded, 1)
+	s.loadedMu.Unlock()
+
+	s.finishedReqCh <- scenario1.req
+	time.Sleep(5 * time.Millisecond)
+
+	s.loadedMu.Lock()
+	runner = s.loaded[scenario1.req.model.ModelPath]
+	require.Equal(t, uint(1), runner.refCount)
+	s.loadedMu.Unlock()
+
+	scenario1.ctxDone()
+	scenario2.ctxDone()
+
+	time.Sleep(25 * time.Millisecond)
+
+	s.loadedMu.Lock()
+	require.Empty(t, s.loaded)
+	s.loadedMu.Unlock()
+
+	require.Empty(t, s.finishedReqCh)
+}
+
 func TestPrematureExpired(t *testing.T) {
 	ctx, done := context.WithTimeout(t.Context(), 500*time.Millisecond)
 	defer done()
