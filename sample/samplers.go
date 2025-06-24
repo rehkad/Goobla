@@ -39,11 +39,11 @@ type Config struct {
 // UnmarshalJSON implements json.Unmarshaler so a Sampler can be constructed
 // directly from its JSON configuration.
 func (s *Sampler) UnmarshalJSON(b []byte) error {
-	var cfg Config
-	if err := json.Unmarshal(b, &cfg); err != nil {
+	sampler, err := NewSampler(b, nil)
+	if err != nil {
 		return err
 	}
-	*s = NewSampler(cfg, nil)
+	*s = sampler
 	return nil
 }
 
@@ -148,11 +148,19 @@ func (s *Sampler) sample(tokens []token) (token, error) {
 	return tokens[idx], nil
 }
 
-// NewSampler returns a sampler configured with the provided options.  The
-// configuration is typically populated via JSON and passed through [Config].
-//
-// TODO(parthsareen): update sampler interface to use json unmarshal https://github.com/moogla/moogla/issues/9278
-func NewSampler(cfg Config, grammar *GrammarSampler) Sampler {
+// NewSampler unmarshals the provided JSON configuration and returns a sampler
+// configured with those options.
+func NewSampler(b []byte, grammar *GrammarSampler) (Sampler, error) {
+	var cfg Config
+	if err := json.Unmarshal(b, &cfg); err != nil {
+		return Sampler{}, err
+	}
+	return NewSamplerFromConfig(cfg, grammar), nil
+}
+
+// NewSamplerFromConfig returns a sampler configured with the provided options.
+// The configuration is typically populated via JSON and passed through [Config].
+func NewSamplerFromConfig(cfg Config, grammar *GrammarSampler) Sampler {
 	var rng *rand.Rand
 	if cfg.Seed != -1 {
 		// PCG requires two parameters: sequence and stream
