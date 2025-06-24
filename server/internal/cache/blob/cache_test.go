@@ -83,6 +83,11 @@ func TestGetFile(t *testing.T) {
 	if !strings.HasPrefix(got, abs) {
 		t.Fatalf("got is not local to %q", c.dir)
 	}
+	hex := fmt.Sprintf("%x", d.sum)
+	shard := hex[:2]
+	if !strings.Contains(got, filepath.Join("blobs", shard)) {
+		t.Fatalf("got %q, want shard subdir %s", got, shard)
+	}
 }
 
 func TestBasic(t *testing.T) {

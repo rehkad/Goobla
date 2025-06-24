@@ -75,11 +75,17 @@ func createTestFile(t *testing.T, name string) (string, string) {
 		t.Fatal(err)
 	}
 
-	if err := createLink(f.Name(), filepath.Join(modelDir, "blobs", fmt.Sprintf("sha256-%s", strings.TrimPrefix(digest, "sha256:")))); err != nil {
+	if err := createLink(f.Name(), blobPath(filepath.Join(modelDir, "blobs"), fmt.Sprintf("sha256-%s", strings.TrimPrefix(digest, "sha256:")))); err != nil {
 		t.Fatal(err)
 	}
 
 	return f.Name(), digest
+}
+
+func blobPath(dir, digest string) string {
+	digest = strings.ReplaceAll(digest, "sha256:", "sha256-")
+	hex := strings.TrimPrefix(digest, "sha256-")
+	return filepath.Join(dir, hex[:2], digest)
 }
 
 // equalStringSlices checks if two slices of strings are equal.
