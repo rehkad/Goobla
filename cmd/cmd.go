@@ -141,29 +141,69 @@ func CreateHandler(cmd *cobra.Command, args []string) error {
 	g.SetLimit(max(runtime.GOMAXPROCS(0)-1, 1))
 
 	files := syncmap.NewSyncMap[string, string]()
+
+	var fileBase string
+	for f := range req.Files {
+		fileBase = filepath.Dir(f)
+		break
+	}
+	for f := range req.Files {
+		for {
+			rel, err := filepath.Rel(fileBase, f)
+			if err == nil && rel != ".." && !strings.HasPrefix(rel, ".."+string(os.PathSeparator)) {
+				break
+			}
+			fileBase = filepath.Dir(fileBase)
+		}
+	}
+
 	for f, digest := range req.Files {
+		f := f
+		digest := digest
 		g.Go(func() error {
 			if _, err := createBlob(cmd, client, f, digest, p); err != nil {
 				return err
 			}
 
-			// TODO: this is incorrect since the file might be in a subdirectory
-			//       instead this should take the path relative to the model directory
-			//       but the current implementation does not allow this
-			files.Store(filepath.Base(f), digest)
+			rel, err := filepath.Rel(fileBase, f)
+			if err != nil || rel == ".." || strings.HasPrefix(rel, ".."+string(os.PathSeparator)) {
+				rel = filepath.Base(f)
+			}
+			files.Store(rel, digest)
 			return nil
 		})
 	}
 
 	adapters := syncmap.NewSyncMap[string, string]()
+
+	var adapterBase string
+	for f := range req.Adapters {
+		adapterBase = filepath.Dir(f)
+		break
+	}
+	for f := range req.Adapters {
+		for {
+			rel, err := filepath.Rel(adapterBase, f)
+			if err == nil && rel != ".." && !strings.HasPrefix(rel, ".."+string(os.PathSeparator)) {
+				break
+			}
+			adapterBase = filepath.Dir(adapterBase)
+		}
+	}
+
 	for f, digest := range req.Adapters {
+		f := f
+		digest := digest
 		g.Go(func() error {
 			if _, err := createBlob(cmd, client, f, digest, p); err != nil {
 				return err
 			}
 
-			// TODO: same here
-			adapters.Store(filepath.Base(f), digest)
+			rel, err := filepath.Rel(adapterBase, f)
+			if err != nil || rel == ".." || strings.HasPrefix(rel, ".."+string(os.PathSeparator)) {
+				rel = filepath.Base(f)
+			}
+			adapters.Store(rel, digest)
 			return nil
 		})
 	}
