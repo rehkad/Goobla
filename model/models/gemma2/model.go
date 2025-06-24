@@ -72,7 +72,9 @@ func New(c fs.Config) (model.Model, error) {
 
 	slidingWindowLen := int32(c.Uint("attention.sliding_window"))
 	m.Cache = kvcache.NewWrapperCache(kvcache.NewSWACache(slidingWindowLen, m.Shift), kvcache.NewCausalCache(m.Shift))
-	m.Cache.SetConfig(ml.CacheConfig{})
+	if err := m.Cache.SetConfig(ml.CacheConfig{}); err != nil {
+		return nil, err
+	}
 
 	return &m, nil
 }

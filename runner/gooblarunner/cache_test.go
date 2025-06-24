@@ -445,9 +445,10 @@ func (m *mockCache) Init(backend ml.Backend, dtype ml.DType, maxSequences, capac
 func (m *mockCache) Close()                                                                        {}
 func (m *mockCache) StartForward(ctx ml.Context, batch input.Batch, reserve bool) error            { return nil }
 func (m *mockCache) CopyPrefix(srcSeq, dstSeq int, len int32)                                      {}
-func (m *mockCache) SetConfig(ml.CacheConfig)                                                      {}
-func (m *mockCache) CanResume(seq int, pos int32) bool                                             { return true }
-
+func (m *mockCache) SetConfig(ml.CacheConfig) error {
+	return nil
+}
+func (m *mockCache) CanResume(seq int, pos int32) bool { return true }
 func TestShiftCacheSlot(t *testing.T) {
 	tests := []struct {
 		name          string

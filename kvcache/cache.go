@@ -39,7 +39,7 @@ type Cache interface {
 	// an empty ml.CacheConfig.
 	//
 	// Most models will not need to use this.
-	SetConfig(ml.CacheConfig)
+	SetConfig(ml.CacheConfig) error
 
 	// ** cache management **
 

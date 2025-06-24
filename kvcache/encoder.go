@@ -55,6 +55,12 @@ func NewEncoderCache() *EncoderCache {
 }
 
 func (c *EncoderCache) Init(backend ml.Backend, dtype ml.DType, maxSequences, capacity, maxBatch int) {
+	if err := c.SetBackend(backend, maxSequences); err != nil {
+		panic(err)
+	}
+}
+
+func (c *EncoderCache) SetBackend(backend ml.Backend, maxSequences int) error {
 	if c.config == nil {
 		var config ml.CacheConfig
 		if cc, ok := backend.(ml.BackendCacheConfig); ok {
@@ -64,22 +70,28 @@ func (c *EncoderCache) Init(backend ml.Backend, dtype ml.DType, maxSequences, ca
 	}
 
 	if maxSequences > 1 {
-		panic(fmt.Errorf("encoder cache does not support multiple sequences; requested: %v", maxSequences))
+		return fmt.Errorf("encoder cache does not support multiple sequences; requested: %v", maxSequences)
 	}
 
 	if c.config.CachePadding != 0 && c.config.CachePadding != 1 {
-		panic(fmt.Errorf("encoder cache is unable to enforce requested CachePadding (%v)", c.config.CachePadding))
+		return fmt.Errorf("encoder cache is unable to enforce requested CachePadding (%v)", c.config.CachePadding)
 	}
 
 	c.backend = backend
+	return nil
 }
 
-func (c *EncoderCache) SetConfig(config ml.CacheConfig) {
+func (c *EncoderCache) SetConfig(config ml.CacheConfig) error {
 	if c.config != nil {
-		panic("config cannot be changed after being previously set, either by the model or backend")
+		return fmt.Errorf("config cannot be changed after being previously set, either by the model or backend")
+	}
+
+	if config.CachePadding != 0 && config.CachePadding != 1 {
+		return fmt.Errorf("encoder cache is unable to enforce requested CachePadding (%v)", config.CachePadding)
 	}
 
 	c.config = &config
+	return nil
 }
 
 func (c *EncoderCache) Close() {
