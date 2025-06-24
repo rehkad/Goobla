@@ -1,15 +1,15 @@
 # `runner`
 
-> Note: this is a work in progress
+A minimal HTTP server for loading a model and running inference.
 
-A minimial runner for loading a model and running inference via a http web server.
-
+Run the server with:
 ```shell
 ./runner -model <model binary>
 ```
 
 ### Completion
 
+Send a completion request. Responses are streamed as JSON objects.
 ```shell
 curl -X POST -H "Content-Type: application/json" -d '{"prompt": "hi"}' http://localhost:8080/completion
 ```
@@ -18,4 +18,10 @@ curl -X POST -H "Content-Type: application/json" -d '{"prompt": "hi"}' http://lo
 
 ```shell
 curl -X POST -H "Content-Type: application/json" -d '{"prompt": "turn me into an embedding"}' http://localhost:8080/embedding
+```
+
+### Health
+
+```shell
+curl http://localhost:8080/health
 ```
