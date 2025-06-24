@@ -87,7 +87,6 @@ func Open(dir string) (*DiskCache, error) {
 		}
 	}
 
-	// TODO(bmizerany): support shards
 	c := &DiskCache{
 		dir: dir,
 		now: time.Now,
@@ -243,6 +242,9 @@ func (c *DiskCache) Import(r io.Reader, size int64) (Digest, error) {
 		return Digest{}, err
 	}
 	name := c.GetFile(d)
+	if err := os.MkdirAll(filepath.Dir(name), 0o777); err != nil {
+		return Digest{}, err
+	}
 	// Rename the temporary file to the final file.
 	if err := os.Rename(f.Name(), name); err != nil {
 		return Digest{}, err
@@ -323,8 +325,17 @@ func (c *DiskCache) Unlink(name string) (ok bool, _ error) {
 // The returned path should not be stored, used outside the lifetime of the
 // cache, or interpreted in any way.
 func (c *DiskCache) GetFile(d Digest) string {
-	filename := fmt.Sprintf("sha256-%x", d.sum)
-	return absJoin(c.dir, "blobs", filename)
+	hex := fmt.Sprintf("%x", d.sum)
+	filename := fmt.Sprintf("sha256-%s", hex)
+	sharded := absJoin(c.dir, "blobs", hex[:2], filename)
+	if _, err := os.Stat(sharded); err == nil {
+		return sharded
+	}
+	plain := absJoin(c.dir, "blobs", filename)
+	if _, err := os.Stat(plain); err == nil {
+		return plain
+	}
+	return sharded
 }
 
 // Links returns a sequence of link names. The sequence is in lexical order.
@@ -455,6 +466,9 @@ func (w *checkWriter) Write(p []byte) (int, error) {
 // copyNamedFile copies file into name, expecting it to have the given Digest
 // and size, if that file is not present already.
 func (c *DiskCache) copyNamedFile(name string, file io.Reader, out Digest, size int64) error {
+	if err := os.MkdirAll(filepath.Dir(name), 0o777); err != nil {
+		return err
+	}
 	info, err := os.Stat(name)
 	if err == nil && info.Size() == size {
 		// File already exists with correct size. This is good enough.

@@ -132,14 +132,23 @@ func GetBlobsPath(digest string) (string, error) {
 	}
 
 	digest = strings.ReplaceAll(digest, ":", "-")
-	path := filepath.Join(envconfig.Models(), "blobs", digest)
-	dirPath := filepath.Dir(path)
 	if digest == "" {
-		dirPath = path
+		path := filepath.Join(envconfig.Models(), "blobs")
+		if err := os.MkdirAll(path, 0o755); err != nil {
+			return "", fmt.Errorf("%w: ensure path elements are traversable", err)
+		}
+		return path, nil
 	}
 
-	if err := os.MkdirAll(dirPath, 0o755); err != nil {
+	hex := strings.TrimPrefix(digest, "sha256-")
+	path := filepath.Join(envconfig.Models(), "blobs", hex[:2], digest)
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		return "", fmt.Errorf("%w: ensure path elements are traversable", err)
+	}
+
+	old := filepath.Join(envconfig.Models(), "blobs", digest)
+	if _, err := os.Stat(old); err == nil {
+		return old, nil
 	}
 
 	return path, nil

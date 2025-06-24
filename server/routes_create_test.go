@@ -49,7 +49,7 @@ func createBinFile(t *testing.T, kv map[string]any, ti []*ggml.Tensor) (string, 
 		t.Fatal(err)
 	}
 
-	if err := createLink(f.Name(), filepath.Join(modelDir, "blobs", fmt.Sprintf("sha256-%s", strings.TrimPrefix(digest, "sha256:")))); err != nil {
+	if err := createLink(f.Name(), blobPath(filepath.Join(modelDir, "blobs"), fmt.Sprintf("sha256-%s", strings.TrimPrefix(digest, "sha256:")))); err != nil {
 		t.Fatal(err)
 	}
 
@@ -92,6 +92,12 @@ func createRequest(t *testing.T, fn func(*gin.Context), body any) *httptest.Resp
 	return w.ResponseRecorder
 }
 
+func blobPath(dir, digest string) string {
+	digest = strings.ReplaceAll(digest, "sha256:", "sha256-")
+	hex := strings.TrimPrefix(digest, "sha256-")
+	return filepath.Join(dir, hex[:2], digest)
+}
+
 func checkFileExists(t *testing.T, p string, expect []string) {
 	t.Helper()
 
@@ -130,9 +136,9 @@ func TestCreateFromBin(t *testing.T) {
 		filepath.Join(p, "manifests", "registry.ollama.ai", "library", "test", "latest"),
 	})
 
-	checkFileExists(t, filepath.Join(p, "blobs", "*"), []string{
-		filepath.Join(p, "blobs", "sha256-a4e5e156ddec27e286f75328784d7106b60a4eb1d246e950a001a3f944fbda99"),
-		filepath.Join(p, "blobs", "sha256-ca239d7bd8ea90e4a5d2e6bf88f8d74a47b14336e73eb4e18bed4dd325018116"),
+	checkFileExists(t, filepath.Join(p, "blobs", "*", "*"), []string{
+		blobPath(filepath.Join(p, "blobs"), "sha256-a4e5e156ddec27e286f75328784d7106b60a4eb1d246e950a001a3f944fbda99"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-ca239d7bd8ea90e4a5d2e6bf88f8d74a47b14336e73eb4e18bed4dd325018116"),
 	})
 }
 
@@ -174,9 +180,9 @@ func TestCreateFromModel(t *testing.T) {
 		filepath.Join(p, "manifests", "registry.ollama.ai", "library", "test2", "latest"),
 	})
 
-	checkFileExists(t, filepath.Join(p, "blobs", "*"), []string{
-		filepath.Join(p, "blobs", "sha256-a4e5e156ddec27e286f75328784d7106b60a4eb1d246e950a001a3f944fbda99"),
-		filepath.Join(p, "blobs", "sha256-ca239d7bd8ea90e4a5d2e6bf88f8d74a47b14336e73eb4e18bed4dd325018116"),
+	checkFileExists(t, filepath.Join(p, "blobs", "*", "*"), []string{
+		blobPath(filepath.Join(p, "blobs"), "sha256-a4e5e156ddec27e286f75328784d7106b60a4eb1d246e950a001a3f944fbda99"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-ca239d7bd8ea90e4a5d2e6bf88f8d74a47b14336e73eb4e18bed4dd325018116"),
 	})
 }
 
@@ -203,10 +209,10 @@ func TestCreateRemovesLayers(t *testing.T) {
 		filepath.Join(p, "manifests", "registry.ollama.ai", "library", "test", "latest"),
 	})
 
-	checkFileExists(t, filepath.Join(p, "blobs", "*"), []string{
-		filepath.Join(p, "blobs", "sha256-a4e5e156ddec27e286f75328784d7106b60a4eb1d246e950a001a3f944fbda99"),
-		filepath.Join(p, "blobs", "sha256-b507b9c2f6ca642bffcd06665ea7c91f235fd32daeefdf875a0f938db05fb315"),
-		filepath.Join(p, "blobs", "sha256-bc80b03733773e0728011b2f4adf34c458b400e1aad48cb28d61170f3a2ad2d6"),
+	checkFileExists(t, filepath.Join(p, "blobs", "*", "*"), []string{
+		blobPath(filepath.Join(p, "blobs"), "sha256-a4e5e156ddec27e286f75328784d7106b60a4eb1d246e950a001a3f944fbda99"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-b507b9c2f6ca642bffcd06665ea7c91f235fd32daeefdf875a0f938db05fb315"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-bc80b03733773e0728011b2f4adf34c458b400e1aad48cb28d61170f3a2ad2d6"),
 	})
 
 	w = createRequest(t, s.CreateHandler, api.CreateRequest{
@@ -224,10 +230,10 @@ func TestCreateRemovesLayers(t *testing.T) {
 		filepath.Join(p, "manifests", "registry.ollama.ai", "library", "test", "latest"),
 	})
 
-	checkFileExists(t, filepath.Join(p, "blobs", "*"), []string{
-		filepath.Join(p, "blobs", "sha256-8f2c2167d789c6b2302dff965160fa5029f6a24096d262c1cbb469f21a045382"),
-		filepath.Join(p, "blobs", "sha256-a4e5e156ddec27e286f75328784d7106b60a4eb1d246e950a001a3f944fbda99"),
-		filepath.Join(p, "blobs", "sha256-fe7ac77b725cda2ccad03f88a880ecdfd7a33192d6cae08fce2c0ee1455991ed"),
+	checkFileExists(t, filepath.Join(p, "blobs", "*", "*"), []string{
+		blobPath(filepath.Join(p, "blobs"), "sha256-8f2c2167d789c6b2302dff965160fa5029f6a24096d262c1cbb469f21a045382"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-a4e5e156ddec27e286f75328784d7106b60a4eb1d246e950a001a3f944fbda99"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-fe7ac77b725cda2ccad03f88a880ecdfd7a33192d6cae08fce2c0ee1455991ed"),
 	})
 }
 
@@ -254,10 +260,10 @@ func TestCreateUnsetsSystem(t *testing.T) {
 		filepath.Join(p, "manifests", "registry.ollama.ai", "library", "test", "latest"),
 	})
 
-	checkFileExists(t, filepath.Join(p, "blobs", "*"), []string{
-		filepath.Join(p, "blobs", "sha256-8585df945d1069bc78b79bd10bb73ba07fbc29b0f5479a31a601c0d12731416e"),
-		filepath.Join(p, "blobs", "sha256-a4e5e156ddec27e286f75328784d7106b60a4eb1d246e950a001a3f944fbda99"),
-		filepath.Join(p, "blobs", "sha256-f29e82a8284dbdf5910b1555580ff60b04238b8da9d5e51159ada67a4d0d5851"),
+	checkFileExists(t, filepath.Join(p, "blobs", "*", "*"), []string{
+		blobPath(filepath.Join(p, "blobs"), "sha256-8585df945d1069bc78b79bd10bb73ba07fbc29b0f5479a31a601c0d12731416e"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-a4e5e156ddec27e286f75328784d7106b60a4eb1d246e950a001a3f944fbda99"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-f29e82a8284dbdf5910b1555580ff60b04238b8da9d5e51159ada67a4d0d5851"),
 	})
 
 	w = createRequest(t, s.CreateHandler, api.CreateRequest{
@@ -275,9 +281,9 @@ func TestCreateUnsetsSystem(t *testing.T) {
 		filepath.Join(p, "manifests", "registry.ollama.ai", "library", "test", "latest"),
 	})
 
-	checkFileExists(t, filepath.Join(p, "blobs", "*"), []string{
-		filepath.Join(p, "blobs", "sha256-a4e5e156ddec27e286f75328784d7106b60a4eb1d246e950a001a3f944fbda99"),
-		filepath.Join(p, "blobs", "sha256-ca239d7bd8ea90e4a5d2e6bf88f8d74a47b14336e73eb4e18bed4dd325018116"),
+	checkFileExists(t, filepath.Join(p, "blobs", "*", "*"), []string{
+		blobPath(filepath.Join(p, "blobs"), "sha256-a4e5e156ddec27e286f75328784d7106b60a4eb1d246e950a001a3f944fbda99"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-ca239d7bd8ea90e4a5d2e6bf88f8d74a47b14336e73eb4e18bed4dd325018116"),
 	})
 }
 
@@ -308,10 +314,10 @@ func TestCreateMergeParameters(t *testing.T) {
 		filepath.Join(p, "manifests", "registry.ollama.ai", "library", "test", "latest"),
 	})
 
-	checkFileExists(t, filepath.Join(p, "blobs", "*"), []string{
-		filepath.Join(p, "blobs", "sha256-1d0ad71299d48c2fb7ae2b98e683643e771f8a5b72be34942af90d97a91c1e37"),
-		filepath.Join(p, "blobs", "sha256-4a384beaf47a9cbe452dfa5ab70eea691790f3b35a832d12933a1996685bf2b6"),
-		filepath.Join(p, "blobs", "sha256-a4e5e156ddec27e286f75328784d7106b60a4eb1d246e950a001a3f944fbda99"),
+	checkFileExists(t, filepath.Join(p, "blobs", "*", "*"), []string{
+		blobPath(filepath.Join(p, "blobs"), "sha256-1d0ad71299d48c2fb7ae2b98e683643e771f8a5b72be34942af90d97a91c1e37"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-4a384beaf47a9cbe452dfa5ab70eea691790f3b35a832d12933a1996685bf2b6"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-a4e5e156ddec27e286f75328784d7106b60a4eb1d246e950a001a3f944fbda99"),
 	})
 
 	// in order to merge parameters, the second model must be created FROM the first
@@ -350,15 +356,15 @@ func TestCreateMergeParameters(t *testing.T) {
 		t.Logf("Contents of %s:\n%s", entry.Name(), string(content))
 	}
 
-	checkFileExists(t, filepath.Join(p, "blobs", "*"), []string{
-		filepath.Join(p, "blobs", "sha256-1d0ad71299d48c2fb7ae2b98e683643e771f8a5b72be34942af90d97a91c1e37"),
-		filepath.Join(p, "blobs", "sha256-4a384beaf47a9cbe452dfa5ab70eea691790f3b35a832d12933a1996685bf2b6"),
-		filepath.Join(p, "blobs", "sha256-4cd9d4ba6b734d9b4cbd1e5caa60374c00722e993fce5e1e2d15a33698f71187"),
-		filepath.Join(p, "blobs", "sha256-a4e5e156ddec27e286f75328784d7106b60a4eb1d246e950a001a3f944fbda99"),
-		filepath.Join(p, "blobs", "sha256-e29a7b3c47287a2489c895d21fe413c20f859a85d20e749492f52a838e36e1ba"),
+	checkFileExists(t, filepath.Join(p, "blobs", "*", "*"), []string{
+		blobPath(filepath.Join(p, "blobs"), "sha256-1d0ad71299d48c2fb7ae2b98e683643e771f8a5b72be34942af90d97a91c1e37"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-4a384beaf47a9cbe452dfa5ab70eea691790f3b35a832d12933a1996685bf2b6"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-4cd9d4ba6b734d9b4cbd1e5caa60374c00722e993fce5e1e2d15a33698f71187"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-a4e5e156ddec27e286f75328784d7106b60a4eb1d246e950a001a3f944fbda99"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-e29a7b3c47287a2489c895d21fe413c20f859a85d20e749492f52a838e36e1ba"),
 	})
 
-	actual, err := os.ReadFile(filepath.Join(p, "blobs", "sha256-e29a7b3c47287a2489c895d21fe413c20f859a85d20e749492f52a838e36e1ba"))
+	actual, err := os.ReadFile(blobPath(filepath.Join(p, "blobs"), "sha256-e29a7b3c47287a2489c895d21fe413c20f859a85d20e749492f52a838e36e1ba"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -393,15 +399,15 @@ func TestCreateMergeParameters(t *testing.T) {
 		filepath.Join(p, "manifests", "registry.ollama.ai", "library", "test2", "latest"),
 	})
 
-	checkFileExists(t, filepath.Join(p, "blobs", "*"), []string{
-		filepath.Join(p, "blobs", "sha256-12f58bb75cb3042d69a7e013ab87fb3c3c7088f50ddc62f0c77bd332f0d44d35"),
-		filepath.Join(p, "blobs", "sha256-1d0ad71299d48c2fb7ae2b98e683643e771f8a5b72be34942af90d97a91c1e37"),
-		filepath.Join(p, "blobs", "sha256-257aa726584f24970a4f240765e75a7169bfbe7f4966c1f04513d6b6c860583a"),
-		filepath.Join(p, "blobs", "sha256-4a384beaf47a9cbe452dfa5ab70eea691790f3b35a832d12933a1996685bf2b6"),
-		filepath.Join(p, "blobs", "sha256-a4e5e156ddec27e286f75328784d7106b60a4eb1d246e950a001a3f944fbda99"),
+	checkFileExists(t, filepath.Join(p, "blobs", "*", "*"), []string{
+		blobPath(filepath.Join(p, "blobs"), "sha256-12f58bb75cb3042d69a7e013ab87fb3c3c7088f50ddc62f0c77bd332f0d44d35"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-1d0ad71299d48c2fb7ae2b98e683643e771f8a5b72be34942af90d97a91c1e37"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-257aa726584f24970a4f240765e75a7169bfbe7f4966c1f04513d6b6c860583a"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-4a384beaf47a9cbe452dfa5ab70eea691790f3b35a832d12933a1996685bf2b6"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-a4e5e156ddec27e286f75328784d7106b60a4eb1d246e950a001a3f944fbda99"),
 	})
 
-	actual, err = os.ReadFile(filepath.Join(p, "blobs", "sha256-12f58bb75cb3042d69a7e013ab87fb3c3c7088f50ddc62f0c77bd332f0d44d35"))
+	actual, err = os.ReadFile(blobPath(filepath.Join(p, "blobs"), "sha256-12f58bb75cb3042d69a7e013ab87fb3c3c7088f50ddc62f0c77bd332f0d44d35"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -452,10 +458,10 @@ func TestCreateReplacesMessages(t *testing.T) {
 		filepath.Join(p, "manifests", "registry.ollama.ai", "library", "test", "latest"),
 	})
 
-	checkFileExists(t, filepath.Join(p, "blobs", "*"), []string{
-		filepath.Join(p, "blobs", "sha256-298baeaf6928a60cf666d88d64a1ba606feb43a2865687c39e40652e407bffc4"),
-		filepath.Join(p, "blobs", "sha256-a4e5e156ddec27e286f75328784d7106b60a4eb1d246e950a001a3f944fbda99"),
-		filepath.Join(p, "blobs", "sha256-e0e27d47045063ccb167ae852c51d49a98eab33fabaee4633fdddf97213e40b5"),
+	checkFileExists(t, filepath.Join(p, "blobs", "*", "*"), []string{
+		blobPath(filepath.Join(p, "blobs"), "sha256-298baeaf6928a60cf666d88d64a1ba606feb43a2865687c39e40652e407bffc4"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-a4e5e156ddec27e286f75328784d7106b60a4eb1d246e950a001a3f944fbda99"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-e0e27d47045063ccb167ae852c51d49a98eab33fabaee4633fdddf97213e40b5"),
 	})
 
 	w = createRequest(t, s.CreateHandler, api.CreateRequest{
@@ -488,12 +494,12 @@ func TestCreateReplacesMessages(t *testing.T) {
 	})
 
 	// Old layers will not have been pruned
-	checkFileExists(t, filepath.Join(p, "blobs", "*"), []string{
-		filepath.Join(p, "blobs", "sha256-298baeaf6928a60cf666d88d64a1ba606feb43a2865687c39e40652e407bffc4"),
-		filepath.Join(p, "blobs", "sha256-a4e5e156ddec27e286f75328784d7106b60a4eb1d246e950a001a3f944fbda99"),
-		filepath.Join(p, "blobs", "sha256-a60ecc9da299ec7ede453f99236e5577fd125e143689b646d9f0ddc9971bf4db"),
-		filepath.Join(p, "blobs", "sha256-e0e27d47045063ccb167ae852c51d49a98eab33fabaee4633fdddf97213e40b5"),
-		filepath.Join(p, "blobs", "sha256-f4e2c3690efef1b4b63ba1e1b2744ffeb6a7438a0110b86596069f6d9999c80b"),
+	checkFileExists(t, filepath.Join(p, "blobs", "*", "*"), []string{
+		blobPath(filepath.Join(p, "blobs"), "sha256-298baeaf6928a60cf666d88d64a1ba606feb43a2865687c39e40652e407bffc4"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-a4e5e156ddec27e286f75328784d7106b60a4eb1d246e950a001a3f944fbda99"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-a60ecc9da299ec7ede453f99236e5577fd125e143689b646d9f0ddc9971bf4db"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-e0e27d47045063ccb167ae852c51d49a98eab33fabaee4633fdddf97213e40b5"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-f4e2c3690efef1b4b63ba1e1b2744ffeb6a7438a0110b86596069f6d9999c80b"),
 	})
 
 	type message struct {
@@ -501,7 +507,7 @@ func TestCreateReplacesMessages(t *testing.T) {
 		Content string `json:"content"`
 	}
 
-	f, err := os.Open(filepath.Join(p, "blobs", "sha256-a60ecc9da299ec7ede453f99236e5577fd125e143689b646d9f0ddc9971bf4db"))
+	f, err := os.Open(blobPath(filepath.Join(p, "blobs"), "sha256-a60ecc9da299ec7ede453f99236e5577fd125e143689b646d9f0ddc9971bf4db"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -547,14 +553,14 @@ func TestCreateTemplateSystem(t *testing.T) {
 		filepath.Join(p, "manifests", "registry.ollama.ai", "library", "test", "latest"),
 	})
 
-	checkFileExists(t, filepath.Join(p, "blobs", "*"), []string{
-		filepath.Join(p, "blobs", "sha256-2b5e330885117c82f3fd75169ea323e141070a2947c11ddb9f79ee0b01c589c1"),
-		filepath.Join(p, "blobs", "sha256-4c5f51faac758fecaff8db42f0b7382891a4d0c0bb885f7b86be88c814a7cc86"),
-		filepath.Join(p, "blobs", "sha256-a4e5e156ddec27e286f75328784d7106b60a4eb1d246e950a001a3f944fbda99"),
-		filepath.Join(p, "blobs", "sha256-fe7ac77b725cda2ccad03f88a880ecdfd7a33192d6cae08fce2c0ee1455991ed"),
+	checkFileExists(t, filepath.Join(p, "blobs", "*", "*"), []string{
+		blobPath(filepath.Join(p, "blobs"), "sha256-2b5e330885117c82f3fd75169ea323e141070a2947c11ddb9f79ee0b01c589c1"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-4c5f51faac758fecaff8db42f0b7382891a4d0c0bb885f7b86be88c814a7cc86"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-a4e5e156ddec27e286f75328784d7106b60a4eb1d246e950a001a3f944fbda99"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-fe7ac77b725cda2ccad03f88a880ecdfd7a33192d6cae08fce2c0ee1455991ed"),
 	})
 
-	template, err := os.ReadFile(filepath.Join(p, "blobs", "sha256-fe7ac77b725cda2ccad03f88a880ecdfd7a33192d6cae08fce2c0ee1455991ed"))
+	template, err := os.ReadFile(blobPath(filepath.Join(p, "blobs"), "sha256-fe7ac77b725cda2ccad03f88a880ecdfd7a33192d6cae08fce2c0ee1455991ed"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -563,7 +569,7 @@ func TestCreateTemplateSystem(t *testing.T) {
 		t.Errorf("expected \"{{ .System }} {{ .Prompt }}\", actual %s", template)
 	}
 
-	system, err := os.ReadFile(filepath.Join(p, "blobs", "sha256-4c5f51faac758fecaff8db42f0b7382891a4d0c0bb885f7b86be88c814a7cc86"))
+	system, err := os.ReadFile(blobPath(filepath.Join(p, "blobs"), "sha256-4c5f51faac758fecaff8db42f0b7382891a4d0c0bb885f7b86be88c814a7cc86"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -638,14 +644,14 @@ func TestCreateLicenses(t *testing.T) {
 		filepath.Join(p, "manifests", "registry.ollama.ai", "library", "test", "latest"),
 	})
 
-	checkFileExists(t, filepath.Join(p, "blobs", "*"), []string{
-		filepath.Join(p, "blobs", "sha256-2af71558e438db0b73a20beab92dc278a94e1bbe974c00c1a33e3ab62d53a608"),
-		filepath.Join(p, "blobs", "sha256-79a39c37536ddee29cbadd5d5e2dcba8ed7f03e431f626ff38432c1c866bb7e2"),
-		filepath.Join(p, "blobs", "sha256-a4e5e156ddec27e286f75328784d7106b60a4eb1d246e950a001a3f944fbda99"),
-		filepath.Join(p, "blobs", "sha256-e5dcffe836b6ec8a58e492419b550e65fb8cbdc308503979e5dacb33ac7ea3b7"),
+	checkFileExists(t, filepath.Join(p, "blobs", "*", "*"), []string{
+		blobPath(filepath.Join(p, "blobs"), "sha256-2af71558e438db0b73a20beab92dc278a94e1bbe974c00c1a33e3ab62d53a608"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-79a39c37536ddee29cbadd5d5e2dcba8ed7f03e431f626ff38432c1c866bb7e2"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-a4e5e156ddec27e286f75328784d7106b60a4eb1d246e950a001a3f944fbda99"),
+		blobPath(filepath.Join(p, "blobs"), "sha256-e5dcffe836b6ec8a58e492419b550e65fb8cbdc308503979e5dacb33ac7ea3b7"),
 	})
 
-	mit, err := os.ReadFile(filepath.Join(p, "blobs", "sha256-e5dcffe836b6ec8a58e492419b550e65fb8cbdc308503979e5dacb33ac7ea3b7"))
+	mit, err := os.ReadFile(blobPath(filepath.Join(p, "blobs"), "sha256-e5dcffe836b6ec8a58e492419b550e65fb8cbdc308503979e5dacb33ac7ea3b7"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -654,7 +660,7 @@ func TestCreateLicenses(t *testing.T) {
 		t.Errorf("expected MIT, actual %s", mit)
 	}
 
-	apache, err := os.ReadFile(filepath.Join(p, "blobs", "sha256-2af71558e438db0b73a20beab92dc278a94e1bbe974c00c1a33e3ab62d53a608"))
+	apache, err := os.ReadFile(blobPath(filepath.Join(p, "blobs"), "sha256-2af71558e438db0b73a20beab92dc278a94e1bbe974c00c1a33e3ab62d53a608"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -685,11 +691,11 @@ func TestCreateDetectTemplate(t *testing.T) {
 			t.Fatalf("expected status code 200, actual %d", w.Code)
 		}
 
-		checkFileExists(t, filepath.Join(p, "blobs", "*"), []string{
-			filepath.Join(p, "blobs", "sha256-0d79f567714c62c048378f2107fb332dabee0135d080c302d884317da9433cc5"),
-			filepath.Join(p, "blobs", "sha256-35360843d0c84fb1506952a131bbef13cd2bb4a541251f22535170c05b56e672"),
-			filepath.Join(p, "blobs", "sha256-553c4a3f747b3d22a4946875f1cc8ed011c2930d83f864a0c7265f9ec0a20413"),
-			filepath.Join(p, "blobs", "sha256-de3959f841e9ef6b4b6255fa41cb9e0a45da89c3066aa72bdd07a4747f848990"),
+		checkFileExists(t, filepath.Join(p, "blobs", "*", "*"), []string{
+			blobPath(filepath.Join(p, "blobs"), "sha256-0d79f567714c62c048378f2107fb332dabee0135d080c302d884317da9433cc5"),
+			blobPath(filepath.Join(p, "blobs"), "sha256-35360843d0c84fb1506952a131bbef13cd2bb4a541251f22535170c05b56e672"),
+			blobPath(filepath.Join(p, "blobs"), "sha256-553c4a3f747b3d22a4946875f1cc8ed011c2930d83f864a0c7265f9ec0a20413"),
+			blobPath(filepath.Join(p, "blobs"), "sha256-de3959f841e9ef6b4b6255fa41cb9e0a45da89c3066aa72bdd07a4747f848990"),
 		})
 	})
 
@@ -705,9 +711,9 @@ func TestCreateDetectTemplate(t *testing.T) {
 			t.Fatalf("expected status code 200, actual %d", w.Code)
 		}
 
-		checkFileExists(t, filepath.Join(p, "blobs", "*"), []string{
-			filepath.Join(p, "blobs", "sha256-a4e5e156ddec27e286f75328784d7106b60a4eb1d246e950a001a3f944fbda99"),
-			filepath.Join(p, "blobs", "sha256-ca239d7bd8ea90e4a5d2e6bf88f8d74a47b14336e73eb4e18bed4dd325018116"),
+		checkFileExists(t, filepath.Join(p, "blobs", "*", "*"), []string{
+			blobPath(filepath.Join(p, "blobs"), "sha256-a4e5e156ddec27e286f75328784d7106b60a4eb1d246e950a001a3f944fbda99"),
+			blobPath(filepath.Join(p, "blobs"), "sha256-ca239d7bd8ea90e4a5d2e6bf88f8d74a47b14336e73eb4e18bed4dd325018116"),
 		})
 	})
 }
@@ -758,7 +764,7 @@ func TestDetectModelTypeFromFiles(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		f, err := os.Create(filepath.Join(p, "blobs", fmt.Sprintf("sha256-%s", strings.TrimPrefix(digest, "sha256:"))))
+		f, err := os.Create(blobPath(filepath.Join(p, "blobs"), fmt.Sprintf("sha256-%s", strings.TrimPrefix(digest, "sha256:"))))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -788,7 +794,7 @@ func TestDetectModelTypeFromFiles(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		f, err := os.Create(filepath.Join(p, "blobs", fmt.Sprintf("sha256-%s", strings.TrimPrefix(digest, "sha256:"))))
+		f, err := os.Create(blobPath(filepath.Join(p, "blobs"), fmt.Sprintf("sha256-%s", strings.TrimPrefix(digest, "sha256:"))))
 		if err != nil {
 			t.Fatal(err)
 		}
