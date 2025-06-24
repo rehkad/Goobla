@@ -69,6 +69,21 @@ func TestWeighted(t *testing.T) {
 	}
 }
 
+func TestNewSamplerJSON(t *testing.T) {
+	logits := []float32{-10, 3, -10, -10}
+	sampler, err := NewSampler([]byte(`{"temperature":0}`), nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, err := sampler.Sample(logits)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got != 1 {
+		t.Errorf("index mismatch: want %d, got %d", 1, got)
+	}
+}
+
 func modelHelper(t testing.TB) model.BytePairEncoding {
 	t.Helper()
 

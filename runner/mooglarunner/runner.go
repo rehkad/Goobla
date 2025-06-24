@@ -619,7 +619,7 @@ func (s *Server) completion(w http.ResponseWriter, r *http.Request) {
 		defer grammar.Free()
 	}
 
-	sampler := sample.NewSampler(sample.Config{
+	sampler := sample.NewSamplerFromConfig(sample.Config{
 		Temperature: req.Options.Temperature,
 		TopK:        req.Options.TopK,
 		TopP:        req.Options.TopP,
