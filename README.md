@@ -21,6 +21,8 @@ Get up and running with large language models.
 ```shell
 curl -fsSL https://goobla.com/install.sh | sh
 ```
+> [!WARNING]
+> Inspect the script or verify its checksum before running. You can download the script from [install.sh](https://github.com/goobla/goobla/blob/main/scripts/install.sh) to review it first.
 
 [Manual install instructions](https://github.com/goobla/goobla/blob/main/docs/linux.md)
 

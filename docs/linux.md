@@ -7,6 +7,8 @@ To install Goobla, run the following command:
 ```shell
 curl -fsSL https://goobla.com/install.sh | sh
 ```
+> [!WARNING]
+> Review the install script or verify its checksum before running. You can download the script from [install.sh](https://github.com/goobla/goobla/blob/main/scripts/install.sh) to inspect it first.
 
 ## Manual install
 
@@ -137,6 +139,8 @@ Update Goobla by running the install script again:
 ```shell
 curl -fsSL https://goobla.com/install.sh | sh
 ```
+> [!WARNING]
+> Inspect the script or verify its checksum before running. You can fetch it from [install.sh](https://github.com/goobla/goobla/blob/main/scripts/install.sh) to review it.
 
 Or by re-downloading Goobla:
 
@@ -154,6 +158,8 @@ For example:
 ```shell
 curl -fsSL https://goobla.com/install.sh | GOOBLA_VERSION=0.5.7 sh
 ```
+> [!WARNING]
+> Review the script or verify its checksum before running. Download it from [install.sh](https://github.com/goobla/goobla/blob/main/scripts/install.sh) if you want to inspect it first.
 
 ## Viewing logs
 
