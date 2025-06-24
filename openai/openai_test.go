@@ -16,6 +16,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 
 	"github.com/goobla/goobla/api"
+	mid "github.com/goobla/goobla/openai/middleware"
+	typ "github.com/goobla/goobla/openai/types"
 )
 
 const (
@@ -45,7 +47,7 @@ func TestChatMiddleware(t *testing.T) {
 		name string
 		body string
 		req  api.ChatRequest
-		err  ErrorResponse
+		err  typ.ErrorResponse
 	}
 
 	var capturedRequest *api.ChatRequest
@@ -327,7 +329,7 @@ func TestChatMiddleware(t *testing.T) {
 					{"role": "user", "content": 2}
 				]
 			}`,
-			err: ErrorResponse{
+			err: typ.ErrorResponse{
 				Error: Error{
 					Message: "invalid message content type: float64",
 					Type:    "invalid_request_error",
@@ -342,7 +344,7 @@ func TestChatMiddleware(t *testing.T) {
 
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
-	router.Use(ChatMiddleware(), captureRequestMiddleware(&capturedRequest))
+	router.Use(mid.ChatMiddleware(), captureRequestMiddleware(&capturedRequest))
 	router.Handle(http.MethodPost, "/api/chat", endpoint)
 
 	for _, tc := range testCases {
@@ -355,7 +357,7 @@ func TestChatMiddleware(t *testing.T) {
 			resp := httptest.NewRecorder()
 			router.ServeHTTP(resp, req)
 
-			var errResp ErrorResponse
+			var errResp typ.ErrorResponse
 			if resp.Code != http.StatusOK {
 				if err := json.Unmarshal(resp.Body.Bytes(), &errResp); err != nil {
 					t.Fatal(err)
@@ -377,7 +379,7 @@ func TestCompletionsMiddleware(t *testing.T) {
 		name string
 		body string
 		req  api.GenerateRequest
-		err  ErrorResponse
+		err  typ.ErrorResponse
 	}
 
 	var capturedRequest *api.GenerateRequest
@@ -521,7 +523,7 @@ func TestCompletionsMiddleware(t *testing.T) {
 				"stop": [1, 2],
 				"suffix": "suffix"
 			}`,
-			err: ErrorResponse{
+			err: typ.ErrorResponse{
 				Error: Error{
 					Message: "invalid type for 'stop' field: float64",
 					Type:    "invalid_request_error",
@@ -536,7 +538,7 @@ func TestCompletionsMiddleware(t *testing.T) {
 
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
-	router.Use(CompletionsMiddleware(), captureRequestMiddleware(&capturedRequest))
+	router.Use(mid.CompletionsMiddleware(), captureRequestMiddleware(&capturedRequest))
 	router.Handle(http.MethodPost, "/api/generate", endpoint)
 
 	for _, tc := range testCases {
@@ -547,7 +549,7 @@ func TestCompletionsMiddleware(t *testing.T) {
 			resp := httptest.NewRecorder()
 			router.ServeHTTP(resp, req)
 
-			var errResp ErrorResponse
+			var errResp typ.ErrorResponse
 			if resp.Code != http.StatusOK {
 				if err := json.Unmarshal(resp.Body.Bytes(), &errResp); err != nil {
 					t.Fatal(err)
@@ -639,7 +641,7 @@ func TestEmbeddingsMiddleware(t *testing.T) {
 		name string
 		body string
 		req  api.EmbedRequest
-		err  ErrorResponse
+		err  typ.ErrorResponse
 	}
 
 	var capturedRequest *api.EmbedRequest
@@ -672,7 +674,7 @@ func TestEmbeddingsMiddleware(t *testing.T) {
 			body: `{
 				"model": "test-model"
 			}`,
-			err: ErrorResponse{
+			err: typ.ErrorResponse{
 				Error: Error{
 					Message: "invalid input",
 					Type:    "invalid_request_error",
@@ -687,7 +689,7 @@ func TestEmbeddingsMiddleware(t *testing.T) {
 
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
-	router.Use(EmbeddingsMiddleware(), captureRequestMiddleware(&capturedRequest))
+	router.Use(mid.EmbeddingsMiddleware(), captureRequestMiddleware(&capturedRequest))
 	router.Handle(http.MethodPost, "/api/embed", endpoint)
 
 	for _, tc := range testCases {
@@ -698,7 +700,7 @@ func TestEmbeddingsMiddleware(t *testing.T) {
 			resp := httptest.NewRecorder()
 			router.ServeHTTP(resp, req)
 
-			var errResp ErrorResponse
+			var errResp typ.ErrorResponse
 			if resp.Code != http.StatusOK {
 				if err := json.Unmarshal(resp.Body.Bytes(), &errResp); err != nil {
 					t.Fatal(err)
@@ -766,7 +768,7 @@ func TestListMiddleware(t *testing.T) {
 
 	for _, tc := range testCases {
 		router := gin.New()
-		router.Use(ListMiddleware())
+		router.Use(mid.ListMiddleware())
 		router.Handle(http.MethodGet, "/api/tags", tc.endpoint)
 		req, _ := http.NewRequest(http.MethodGet, "/api/tags", nil)
 
@@ -832,7 +834,7 @@ func TestRetrieveMiddleware(t *testing.T) {
 
 	for _, tc := range testCases {
 		router := gin.New()
-		router.Use(RetrieveMiddleware())
+		router.Use(mid.RetrieveMiddleware())
 		router.Handle(http.MethodGet, "/api/show/:model", tc.endpoint)
 		req, _ := http.NewRequest(http.MethodGet, "/api/show/test-model", nil)
 
