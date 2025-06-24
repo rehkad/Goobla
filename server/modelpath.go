@@ -103,7 +103,11 @@ func (mp ModelPath) GetManifestPath() (string, error) {
 	if !name.IsValid() {
 		return "", fs.ErrNotExist
 	}
-	return filepath.Join(envconfig.Models(), "manifests", name.Filepath()), nil
+	mdir, err := envconfig.Models()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(mdir, "manifests", name.Filepath()), nil
 }
 
 func (mp ModelPath) BaseURL() *url.URL {
@@ -114,7 +118,11 @@ func (mp ModelPath) BaseURL() *url.URL {
 }
 
 func GetManifestPath() (string, error) {
-	path := filepath.Join(envconfig.Models(), "manifests")
+	mdir, err := envconfig.Models()
+	if err != nil {
+		return "", err
+	}
+	path := filepath.Join(mdir, "manifests")
 	if err := os.MkdirAll(path, 0o755); err != nil {
 		return "", fmt.Errorf("%w: ensure path elements are traversable", err)
 	}
@@ -132,8 +140,12 @@ func GetBlobsPath(digest string) (string, error) {
 	}
 
 	digest = strings.ReplaceAll(digest, ":", "-")
+	mdir, err := envconfig.Models()
+	if err != nil {
+		return "", err
+	}
 	if digest == "" {
-		path := filepath.Join(envconfig.Models(), "blobs")
+		path := filepath.Join(mdir, "blobs")
 		if err := os.MkdirAll(path, 0o755); err != nil {
 			return "", fmt.Errorf("%w: ensure path elements are traversable", err)
 		}
@@ -141,12 +153,12 @@ func GetBlobsPath(digest string) (string, error) {
 	}
 
 	hex := strings.TrimPrefix(digest, "sha256-")
-	path := filepath.Join(envconfig.Models(), "blobs", hex[:2], digest)
+	path := filepath.Join(mdir, "blobs", hex[:2], digest)
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		return "", fmt.Errorf("%w: ensure path elements are traversable", err)
 	}
 
-	old := filepath.Join(envconfig.Models(), "blobs", digest)
+	old := filepath.Join(mdir, "blobs", digest)
 	if _, err := os.Stat(old); err == nil {
 		return old, nil
 	}

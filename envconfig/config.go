@@ -81,17 +81,18 @@ func AllowedOrigins() (origins []string) {
 
 // Models returns the path to the models directory. Models directory can be configured via the GOOBLA_MODELS environment variable.
 // Default is $HOME/.goobla/models
-func Models() string {
+func Models() (string, error) {
 	if s := Var("GOOBLA_MODELS"); s != "" {
-		return s
+		return s, nil
 	}
 
 	home, err := os.UserHomeDir()
 	if err != nil {
-		panic(err)
+		// use a relative directory if we cannot determine the home
+		return filepath.Join(".goobla", "models"), err
 	}
 
-	return filepath.Join(home, ".goobla", "models")
+	return filepath.Join(home, ".goobla", "models"), nil
 }
 
 // KeepAlive returns the duration that models stay loaded in memory. KeepAlive can be configured via the GOOBLA_KEEP_ALIVE environment variable.
@@ -261,15 +262,18 @@ func AsMap() map[string]EnvVar {
 		"GOOBLA_LOAD_TIMEOUT":      {"GOOBLA_LOAD_TIMEOUT", LoadTimeout(), "How long to allow model loads to stall before giving up (default \"5m\")"},
 		"GOOBLA_MAX_LOADED_MODELS": {"GOOBLA_MAX_LOADED_MODELS", MaxRunners(), "Maximum number of loaded models per GPU"},
 		"GOOBLA_MAX_QUEUE":         {"GOOBLA_MAX_QUEUE", MaxQueue(), "Maximum number of queued requests"},
-		"GOOBLA_MODELS":            {"GOOBLA_MODELS", Models(), "The path to the models directory"},
-		"GOOBLA_NOHISTORY":         {"GOOBLA_NOHISTORY", NoHistory(), "Do not preserve readline history"},
-		"GOOBLA_NOPRUNE":           {"GOOBLA_NOPRUNE", NoPrune(), "Do not prune model blobs on startup"},
-		"GOOBLA_NUM_PARALLEL":      {"GOOBLA_NUM_PARALLEL", NumParallel(), "Maximum number of parallel requests"},
-		"GOOBLA_ORIGINS":           {"GOOBLA_ORIGINS", AllowedOrigins(), "A comma separated list of allowed origins"},
-		"GOOBLA_SCHED_SPREAD":      {"GOOBLA_SCHED_SPREAD", SchedSpread(), "Always schedule model across all GPUs"},
-		"GOOBLA_MULTIUSER_CACHE":   {"GOOBLA_MULTIUSER_CACHE", MultiUserCache(), "Optimize prompt caching for multi-user scenarios"},
-		"GOOBLA_CONTEXT_LENGTH":    {"GOOBLA_CONTEXT_LENGTH", ContextLength(), "Context length to use unless otherwise specified (default: 4096)"},
-		"GOOBLA_NEW_ENGINE":        {"GOOBLA_NEW_ENGINE", NewEngine(), "Enable the new Goobla engine"},
+		func() EnvVar {
+			m, _ := Models()
+			return EnvVar{"GOOBLA_MODELS", m, "The path to the models directory"}
+		}(),
+		"GOOBLA_NOHISTORY":       {"GOOBLA_NOHISTORY", NoHistory(), "Do not preserve readline history"},
+		"GOOBLA_NOPRUNE":         {"GOOBLA_NOPRUNE", NoPrune(), "Do not prune model blobs on startup"},
+		"GOOBLA_NUM_PARALLEL":    {"GOOBLA_NUM_PARALLEL", NumParallel(), "Maximum number of parallel requests"},
+		"GOOBLA_ORIGINS":         {"GOOBLA_ORIGINS", AllowedOrigins(), "A comma separated list of allowed origins"},
+		"GOOBLA_SCHED_SPREAD":    {"GOOBLA_SCHED_SPREAD", SchedSpread(), "Always schedule model across all GPUs"},
+		"GOOBLA_MULTIUSER_CACHE": {"GOOBLA_MULTIUSER_CACHE", MultiUserCache(), "Optimize prompt caching for multi-user scenarios"},
+		"GOOBLA_CONTEXT_LENGTH":  {"GOOBLA_CONTEXT_LENGTH", ContextLength(), "Context length to use unless otherwise specified (default: 4096)"},
+		"GOOBLA_NEW_ENGINE":      {"GOOBLA_NEW_ENGINE", NewEngine(), "Enable the new Goobla engine"},
 
 		// Informational
 		"HTTP_PROXY":  {"HTTP_PROXY", String("HTTP_PROXY")(), "HTTP proxy"},
