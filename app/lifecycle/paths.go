@@ -12,7 +12,7 @@ import (
 
 var (
 	AppName    = "ollama app"
-	CLIName    = "ollama"
+	CLIName    = "moogla"
 	AppDir     = "/opt/Moogla"
 	AppDataDir = "/opt/Moogla"
 	// TODO - should there be a distinct log dir?
