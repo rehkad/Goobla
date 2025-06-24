@@ -637,7 +637,7 @@ func setMessages(layers []Layer, m []api.Message) ([]Layer, error) {
 		return layers, nil
 	}
 
-	fmt.Printf("removing old messages\n")
+	slog.Debug("removing old messages")
 	layers = removeLayer(layers, "application/vnd.ollama.image.messages")
 	var b bytes.Buffer
 	if err := json.NewEncoder(&b).Encode(m); err != nil {
