@@ -33,7 +33,7 @@ import (
 	"github.com/goobla/goobla/fs/ggml"
 	"github.com/goobla/goobla/llm"
 	"github.com/goobla/goobla/logutil"
-	"github.com/goobla/goobla/openai"
+	openaimid "github.com/goobla/goobla/openai/middleware"
 	"github.com/goobla/goobla/server/internal/client/goobla"
 	"github.com/goobla/goobla/server/internal/registry"
 	"github.com/goobla/goobla/template"
@@ -1211,11 +1211,11 @@ func (s *Server) GenerateRoutes(logger *slog.Logger, rc *goobla.Registry) (http.
 	r.POST("/api/embeddings", s.EmbeddingsHandler)
 
 	// Inference (OpenAI compatibility)
-	r.POST("/v1/chat/completions", openai.ChatMiddleware(), s.ChatHandler)
-	r.POST("/v1/completions", openai.CompletionsMiddleware(), s.GenerateHandler)
-	r.POST("/v1/embeddings", openai.EmbeddingsMiddleware(), s.EmbedHandler)
-	r.GET("/v1/models", openai.ListMiddleware(), s.ListHandler)
-	r.GET("/v1/models/:model", openai.RetrieveMiddleware(), s.ShowHandler)
+	r.POST("/v1/chat/completions", openaimid.ChatMiddleware(), s.ChatHandler)
+	r.POST("/v1/completions", openaimid.CompletionsMiddleware(), s.GenerateHandler)
+	r.POST("/v1/embeddings", openaimid.EmbeddingsMiddleware(), s.EmbedHandler)
+	r.GET("/v1/models", openaimid.ListMiddleware(), s.ListHandler)
+	r.GET("/v1/models/:model", openaimid.RetrieveMiddleware(), s.ShowHandler)
 
 	if rc != nil {
 		// wrap old with new
