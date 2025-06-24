@@ -14,6 +14,7 @@ import (
 	"math"
 	"net"
 	"net/http"
+	_ "net/http/pprof"
 	"net/netip"
 	"os"
 	"os/signal"
@@ -1284,7 +1285,27 @@ func Serve(ln net.Listener) error {
 		return err
 	}
 
-	http.Handle("/", h)
+	pprofAddr := strings.ToLower(envconfig.PprofAddr())
+	var srvr *http.Server
+	switch pprofAddr {
+	case "", "on":
+		// Use DefaultServeMux so we get net/http/pprof handlers on the
+		// main server.
+		http.Handle("/", h)
+		srvr = &http.Server{Handler: nil}
+	case "off", "false", "0":
+		srvr = &http.Server{Handler: h}
+	default:
+		// Serve application routes on the main server and start pprof on
+		// a separate port using the default mux.
+		srvr = &http.Server{Handler: h}
+		go func() {
+			slog.Info("pprof listening", "addr", pprofAddr)
+			if err := http.ListenAndServe(pprofAddr, nil); err != nil && !errors.Is(err, http.ErrServerClosed) {
+				slog.Error("pprof server error", "error", err)
+			}
+		}()
+	}
 
 	ctx, done := context.WithCancel(context.Background())
 	schedCtx, schedDone := context.WithCancel(ctx)
@@ -1292,17 +1313,6 @@ func Serve(ln net.Listener) error {
 	s.sched = sched
 
 	slog.Info(fmt.Sprintf("Listening on %s (version %s)", ln.Addr(), version.Version))
-	srvr := &http.Server{
-		// Use http.DefaultServeMux so we get net/http/pprof for
-		// free.
-		//
-		// TODO(bmizerany): Decide if we want to make this
-		// configurable so it is not exposed by default, or allow
-		// users to bind it to a different port. This was a quick
-		// and easy way to get pprof, but it may not be the best
-		// way.
-		Handler: nil,
-	}
 
 	// listen for a ctrl+c and stop any loaded llm
 	signals := make(chan os.Signal, 1)

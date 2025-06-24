@@ -157,3 +157,10 @@ Goobla looks for acceleration libraries in the following paths relative to the `
 * `build/lib/goobla` (for development)
 
 If the libraries are not found, Goobla will not run with any acceleration libraries.
+
+## Profiling
+
+By default the server exposes Go's pprof handlers on the main port. Set the
+environment variable `GOOBLA_PPROF` to `off` to disable these endpoints or
+specify a host and port such as `127.0.0.1:6060` to run pprof on a separate
+port.
