@@ -202,7 +202,7 @@ jobs:
 
       - name: go test
         if: always()
-        run: go test -count=1 -benchtime=1x ./...
+        run: go test -mod=vendor -count=1 -benchtime=1x ./...
 
       # TODO(bmizerany): replace this heavy tool with just the
       # tools/checks/binaries we want and then make them all run in parallel
