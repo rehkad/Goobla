@@ -386,12 +386,12 @@ func TestCompletionsMiddleware(t *testing.T) {
 		{
 			name: "completions handler",
 			body: `{
-				"model": "test-model",
-				"prompt": "Hello",
-				"temperature": 0.8,
-				"stop": ["\n", "stop"],
-				"suffix": "suffix"
-			}`,
+                                "model": "test-model",
+                                "prompt": "Hello",
+                                "temperature": 0.8,
+                                "stop": ["\n", "stop"],
+                                "suffix": "suffix"
+                        }`,
 			req: api.GenerateRequest{
 				Model:  "test-model",
 				Prompt: "Hello",
@@ -407,10 +407,67 @@ func TestCompletionsMiddleware(t *testing.T) {
 			},
 		},
 		{
+			name: "completions handler prompt array strings",
+			body: `{
+                                "model": "test-model",
+                                "prompt": ["Hello", "World"],
+                                "temperature": 0.8
+                        }`,
+			req: api.GenerateRequest{
+				Model:  "test-model",
+				Prompt: "HelloWorld",
+				Options: map[string]any{
+					"frequency_penalty": 0.0,
+					"presence_penalty":  0.0,
+					"temperature":       0.8,
+					"top_p":             1.0,
+				},
+				Stream: &False,
+			},
+		},
+		{
+			name: "completions handler prompt tokens",
+			body: `{
+                                "model": "test-model",
+                                "prompt": [1,2,3],
+                                "temperature": 0.8
+                        }`,
+			req: api.GenerateRequest{
+				Model:   "test-model",
+				Context: []int{1, 2, 3},
+				Options: map[string]any{
+					"frequency_penalty": 0.0,
+					"presence_penalty":  0.0,
+					"temperature":       0.8,
+					"top_p":             1.0,
+				},
+				Stream: &False,
+			},
+		},
+		{
+			name: "completions handler prompt nested tokens",
+			body: `{
+                                "model": "test-model",
+                                "prompt": [[1,2,3]],
+                                "temperature": 0.8
+                        }`,
+			req: api.GenerateRequest{
+				Model:   "test-model",
+				Context: []int{1, 2, 3},
+				Options: map[string]any{
+					"frequency_penalty": 0.0,
+					"presence_penalty":  0.0,
+					"temperature":       0.8,
+					"top_p":             1.0,
+				},
+				Stream: &False,
+			},
+		},
+		{
 			name: "completions handler stream",
 			body: `{
-				"model": "test-model",
-				"prompt": "Hello",
+                                "model": "test-model",
+                                "prompt": "Hello",
 				"stream": true,
 				"temperature": 0.8,
 				"stop": ["\n", "stop"],

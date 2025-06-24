@@ -120,7 +120,7 @@ type ChatCompletionChunk struct {
 // TODO (https://github.com/goobla/goobla/issues/5259): support []string, []int and [][]int
 type CompletionRequest struct {
 	Model            string         `json:"model"`
-	Prompt           string         `json:"prompt"`
+	Prompt           any            `json:"prompt"`
 	FrequencyPenalty float32        `json:"frequency_penalty"`
 	MaxTokens        *int           `json:"max_tokens"`
 	PresencePenalty  float32        `json:"presence_penalty"`
@@ -573,9 +573,58 @@ func fromCompleteRequest(r CompletionRequest) (api.GenerateRequest, error) {
 		options["top_p"] = 1.0
 	}
 
+	var prompt string
+	var context []int
+	switch p := r.Prompt.(type) {
+	case string:
+		prompt = p
+	case []any:
+		if len(p) == 0 {
+			prompt = ""
+		} else {
+			switch first := p[0].(type) {
+			case string:
+				// array of strings - concatenate
+				var sb strings.Builder
+				for _, v := range p {
+					s, ok := v.(string)
+					if !ok {
+						return api.GenerateRequest{}, fmt.Errorf("invalid type for 'prompt' field: %T", v)
+					}
+					sb.WriteString(s)
+				}
+				prompt = sb.String()
+			case float64:
+				// array of token ids
+				for _, v := range p {
+					num, ok := v.(float64)
+					if !ok {
+						return api.GenerateRequest{}, fmt.Errorf("invalid type for 'prompt' field: %T", v)
+					}
+					context = append(context, int(num))
+				}
+			case []any:
+				// assume array of arrays of token ids, use first element
+				var tokens []any = first
+				for _, v := range tokens {
+					num, ok := v.(float64)
+					if !ok {
+						return api.GenerateRequest{}, fmt.Errorf("invalid type for 'prompt' field: %T", v)
+					}
+					context = append(context, int(num))
+				}
+			default:
+				return api.GenerateRequest{}, fmt.Errorf("invalid type for 'prompt' field: %T", first)
+			}
+		}
+	default:
+		return api.GenerateRequest{}, fmt.Errorf("invalid type for 'prompt' field: %T", r.Prompt)
+	}
+
 	return api.GenerateRequest{
 		Model:   r.Model,
-		Prompt:  r.Prompt,
+		Prompt:  prompt,
+		Context: context,
 		Options: options,
 		Stream:  &r.Stream,
 		Suffix:  r.Suffix,
