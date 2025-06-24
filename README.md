@@ -1,6 +1,6 @@
 <div align="center">
-  <a href="https://ollama.com">
-    <img alt="ollama" height="200px" src="https://github.com/ollama/ollama/assets/3325447/0d0b44e2-8f4a-4e99-9b52-a5c1c741c8f7">
+  <a href="https://moogla.com">
+    <img alt="ollama" height="200px" src="https://github.com/moogla/moogla/assets/3325447/0d0b44e2-8f4a-4e99-9b52-a5c1c741c8f7">
   </a>
 </div>
 
@@ -10,19 +10,19 @@ Get up and running with large language models.
 
 ### macOS
 
-[Download](https://ollama.com/download/Moogla-darwin.zip)
+[Download](https://moogla.com/download/Moogla-darwin.zip)
 
 ### Windows
 
-[Download](https://ollama.com/download/MooglaSetup.exe)
+[Download](https://moogla.com/download/MooglaSetup.exe)
 
 ### Linux
 
 ```shell
-curl -fsSL https://ollama.com/install.sh | sh
+curl -fsSL https://moogla.com/install.sh | sh
 ```
 
-[Manual install instructions](https://github.com/ollama/ollama/blob/main/docs/linux.md)
+[Manual install instructions](https://github.com/moogla/moogla/blob/main/docs/linux.md)
 
 ### Docker
 
@@ -30,8 +30,8 @@ The official [Moogla Docker image](https://hub.docker.com/r/ollama/ollama) `olla
 
 ### Libraries
 
-- [ollama-python](https://github.com/ollama/ollama-python)
-- [ollama-js](https://github.com/ollama/ollama-js)
+- [ollama-python](https://github.com/moogla/moogla-python)
+- [ollama-js](https://github.com/moogla/moogla-js)
 
 ### Community
 
@@ -40,7 +40,7 @@ The official [Moogla Docker image](https://hub.docker.com/r/ollama/ollama) `olla
 
 ## Quickstart
 
-To run and chat with [Gemma 3](https://ollama.com/library/gemma3):
+To run and chat with [Gemma 3](https://moogla.com/library/gemma3):
 
 ```shell
 ollama run gemma3
@@ -48,7 +48,7 @@ ollama run gemma3
 
 ## Model library
 
-Moogla supports a list of models available on [ollama.com/library](https://ollama.com/library 'ollama model library')
+Moogla supports a list of models available on [moogla.com/library](https://moogla.com/library 'ollama model library')
 
 Here are some example models that can be downloaded:
 
@@ -232,7 +232,7 @@ ollama stop llama3.2
 
 ## Building
 
-See the [developer guide](https://github.com/ollama/ollama/blob/main/docs/development.md)
+See the [developer guide](https://github.com/moogla/moogla/blob/main/docs/development.md)
 
 ### Running local builds
 
@@ -486,7 +486,7 @@ See the [API documentation](./docs/api.md) for all endpoints.
 - [crewAI](https://github.com/crewAIInc/crewAI)
 - [Yacana](https://remembersoftwares.github.io/yacana/) (User-friendly multi-agent framework for brainstorming and executing predetermined flows with built-in tool integration)
 - [Spring AI](https://github.com/spring-projects/spring-ai) with [reference](https://docs.spring.io/spring-ai/reference/api/chat/ollama-chat.html) and [example](https://github.com/tzolov/ollama-tools)
-- [LangChainGo](https://github.com/tmc/langchaingo/) with [example](https://github.com/tmc/langchaingo/tree/main/examples/ollama-completion-example)
+- [LangChainGo](https://github.com/tmc/langchaingo/) with [example](https://github.com/tmc/langchaingo/tree/main/examples/moogla.completion-example)
 - [LangChain4j](https://github.com/langchain4j/langchain4j) with [example](https://github.com/langchain4j/langchain4j-examples/tree/main/ollama-examples/src/main/java)
 - [LangChainRust](https://github.com/Abraxas-365/langchain-rust) with [example](https://github.com/Abraxas-365/langchain-rust/blob/main/examples/llm_ollama.rs)
 - [LangChain for .NET](https://github.com/tryAGI/LangChain) with [example](https://github.com/tryAGI/LangChain/blob/main/examples/LangChain.Samples.OpenAI/Program.cs)

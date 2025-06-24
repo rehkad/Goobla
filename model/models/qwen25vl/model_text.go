@@ -3,13 +3,13 @@ package qwen25vl
 import (
 	"math"
 
-	"github.com/ollama/ollama/fs"
-	"github.com/ollama/ollama/kvcache"
-	"github.com/ollama/ollama/ml"
-	"github.com/ollama/ollama/ml/nn"
-	"github.com/ollama/ollama/ml/nn/fast"
-	"github.com/ollama/ollama/ml/nn/rope"
-	"github.com/ollama/ollama/model/input"
+	"github.com/moogla/moogla/fs"
+	"github.com/moogla/moogla/kvcache"
+	"github.com/moogla/moogla/ml"
+	"github.com/moogla/moogla/ml/nn"
+	"github.com/moogla/moogla/ml/nn/fast"
+	"github.com/moogla/moogla/ml/nn/rope"
+	"github.com/moogla/moogla/model/input"
 )
 
 type TextOptions struct {

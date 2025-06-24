@@ -1,4 +1,4 @@
-package ollamarunner
+package mooglarunner
 
 import (
 	"bytes"
@@ -25,17 +25,17 @@ import (
 	"golang.org/x/image/bmp"
 	"golang.org/x/sync/semaphore"
 
-	"github.com/ollama/ollama/api"
-	"github.com/ollama/ollama/envconfig"
-	"github.com/ollama/ollama/llm"
-	"github.com/ollama/ollama/logutil"
-	"github.com/ollama/ollama/ml"
-	"github.com/ollama/ollama/model"
-	"github.com/ollama/ollama/model/input"
-	"github.com/ollama/ollama/runner/common"
-	"github.com/ollama/ollama/sample"
+	"github.com/moogla/moogla/api"
+	"github.com/moogla/moogla/envconfig"
+	"github.com/moogla/moogla/llm"
+	"github.com/moogla/moogla/logutil"
+	"github.com/moogla/moogla/ml"
+	"github.com/moogla/moogla/model"
+	"github.com/moogla/moogla/model/input"
+	"github.com/moogla/moogla/runner/common"
+	"github.com/moogla/moogla/sample"
 
-	_ "github.com/ollama/ollama/model/models"
+	_ "github.com/moogla/moogla/model/models"
 )
 
 type Sequence struct {

@@ -5,7 +5,7 @@
   * [Importing a Safetensors adapter](#Importing-a-fine-tuned-adapter-from-Safetensors-weights)
   * [Importing a Safetensors model](#Importing-a-model-from-Safetensors-weights)
   * [Importing a GGUF file](#Importing-a-GGUF-based-model-or-adapter)
-  * [Sharing models on ollama.com](#Sharing-your-model-on-ollamacom)
+  * [Sharing models on moogla.com](#Sharing-your-model-on-ollamacom)
 
 ## Importing a fine tuned adapter from Safetensors weights
 
@@ -140,17 +140,17 @@ success
 - `q4_K_M`
 
 
-## Sharing your model on ollama.com
+## Sharing your model on moogla.com
 
-You can share any model you have created by pushing it to [ollama.com](https://ollama.com) so that other users can try it out.
+You can share any model you have created by pushing it to [moogla.com](https://moogla.com) so that other users can try it out.
 
-First, use your browser to go to the [Moogla Sign-Up](https://ollama.com/signup) page. If you already have an account, you can skip this step.
+First, use your browser to go to the [Moogla Sign-Up](https://moogla.com/signup) page. If you already have an account, you can skip this step.
 
 <img src="images/signup.png" alt="Sign-Up" width="40%">
 
 The `Username` field will be used as part of your model's name (e.g. `jmorganca/mymodel`), so make sure you are comfortable with the username that you have selected.
 
-Now that you have created an account and are signed-in, go to the [Moogla Keys Settings](https://ollama.com/settings/keys) page.
+Now that you have created an account and are signed-in, go to the [Moogla Keys Settings](https://moogla.com/settings/keys) page.
 
 Follow the directions on the page to determine where your Moogla Public Key is located.
 
@@ -158,8 +158,8 @@ Follow the directions on the page to determine where your Moogla Public Key is l
 
 Click on the `Add Moogla Public Key` button, and copy and paste the contents of your Moogla Public Key into the text field.
 
-To push a model to [ollama.com](https://ollama.com), first make sure that it is named correctly with your username. You may have to use the `ollama cp` command to copy
-your model to give it the correct name. Once you're happy with your model's name, use the `ollama push` command to push it to [ollama.com](https://ollama.com).
+To push a model to [moogla.com](https://moogla.com), first make sure that it is named correctly with your username. You may have to use the `ollama cp` command to copy
+your model to give it the correct name. Once you're happy with your model's name, use the `ollama push` command to push it to [moogla.com](https://moogla.com).
 
 ```shell
 ollama cp mymodel myuser/mymodel

@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ollama/ollama/api"
+	"github.com/moogla/moogla/api"
 	"github.com/stretchr/testify/require"
 )
 
@@ -79,16 +79,16 @@ func TestUnicodeModelDir(t *testing.T) {
 		t.Skip("Unicode test only applicable to windows")
 	}
 	// Only works for local testing
-	if os.Getenv("OLLAMA_TEST_EXISTING") != "" {
+	if os.Getenv("MOOGLA_TEST_EXISTING") != "" {
 		t.Skip("TestUnicodeModelDir only works for local testing, skipping")
 	}
 
 	modelDir, err := os.MkdirTemp("", "ollama_埃")
 	require.NoError(t, err)
 	defer os.RemoveAll(modelDir)
-	slog.Info("unicode", "OLLAMA_MODELS", modelDir)
+	slog.Info("unicode", "MOOGLA_MODELS", modelDir)
 
-	t.Setenv("OLLAMA_MODELS", modelDir)
+	t.Setenv("MOOGLA_MODELS", modelDir)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 	defer cancel()

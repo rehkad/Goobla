@@ -25,14 +25,14 @@ import (
 
 	"golang.org/x/sync/semaphore"
 
-	"github.com/ollama/ollama/api"
-	"github.com/ollama/ollama/discover"
-	"github.com/ollama/ollama/envconfig"
-	"github.com/ollama/ollama/format"
-	"github.com/ollama/ollama/fs/ggml"
-	"github.com/ollama/ollama/llama"
-	"github.com/ollama/ollama/logutil"
-	"github.com/ollama/ollama/model"
+	"github.com/moogla/moogla/api"
+	"github.com/moogla/moogla/discover"
+	"github.com/moogla/moogla/envconfig"
+	"github.com/moogla/moogla/format"
+	"github.com/moogla/moogla/fs/ggml"
+	"github.com/moogla/moogla/llama"
+	"github.com/moogla/moogla/logutil"
+	"github.com/moogla/moogla/model"
 )
 
 type filteredEnv []string
@@ -42,7 +42,7 @@ func (e filteredEnv) LogValue() slog.Value {
 	for _, env := range e {
 		if key, value, ok := strings.Cut(env, "="); ok {
 			switch {
-			case strings.HasPrefix(key, "OLLAMA_"),
+			case strings.HasPrefix(key, "MOOGLA_"),
 				strings.HasPrefix(key, "CUDA_"),
 				strings.HasPrefix(key, "ROCR_"),
 				strings.HasPrefix(key, "ROCM_"),
@@ -400,7 +400,7 @@ func NewLlamaServer(gpus discover.GpuInfoList, modelPath string, f *ggml.GGML, a
 		s.cmd.Stderr = s.status
 		s.cmd.SysProcAttr = LlamaServerSysProcAttr
 
-		s.cmd.Env = append(s.cmd.Env, "OLLAMA_LIBRARY_PATH="+strings.Join(ggmlPaths, string(filepath.ListSeparator)))
+		s.cmd.Env = append(s.cmd.Env, "MOOGLA_LIBRARY_PATH="+strings.Join(ggmlPaths, string(filepath.ListSeparator)))
 
 		envWorkarounds := [][2]string{}
 		for _, gpu := range gpus {

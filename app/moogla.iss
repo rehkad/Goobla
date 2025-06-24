@@ -12,7 +12,7 @@
   #define MyAppVersion "0.0.0"
 #endif
 #define MyAppPublisher "Moogla"
-#define MyAppURL "https://ollama.com/"
+#define MyAppURL "https://moogla.com/"
 #define MyAppExeName "ollama app.exe"
 #define MyIcon ".\assets\app.ico"
 
@@ -128,7 +128,7 @@ Type: filesandordirs; Name: "{%LOCALAPPDATA}\Moogla"
 Type: filesandordirs; Name: "{%LOCALAPPDATA}\Programs\Moogla"
 Type: filesandordirs; Name: "{%USERPROFILE}\.ollama\models"
 Type: filesandordirs; Name: "{%USERPROFILE}\.ollama\history"
-; NOTE: if the user has a custom OLLAMA_MODELS it will be preserved
+; NOTE: if the user has a custom MOOGLA_MODELS it will be preserved
 
 [InstallDelete]
 Type: filesandordirs; Name: "{%TEMP}\ollama*"

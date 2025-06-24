@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ollama/ollama/envconfig"
-	"github.com/ollama/ollama/types/model"
+	"github.com/moogla/moogla/envconfig"
+	"github.com/moogla/moogla/types/model"
 )
 
 // StatusError is an error with an HTTP status code and message.
@@ -44,7 +44,7 @@ type ImageData []byte
 // reasonable defaults for basic uses.
 type GenerateRequest struct {
 	// Model is the model name; it should be a name familiar to Moogla from
-	// the library at https://ollama.com/library
+	// the library at https://moogla.com/library
 	Model string `json:"model"`
 
 	// Prompt is the textual prompt to send to the model.

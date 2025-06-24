@@ -15,11 +15,11 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/ollama/ollama/api"
+	"github.com/moogla/moogla/api"
 )
 
 func TestMaxQueue(t *testing.T) {
-	if os.Getenv("OLLAMA_TEST_EXISTING") != "" {
+	if os.Getenv("MOOGLA_TEST_EXISTING") != "" {
 		t.Skip("Max Queue test requires spawning a local server so we can adjust the queue size")
 		return
 	}
@@ -27,7 +27,7 @@ func TestMaxQueue(t *testing.T) {
 	// Note: This test can be quite slow when running in CPU mode, so keep the threadCount low unless your on GPU
 	// Also note that by default Darwin can't sustain > ~128 connections without adjusting limits
 	threadCount := 16
-	t.Setenv("OLLAMA_MAX_QUEUE", strconv.Itoa(threadCount))
+	t.Setenv("MOOGLA_MAX_QUEUE", strconv.Itoa(threadCount))
 
 	req := api.GenerateRequest{
 		Model:  smol,

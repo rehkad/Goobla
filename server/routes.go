@@ -27,25 +27,25 @@ import (
 	"golang.org/x/image/webp"
 	"golang.org/x/sync/errgroup"
 
-	"github.com/ollama/ollama/api"
-	"github.com/ollama/ollama/discover"
-	"github.com/ollama/ollama/envconfig"
-	"github.com/ollama/ollama/fs/ggml"
-	"github.com/ollama/ollama/llm"
-	"github.com/ollama/ollama/logutil"
-	"github.com/ollama/ollama/openai"
-	"github.com/ollama/ollama/server/internal/client/ollama"
-	"github.com/ollama/ollama/server/internal/registry"
-	"github.com/ollama/ollama/template"
-	"github.com/ollama/ollama/thinking"
-	"github.com/ollama/ollama/tools"
-	"github.com/ollama/ollama/types/errtypes"
-	"github.com/ollama/ollama/types/model"
-	"github.com/ollama/ollama/version"
+	"github.com/moogla/moogla/api"
+	"github.com/moogla/moogla/discover"
+	"github.com/moogla/moogla/envconfig"
+	"github.com/moogla/moogla/fs/ggml"
+	"github.com/moogla/moogla/llm"
+	"github.com/moogla/moogla/logutil"
+	"github.com/moogla/moogla/openai"
+	"github.com/moogla/moogla/server/internal/client/moogla"
+	"github.com/moogla/moogla/server/internal/registry"
+	"github.com/moogla/moogla/template"
+	"github.com/moogla/moogla/thinking"
+	"github.com/moogla/moogla/tools"
+	"github.com/moogla/moogla/types/errtypes"
+	"github.com/moogla/moogla/types/model"
+	"github.com/moogla/moogla/version"
 )
 
 func experimentEnabled(name string) bool {
-	return slices.Contains(strings.Split(os.Getenv("OLLAMA_EXPERIMENT"), ","), name)
+	return slices.Contains(strings.Split(os.Getenv("MOOGLA_EXPERIMENT"), ","), name)
 }
 
 var useClient2 = experimentEnabled("client2")

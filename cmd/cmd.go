@@ -34,17 +34,17 @@ import (
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/term"
 
-	"github.com/ollama/ollama/api"
-	"github.com/ollama/ollama/envconfig"
-	"github.com/ollama/ollama/format"
-	"github.com/ollama/ollama/parser"
-	"github.com/ollama/ollama/progress"
-	"github.com/ollama/ollama/readline"
-	"github.com/ollama/ollama/runner"
-	"github.com/ollama/ollama/server"
-	"github.com/ollama/ollama/types/model"
-	"github.com/ollama/ollama/types/syncmap"
-	"github.com/ollama/ollama/version"
+	"github.com/moogla/moogla/api"
+	"github.com/moogla/moogla/envconfig"
+	"github.com/moogla/moogla/format"
+	"github.com/moogla/moogla/parser"
+	"github.com/moogla/moogla/progress"
+	"github.com/moogla/moogla/readline"
+	"github.com/moogla/moogla/runner"
+	"github.com/moogla/moogla/server"
+	"github.com/moogla/moogla/types/model"
+	"github.com/moogla/moogla/types/syncmap"
+	"github.com/moogla/moogla/version"
 )
 
 // ensureThinkingSupport emits a warning if the model does not advertise thinking support
@@ -505,8 +505,8 @@ func PushHandler(cmd *cobra.Command, args []string) error {
 	spinner.Stop()
 
 	destination := n.String()
-	if strings.HasSuffix(n.Host, ".ollama.ai") || strings.HasSuffix(n.Host, ".ollama.com") {
-		destination = "https://ollama.com/" + strings.TrimSuffix(n.DisplayShortest(), ":latest")
+	if strings.HasSuffix(n.Host, ".ollama.ai") || strings.HasSuffix(n.Host, ".moogla.com") {
+		destination = "https://moogla.com/" + strings.TrimSuffix(n.DisplayShortest(), ":latest")
 	}
 	fmt.Printf("\nYou can find your model at:\n\n")
 	fmt.Printf("\t%s\n", destination)
@@ -1536,7 +1536,7 @@ func NewCLI() *cobra.Command {
 
 	envVars := envconfig.AsMap()
 
-	envs := []envconfig.EnvVar{envVars["OLLAMA_HOST"]}
+	envs := []envconfig.EnvVar{envVars["MOOGLA_HOST"]}
 
 	for _, cmd := range []*cobra.Command{
 		createCmd,
@@ -1553,24 +1553,24 @@ func NewCLI() *cobra.Command {
 	} {
 		switch cmd {
 		case runCmd:
-			appendEnvDocs(cmd, []envconfig.EnvVar{envVars["OLLAMA_HOST"], envVars["OLLAMA_NOHISTORY"]})
+			appendEnvDocs(cmd, []envconfig.EnvVar{envVars["MOOGLA_HOST"], envVars["MOOGLA_NOHISTORY"]})
 		case serveCmd:
 			appendEnvDocs(cmd, []envconfig.EnvVar{
-				envVars["OLLAMA_DEBUG"],
-				envVars["OLLAMA_HOST"],
-				envVars["OLLAMA_KEEP_ALIVE"],
-				envVars["OLLAMA_MAX_LOADED_MODELS"],
-				envVars["OLLAMA_MAX_QUEUE"],
-				envVars["OLLAMA_MODELS"],
-				envVars["OLLAMA_NUM_PARALLEL"],
-				envVars["OLLAMA_NOPRUNE"],
-				envVars["OLLAMA_ORIGINS"],
-				envVars["OLLAMA_SCHED_SPREAD"],
-				envVars["OLLAMA_FLASH_ATTENTION"],
-				envVars["OLLAMA_KV_CACHE_TYPE"],
-				envVars["OLLAMA_LLM_LIBRARY"],
-				envVars["OLLAMA_GPU_OVERHEAD"],
-				envVars["OLLAMA_LOAD_TIMEOUT"],
+				envVars["MOOGLA_DEBUG"],
+				envVars["MOOGLA_HOST"],
+				envVars["MOOGLA_KEEP_ALIVE"],
+				envVars["MOOGLA_MAX_LOADED_MODELS"],
+				envVars["MOOGLA_MAX_QUEUE"],
+				envVars["MOOGLA_MODELS"],
+				envVars["MOOGLA_NUM_PARALLEL"],
+				envVars["MOOGLA_NOPRUNE"],
+				envVars["MOOGLA_ORIGINS"],
+				envVars["MOOGLA_SCHED_SPREAD"],
+				envVars["MOOGLA_FLASH_ATTENTION"],
+				envVars["MOOGLA_KV_CACHE_TYPE"],
+				envVars["MOOGLA_LLM_LIBRARY"],
+				envVars["MOOGLA_GPU_OVERHEAD"],
+				envVars["MOOGLA_LOAD_TIMEOUT"],
 			})
 		default:
 			appendEnvDocs(cmd, envs)

@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/ollama/ollama/logutil"
+	"github.com/moogla/moogla/logutil"
 )
 
 func TestHost(t *testing.T) {
@@ -41,7 +41,7 @@ func TestHost(t *testing.T) {
 
 	for name, tt := range cases {
 		t.Run(name, func(t *testing.T) {
-			t.Setenv("OLLAMA_HOST", tt.value)
+			t.Setenv("MOOGLA_HOST", tt.value)
 			if host := Host(); host.String() != tt.expect {
 				t.Errorf("%s: expected %s, got %s", name, tt.expect, host.String())
 			}
@@ -138,7 +138,7 @@ func TestOrigins(t *testing.T) {
 	}
 	for _, tt := range cases {
 		t.Run(tt.value, func(t *testing.T) {
-			t.Setenv("OLLAMA_ORIGINS", tt.value)
+			t.Setenv("MOOGLA_ORIGINS", tt.value)
 
 			if diff := cmp.Diff(AllowedOrigins(), tt.expect); diff != "" {
 				t.Errorf("%s: mismatch (-want +got):\n%s", tt.value, diff)
@@ -161,8 +161,8 @@ func TestBool(t *testing.T) {
 
 	for k, v := range cases {
 		t.Run(k, func(t *testing.T) {
-			t.Setenv("OLLAMA_BOOL", k)
-			if b := Bool("OLLAMA_BOOL")(); b != v {
+			t.Setenv("MOOGLA_BOOL", k)
+			if b := Bool("MOOGLA_BOOL")(); b != v {
 				t.Errorf("%s: expected %t, got %t", k, v, b)
 			}
 		})
@@ -184,8 +184,8 @@ func TestUint(t *testing.T) {
 
 	for k, v := range cases {
 		t.Run(k, func(t *testing.T) {
-			t.Setenv("OLLAMA_UINT", k)
-			if i := Uint("OLLAMA_UINT", 11434)(); i != v {
+			t.Setenv("MOOGLA_UINT", k)
+			if i := Uint("MOOGLA_UINT", 11434)(); i != v {
 				t.Errorf("%s: expected %d, got %d", k, v, i)
 			}
 		})
@@ -217,7 +217,7 @@ func TestKeepAlive(t *testing.T) {
 
 	for tt, expect := range cases {
 		t.Run(tt, func(t *testing.T) {
-			t.Setenv("OLLAMA_KEEP_ALIVE", tt)
+			t.Setenv("MOOGLA_KEEP_ALIVE", tt)
 			if actual := KeepAlive(); actual != expect {
 				t.Errorf("%s: expected %s, got %s", tt, expect, actual)
 			}
@@ -251,7 +251,7 @@ func TestLoadTimeout(t *testing.T) {
 
 	for tt, expect := range cases {
 		t.Run(tt, func(t *testing.T) {
-			t.Setenv("OLLAMA_LOAD_TIMEOUT", tt)
+			t.Setenv("MOOGLA_LOAD_TIMEOUT", tt)
 			if actual := LoadTimeout(); actual != expect {
 				t.Errorf("%s: expected %s, got %s", tt, expect, actual)
 			}
@@ -271,8 +271,8 @@ func TestVar(t *testing.T) {
 
 	for k, v := range cases {
 		t.Run(k, func(t *testing.T) {
-			t.Setenv("OLLAMA_VAR", k)
-			if s := Var("OLLAMA_VAR"); s != v {
+			t.Setenv("MOOGLA_VAR", k)
+			if s := Var("MOOGLA_VAR"); s != v {
 				t.Errorf("%s: expected %q, got %q", k, v, s)
 			}
 		})
@@ -287,7 +287,7 @@ func TestContextLength(t *testing.T) {
 
 	for k, v := range cases {
 		t.Run(k, func(t *testing.T) {
-			t.Setenv("OLLAMA_CONTEXT_LENGTH", k)
+			t.Setenv("MOOGLA_CONTEXT_LENGTH", k)
 			if i := ContextLength(); i != v {
 				t.Errorf("%s: expected %d, got %d", k, v, i)
 			}
@@ -318,7 +318,7 @@ func TestLogLevel(t *testing.T) {
 
 	for k, v := range cases {
 		t.Run(k, func(t *testing.T) {
-			t.Setenv("OLLAMA_DEBUG", k)
+			t.Setenv("MOOGLA_DEBUG", k)
 			if i := LogLevel(); i != v {
 				t.Errorf("%s: expected %d, got %d", k, v, i)
 			}

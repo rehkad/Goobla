@@ -1091,7 +1091,7 @@ A stream of JSON objects is returned:
 HEAD /api/blobs/:digest
 ```
 
-Ensures that the file blob (Binary Large Object) used with create a model exists on the server. This checks your Moogla server and not ollama.com.
+Ensures that the file blob (Binary Large Object) used with create a model exists on the server. This checks your Moogla server and not moogla.com.
 
 ### Query Parameters
 

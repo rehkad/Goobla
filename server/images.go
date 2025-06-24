@@ -21,14 +21,14 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ollama/ollama/api"
-	"github.com/ollama/ollama/envconfig"
-	"github.com/ollama/ollama/fs/gguf"
-	"github.com/ollama/ollama/parser"
-	"github.com/ollama/ollama/template"
-	"github.com/ollama/ollama/thinking"
-	"github.com/ollama/ollama/types/model"
-	"github.com/ollama/ollama/version"
+	"github.com/moogla/moogla/api"
+	"github.com/moogla/moogla/envconfig"
+	"github.com/moogla/moogla/fs/gguf"
+	"github.com/moogla/moogla/parser"
+	"github.com/moogla/moogla/template"
+	"github.com/moogla/moogla/thinking"
+	"github.com/moogla/moogla/types/model"
+	"github.com/moogla/moogla/version"
 )
 
 var (

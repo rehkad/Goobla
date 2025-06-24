@@ -30,7 +30,7 @@ When you run Moogla on **Windows**, there are a few different locations. You can
 To enable additional debug logging to help troubleshoot problems, first **Quit the running app from the tray menu** then in a powershell terminal
 
 ```powershell
-$env:OLLAMA_DEBUG="1"
+$env:MOOGLA_DEBUG="1"
 & "ollama app.exe"
 ```
 
@@ -48,10 +48,10 @@ Dynamic LLM libraries [rocm_v6 cpu cpu_avx cpu_avx2 cuda_v12 rocm_v5]
 
 **Experimental LLM Library Override**
 
-You can set OLLAMA_LLM_LIBRARY to any of the available LLM libraries to bypass autodetection, so for example, if you have a CUDA card, but want to force the CPU LLM library with AVX2 vector support, use:
+You can set MOOGLA_LLM_LIBRARY to any of the available LLM libraries to bypass autodetection, so for example, if you have a CUDA card, but want to force the CPU LLM library with AVX2 vector support, use:
 
 ```shell
-OLLAMA_LLM_LIBRARY="cpu_avx2" ollama serve
+MOOGLA_LLM_LIBRARY="cpu_avx2" ollama serve
 ```
 
 You can see what features your CPU has with the following.
@@ -65,7 +65,7 @@ cat /proc/cpuinfo| grep flags | head -1
 If you run into problems on Linux and want to install an older version, or you'd like to try out a pre-release before it's officially released, you can tell the install script which version to install.
 
 ```shell
-curl -fsSL https://ollama.com/install.sh | OLLAMA_VERSION=0.5.7 sh
+curl -fsSL https://moogla.com/install.sh | MOOGLA_VERSION=0.5.7 sh
 ```
 
 ## Linux docker
@@ -101,7 +101,7 @@ When running in a container, in some Linux distributions and container runtimes,
 
 If you are experiencing problems getting Moogla to correctly discover or use your GPU for inference, the following may help isolate the failure.
 - `AMD_LOG_LEVEL=3` Enable info log levels in the AMD HIP/ROCm libraries.  This can help show more detailed error codes that can help troubleshoot problems
-- `OLLAMA_DEBUG=1` During GPU discovery additional information will be reported
+- `MOOGLA_DEBUG=1` During GPU discovery additional information will be reported
 - Check dmesg for any errors from amdgpu or kfd drivers `sudo dmesg | grep -i amdgpu` and `sudo dmesg | grep -i kfd`
 
 ## Multiple AMD GPUs

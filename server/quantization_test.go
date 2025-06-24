@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	fsggml "github.com/ollama/ollama/fs/ggml"
-	"github.com/ollama/ollama/ml/backend/ggml"
+	fsggml "github.com/moogla/moogla/fs/ggml"
+	"github.com/moogla/moogla/ml/backend/ggml"
 )
 
 func TestGetTensorNewType(t *testing.T) {

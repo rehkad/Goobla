@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ollama/ollama/envconfig"
-	"github.com/ollama/ollama/logutil"
+	"github.com/moogla/moogla/envconfig"
+	"github.com/moogla/moogla/logutil"
 )
 
 func InitLogging() {

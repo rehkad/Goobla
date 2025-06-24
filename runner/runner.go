@@ -1,8 +1,8 @@
 package runner
 
 import (
-	"github.com/ollama/ollama/runner/llamarunner"
-	"github.com/ollama/ollama/runner/ollamarunner"
+	"github.com/moogla/moogla/runner/llamarunner"
+	"github.com/moogla/moogla/runner/mooglarunner"
 )
 
 func Execute(args []string) error {
@@ -17,7 +17,7 @@ func Execute(args []string) error {
 	}
 
 	if newRunner {
-		return ollamarunner.Execute(args)
+		return mooglarunner.Execute(args)
 	} else {
 		return llamarunner.Execute(args)
 	}

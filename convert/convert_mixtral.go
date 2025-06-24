@@ -3,7 +3,7 @@ package convert
 import (
 	"fmt"
 
-	"github.com/ollama/ollama/fs/ggml"
+	"github.com/moogla/moogla/fs/ggml"
 )
 
 type mixtralModel struct {

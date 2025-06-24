@@ -15,7 +15,7 @@
 #include "ops.h"
 #include "ggml.h"
 
-#include "ollama-debug.h"
+#include "moogla-debug.h"
 
 #if defined(_MSC_VER) || defined(__MINGW32__)
 #include <malloc.h> // using malloc.h with MSC/MINGW
@@ -2843,8 +2843,8 @@ static thread_ret_t ggml_graph_compute_thread(void * data) {
 
         ggml_compute_forward(&params, node);
 
-#ifdef OLLAMA_DEBUG
-        ollama_debug(node, true);
+#ifdef MOOGLA_DEBUG
+        moogla_debug(node, true);
 #endif
 
         if (state->ith == 0 && cplan->abort_callback &&

@@ -9,15 +9,15 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/ollama/ollama/api"
-	"github.com/ollama/ollama/discover"
-	"github.com/ollama/ollama/fs/ggml"
+	"github.com/moogla/moogla/api"
+	"github.com/moogla/moogla/discover"
+	"github.com/moogla/moogla/fs/ggml"
 )
 
 func TestEstimateGPULayers(t *testing.T) {
-	t.Setenv("OLLAMA_DEBUG", "1")
-	t.Setenv("OLLAMA_KV_CACHE_TYPE", "") // Ensure default f16
-	t.Setenv("OLLAMA_CONTEXT_LENGTH", "2048")
+	t.Setenv("MOOGLA_DEBUG", "1")
+	t.Setenv("MOOGLA_KV_CACHE_TYPE", "") // Ensure default f16
+	t.Setenv("MOOGLA_CONTEXT_LENGTH", "2048")
 
 	modelName := "dummy"
 	f, err := os.CreateTemp(t.TempDir(), modelName)

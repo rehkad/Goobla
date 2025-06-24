@@ -1,7 +1,7 @@
 # OpenAI compatibility
 
 > [!NOTE]
-> OpenAI compatibility is experimental and is subject to major adjustments including breaking changes. For fully-featured access to the Moogla API, see the Moogla [Python library](https://github.com/ollama/ollama-python), [JavaScript library](https://github.com/ollama/ollama-js) and [REST API](https://github.com/ollama/ollama/blob/main/docs/api.md).
+> OpenAI compatibility is experimental and is subject to major adjustments including breaking changes. For fully-featured access to the Moogla API, see the Moogla [Python library](https://github.com/moogla/moogla-python), [JavaScript library](https://github.com/moogla/moogla-js) and [REST API](https://github.com/moogla/moogla/blob/main/docs/api.md).
 
 Moogla provides experimental compatibility with parts of the [OpenAI API](https://platform.openai.com/docs/api-reference) to help connect existing applications to Moogla.
 

@@ -17,16 +17,16 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/ollama/ollama/api"
-	"github.com/ollama/ollama/envconfig"
-	"github.com/ollama/ollama/fs/ggml"
+	"github.com/moogla/moogla/api"
+	"github.com/moogla/moogla/envconfig"
+	"github.com/moogla/moogla/fs/ggml"
 )
 
 var stream bool = false
 
 func createBinFile(t *testing.T, kv map[string]any, ti []*ggml.Tensor) (string, string) {
 	t.Helper()
-	t.Setenv("OLLAMA_MODELS", cmp.Or(os.Getenv("OLLAMA_MODELS"), t.TempDir()))
+	t.Setenv("MOOGLA_MODELS", cmp.Or(os.Getenv("MOOGLA_MODELS"), t.TempDir()))
 
 	modelDir := envconfig.Models()
 
@@ -73,8 +73,8 @@ func (t *responseRecorder) CloseNotify() <-chan bool {
 
 func createRequest(t *testing.T, fn func(*gin.Context), body any) *httptest.ResponseRecorder {
 	t.Helper()
-	// if OLLAMA_MODELS is not set, set it to the temp directory
-	t.Setenv("OLLAMA_MODELS", cmp.Or(os.Getenv("OLLAMA_MODELS"), t.TempDir()))
+	// if MOOGLA_MODELS is not set, set it to the temp directory
+	t.Setenv("MOOGLA_MODELS", cmp.Or(os.Getenv("MOOGLA_MODELS"), t.TempDir()))
 
 	w := NewRecorder()
 	c, _ := gin.CreateTestContext(w)
@@ -109,7 +109,7 @@ func TestCreateFromBin(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	p := t.TempDir()
-	t.Setenv("OLLAMA_MODELS", p)
+	t.Setenv("MOOGLA_MODELS", p)
 
 	var s Server
 
@@ -140,7 +140,7 @@ func TestCreateFromModel(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	p := t.TempDir()
-	t.Setenv("OLLAMA_MODELS", p)
+	t.Setenv("MOOGLA_MODELS", p)
 	var s Server
 
 	_, digest := createBinFile(t, nil, nil)
@@ -184,7 +184,7 @@ func TestCreateRemovesLayers(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	p := t.TempDir()
-	t.Setenv("OLLAMA_MODELS", p)
+	t.Setenv("MOOGLA_MODELS", p)
 	var s Server
 
 	_, digest := createBinFile(t, nil, nil)
@@ -235,7 +235,7 @@ func TestCreateUnsetsSystem(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	p := t.TempDir()
-	t.Setenv("OLLAMA_MODELS", p)
+	t.Setenv("MOOGLA_MODELS", p)
 	var s Server
 
 	_, digest := createBinFile(t, nil, nil)
@@ -285,7 +285,7 @@ func TestCreateMergeParameters(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	p := t.TempDir()
-	t.Setenv("OLLAMA_MODELS", p)
+	t.Setenv("MOOGLA_MODELS", p)
 	var s Server
 
 	_, digest := createBinFile(t, nil, nil)
@@ -420,7 +420,7 @@ func TestCreateReplacesMessages(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	p := t.TempDir()
-	t.Setenv("OLLAMA_MODELS", p)
+	t.Setenv("MOOGLA_MODELS", p)
 	var s Server
 
 	_, digest := createBinFile(t, nil, nil)
@@ -527,7 +527,7 @@ func TestCreateTemplateSystem(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	p := t.TempDir()
-	t.Setenv("OLLAMA_MODELS", p)
+	t.Setenv("MOOGLA_MODELS", p)
 	var s Server
 
 	_, digest := createBinFile(t, nil, nil)
@@ -619,7 +619,7 @@ func TestCreateLicenses(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	p := t.TempDir()
-	t.Setenv("OLLAMA_MODELS", p)
+	t.Setenv("MOOGLA_MODELS", p)
 	var s Server
 
 	_, digest := createBinFile(t, nil, nil)
@@ -668,7 +668,7 @@ func TestCreateDetectTemplate(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	p := t.TempDir()
-	t.Setenv("OLLAMA_MODELS", p)
+	t.Setenv("MOOGLA_MODELS", p)
 	var s Server
 
 	t.Run("matched", func(t *testing.T) {
@@ -750,7 +750,7 @@ func TestDetectModelTypeFromFiles(t *testing.T) {
 
 	t.Run("unsupported file type", func(t *testing.T) {
 		p := t.TempDir()
-		t.Setenv("OLLAMA_MODELS", p)
+		t.Setenv("MOOGLA_MODELS", p)
 
 		data := []byte("12345678")
 		digest := fmt.Sprintf("sha256:%x", sha256.Sum256(data))
@@ -780,7 +780,7 @@ func TestDetectModelTypeFromFiles(t *testing.T) {
 
 	t.Run("file with less than 4 bytes", func(t *testing.T) {
 		p := t.TempDir()
-		t.Setenv("OLLAMA_MODELS", p)
+		t.Setenv("MOOGLA_MODELS", p)
 
 		data := []byte("123")
 		digest := fmt.Sprintf("sha256:%x", sha256.Sum256(data))

@@ -36,7 +36,7 @@ import (
 	"sync"
 	"unsafe"
 
-	_ "github.com/ollama/ollama/ml/backend/ggml/ggml/src/ggml-cpu"
+	_ "github.com/moogla/moogla/ml/backend/ggml/ggml/src/ggml-cpu"
 )
 
 func init() {
@@ -69,9 +69,9 @@ var OnceLoad = sync.OnceFunc(func() {
 	}
 
 	// Avoid potentially loading incompatible GGML libraries
-	paths, ok := os.LookupEnv("OLLAMA_LIBRARY_PATH")
+	paths, ok := os.LookupEnv("MOOGLA_LIBRARY_PATH")
 	if !ok {
-		slog.Debug("OLLAMA_LIBRARY_PATH not set, falling back to default", "search", value)
+		slog.Debug("MOOGLA_LIBRARY_PATH not set, falling back to default", "search", value)
 		paths = value
 	}
 

@@ -69,7 +69,7 @@ function checkEnv() {
         ${script:SignTool}=${env:SIGN_TOOL}
     }
     if ("${env:KEY_CONTAINER}") {
-        ${script:OLLAMA_CERT}=$(resolve-path "${script:SRC_DIR}\ollama_inc.crt")
+        ${script:MOOGLA_CERT}=$(resolve-path "${script:SRC_DIR}\ollama_inc.crt")
         Write-host "Code signing enabled"
     } else {
         write-host "Code signing disabled - please set KEY_CONTAINERS to sign and copy ollama_inc.crt to the top of the source tree"
@@ -125,7 +125,7 @@ function buildMoogla() {
         }
     }
     write-host "Building ollama CLI"
-    & go build -trimpath -ldflags "-s -w -X=github.com/ollama/ollama/version.Version=$script:VERSION -X=github.com/ollama/ollama/server.mode=release" .
+    & go build -trimpath -ldflags "-s -w -X=github.com/moogla/moogla/version.Version=$script:VERSION -X=github.com/moogla/moogla/server.mode=release" .
     if ($LASTEXITCODE -ne 0) { exit($LASTEXITCODE)}
     cp .\ollama.exe "${script:DIST_DIR}\"
 }
@@ -134,7 +134,7 @@ function buildApp() {
     write-host "Building Moogla App"
     cd "${script:SRC_DIR}\app"
     & windres -l 0 -o ollama.syso ollama.rc
-    & go build -trimpath -ldflags "-s -w -H windowsgui -X=github.com/ollama/ollama/version.Version=$script:VERSION -X=github.com/ollama/ollama/server.mode=release" -o "${script:SRC_DIR}\dist\windows-${script:TARGET_ARCH}-app.exe" .
+    & go build -trimpath -ldflags "-s -w -H windowsgui -X=github.com/moogla/moogla/version.Version=$script:VERSION -X=github.com/moogla/moogla/server.mode=release" -o "${script:SRC_DIR}\dist\windows-${script:TARGET_ARCH}-app.exe" .
     if ($LASTEXITCODE -ne 0) { exit($LASTEXITCODE)}
 }
 
@@ -177,7 +177,7 @@ function gatherDependencies() {
 function sign() {
     if ("${env:KEY_CONTAINER}") {
         write-host "Signing Moogla executables, scripts and libraries"
-        & "${script:SignTool}" sign /v /fd sha256 /t http://timestamp.digicert.com /f "${script:OLLAMA_CERT}" `
+        & "${script:SignTool}" sign /v /fd sha256 /t http://timestamp.digicert.com /f "${script:MOOGLA_CERT}" `
             /csp "Google Cloud KMS Provider" /kc ${env:KEY_CONTAINER} `
             $(get-childitem -path "${script:SRC_DIR}\dist" -r -include @('ollama_welcome.ps1')) `
             $(get-childitem -path "${script:SRC_DIR}\dist\windows-*" -r -include @('*.exe', '*.dll'))
@@ -196,7 +196,7 @@ function buildInstaller() {
     cd "${script:SRC_DIR}\app"
     $env:PKG_VERSION=$script:PKG_VERSION
     if ("${env:KEY_CONTAINER}") {
-        & "${script:INNO_SETUP_DIR}\ISCC.exe" /DARCH=$script:TARGET_ARCH /SMySignTool="${script:SignTool} sign /fd sha256 /t http://timestamp.digicert.com /f ${script:OLLAMA_CERT} /csp `$qGoogle Cloud KMS Provider`$q /kc ${env:KEY_CONTAINER} `$f" .\ollama.iss
+        & "${script:INNO_SETUP_DIR}\ISCC.exe" /DARCH=$script:TARGET_ARCH /SMySignTool="${script:SignTool} sign /fd sha256 /t http://timestamp.digicert.com /f ${script:MOOGLA_CERT} /csp `$qGoogle Cloud KMS Provider`$q /kc ${env:KEY_CONTAINER} `$f" .\ollama.iss
     } else {
         & "${script:INNO_SETUP_DIR}\ISCC.exe" /DARCH=$script:TARGET_ARCH .\ollama.iss
     }

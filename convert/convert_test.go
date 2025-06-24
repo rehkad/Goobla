@@ -19,7 +19,7 @@ import (
 
 	"golang.org/x/exp/maps"
 
-	"github.com/ollama/ollama/fs/ggml"
+	"github.com/moogla/moogla/fs/ggml"
 )
 
 type tensorData struct {
@@ -439,7 +439,7 @@ func generateLoraTestData(t *testing.T, tempDir string) {
     "adapter_path": "adapters-test",
     "batch_size": 8,
     "config": "config-tiny.json",
-    "data": "../discollama-completion",
+    "data": "../discmoogla.completion",
     "grad_checkpoint": null,
     "iters": 1000,
     "learning_rate": 1e-05,
