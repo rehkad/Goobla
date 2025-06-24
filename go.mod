@@ -1,4 +1,4 @@
-module github.com/moogla/moogla
+module github.com/goobla/goobla
 
 go 1.24.0
 

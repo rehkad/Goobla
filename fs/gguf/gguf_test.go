@@ -7,10 +7,10 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/goobla/goobla/fs/ggml"
+	"github.com/goobla/goobla/fs/gguf"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"github.com/moogla/moogla/fs/ggml"
-	"github.com/moogla/moogla/fs/gguf"
 )
 
 func createBinFile(tb testing.TB) string {

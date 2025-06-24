@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/moogla/moogla/envconfig"
-	"github.com/moogla/moogla/logutil"
+	"github.com/goobla/goobla/envconfig"
+	"github.com/goobla/goobla/logutil"
 )
 
 func InitLogging() {
@@ -29,7 +29,7 @@ func InitLogging() {
 	}
 
 	slog.SetDefault(logutil.NewLogger(logFile, envconfig.LogLevel()))
-	slog.Info("ollama app started")
+	slog.Info("goobla app started")
 }
 
 func rotateLogs(logFile string) {

@@ -1,8 +1,8 @@
 package runner
 
 import (
-	"github.com/moogla/moogla/runner/llamarunner"
-	"github.com/moogla/moogla/runner/mooglarunner"
+	"github.com/goobla/goobla/runner/gooblarunner"
+	"github.com/goobla/goobla/runner/llamarunner"
 )
 
 func Execute(args []string) error {
@@ -11,13 +11,13 @@ func Execute(args []string) error {
 	}
 
 	var newRunner bool
-	if args[0] == "--ollama-engine" {
+	if args[0] == "--goobla-engine" {
 		args = args[1:]
 		newRunner = true
 	}
 
 	if newRunner {
-		return mooglarunner.Execute(args)
+		return gooblarunner.Execute(args)
 	} else {
 		return llamarunner.Execute(args)
 	}

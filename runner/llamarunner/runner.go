@@ -21,12 +21,12 @@ import (
 
 	"golang.org/x/sync/semaphore"
 
-	"github.com/moogla/moogla/api"
-	"github.com/moogla/moogla/envconfig"
-	"github.com/moogla/moogla/llama"
-	"github.com/moogla/moogla/llm"
-	"github.com/moogla/moogla/logutil"
-	"github.com/moogla/moogla/runner/common"
+	"github.com/goobla/goobla/api"
+	"github.com/goobla/goobla/envconfig"
+	"github.com/goobla/goobla/llama"
+	"github.com/goobla/goobla/llm"
+	"github.com/goobla/goobla/logutil"
+	"github.com/goobla/goobla/runner/common"
 )
 
 // input is an element of the prompt to process, either

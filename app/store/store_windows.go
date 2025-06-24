@@ -7,5 +7,5 @@ import (
 
 func getStorePath() string {
 	localAppData := os.Getenv("LOCALAPPDATA")
-	return filepath.Join(localAppData, "Moogla", "config.json")
+	return filepath.Join(localAppData, "Goobla", "config.json")
 }

@@ -1,7 +1,7 @@
 // Package api implements the client-side API for code wishing to interact
-// with the Moogla service. The methods of the [Client] type correspond to
-// the Moogla REST API as described in [the API documentation].
-// The moogla.command-line client itself uses this package to interact with
+// with the Goobla service. The methods of the [Client] type correspond to
+// the Goobla REST API as described in [the API documentation].
+// The goobla.command-line client itself uses this package to interact with
 // the backend service.
 //
 // # Examples
@@ -9,8 +9,8 @@
 // Several examples of using this package are available [in the GitHub
 // repository].
 //
-// [the API documentation]: https://github.com/moogla/moogla/blob/main/docs/api.md
-// [in the GitHub repository]: https://github.com/moogla/moogla/tree/main/api/examples
+// [the API documentation]: https://github.com/goobla/goobla/blob/main/docs/api.md
+// [in the GitHub repository]: https://github.com/goobla/goobla/tree/main/api/examples
 package api
 
 import (
@@ -27,13 +27,13 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/moogla/moogla/auth"
-	"github.com/moogla/moogla/envconfig"
-	"github.com/moogla/moogla/format"
-	"github.com/moogla/moogla/version"
+	"github.com/goobla/goobla/auth"
+	"github.com/goobla/goobla/envconfig"
+	"github.com/goobla/goobla/format"
+	"github.com/goobla/goobla/version"
 )
 
-// Client encapsulates client state for interacting with the Moogla
+// Client encapsulates client state for interacting with the Goobla
 // service. Use [ClientFromEnvironment] to create new Clients.
 type Client struct {
 	base *url.URL
@@ -57,13 +57,13 @@ func checkError(resp *http.Response, body []byte) error {
 }
 
 // ClientFromEnvironment creates a new [Client] using configuration from the
-// environment variable MOOGLA_HOST, which points to the network host and
-// port on which the Moogla service is listening. The format of this variable
+// environment variable GOOBLA_HOST, which points to the network host and
+// port on which the Goobla service is listening. The format of this variable
 // is:
 //
 //	<scheme>://<host>:<port>
 //
-// If the variable is not specified, a default Moogla host and port will be
+// If the variable is not specified, a default Goobla host and port will be
 // used.
 func ClientFromEnvironment() (*Client, error) {
 	return &Client{
@@ -110,7 +110,7 @@ func (c *Client) do(ctx context.Context, method, path string, reqData, respData 
 	requestURL := c.base.JoinPath(path)
 
 	var token string
-	if envconfig.UseAuth() || c.base.Hostname() == "moogla.com" {
+	if envconfig.UseAuth() || c.base.Hostname() == "goobla.com" {
 		now := strconv.FormatInt(time.Now().Unix(), 10)
 		chal := fmt.Sprintf("%s,%s?ts=%s", method, path, now)
 		token, err = getAuthorizationToken(ctx, chal)
@@ -130,7 +130,7 @@ func (c *Client) do(ctx context.Context, method, path string, reqData, respData 
 
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Accept", "application/json")
-	request.Header.Set("User-Agent", fmt.Sprintf("moogla/%s (%s %s) Go/%s", version.Version, runtime.GOARCH, runtime.GOOS, runtime.Version()))
+	request.Header.Set("User-Agent", fmt.Sprintf("goobla/%s (%s %s) Go/%s", version.Version, runtime.GOARCH, runtime.GOOS, runtime.Version()))
 
 	if token != "" {
 		request.Header.Set("Authorization", token)
@@ -175,7 +175,7 @@ func (c *Client) stream(ctx context.Context, method, path string, data any, fn f
 	requestURL := c.base.JoinPath(path)
 
 	var token string
-	if envconfig.UseAuth() || c.base.Hostname() == "moogla.com" {
+	if envconfig.UseAuth() || c.base.Hostname() == "goobla.com" {
 		var err error
 		now := strconv.FormatInt(time.Now().Unix(), 10)
 		chal := fmt.Sprintf("%s,%s?ts=%s", method, path, now)
@@ -196,7 +196,7 @@ func (c *Client) stream(ctx context.Context, method, path string, data any, fn f
 
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Accept", "application/x-ndjson")
-	request.Header.Set("User-Agent", fmt.Sprintf("moogla/%s (%s %s) Go/%s", version.Version, runtime.GOARCH, runtime.GOOS, runtime.Version()))
+	request.Header.Set("User-Agent", fmt.Sprintf("goobla/%s (%s %s) Go/%s", version.Version, runtime.GOARCH, runtime.GOOS, runtime.Version()))
 
 	if token != "" {
 		request.Header.Set("Authorization", token)
@@ -286,7 +286,7 @@ func (c *Client) Chat(ctx context.Context, req *ChatRequest, fn ChatResponseFunc
 // returns an error, [Client.Pull] will stop the process and return this error.
 type PullProgressFunc func(ProgressResponse) error
 
-// Pull downloads a model from the Moogla library. fn is called each time
+// Pull downloads a model from the Goobla library. fn is called each time
 // progress is made on the request and can be used to display a progress bar,
 // etc.
 func (c *Client) Pull(ctx context.Context, req *PullRequest, fn PullProgressFunc) error {
@@ -305,7 +305,7 @@ func (c *Client) Pull(ctx context.Context, req *PullRequest, fn PullProgressFunc
 // It's similar to other progress function types like [PullProgressFunc].
 type PushProgressFunc func(ProgressResponse) error
 
-// Push uploads a model to the model library; requires registering for Moogla.ai
+// Push uploads a model to the model library; requires registering for Goobla.ai
 // and adding a public key first. fn is called each time progress is made on
 // the request and can be used to display a progress bar, etc.
 func (c *Client) Push(ctx context.Context, req *PushRequest, fn PushProgressFunc) error {
@@ -327,7 +327,7 @@ type CreateProgressFunc func(ProgressResponse) error
 // Create creates a model from a [Modelfile]. fn is a progress function that
 // behaves similarly to other methods (see [Client.Pull]).
 //
-// [Modelfile]: https://github.com/moogla/moogla/blob/main/docs/modelfile.md
+// [Modelfile]: https://github.com/goobla/goobla/blob/main/docs/modelfile.md
 func (c *Client) Create(ctx context.Context, req *CreateRequest, fn CreateProgressFunc) error {
 	return c.stream(ctx, http.MethodPost, "/api/create", req, func(bts []byte) error {
 		var resp ProgressResponse
@@ -416,7 +416,7 @@ func (c *Client) CreateBlob(ctx context.Context, digest string, r io.Reader) err
 	return c.do(ctx, http.MethodPost, fmt.Sprintf("/api/blobs/%s", digest), r, nil)
 }
 
-// Version returns the Moogla server version as a string.
+// Version returns the Goobla server version as a string.
 func (c *Client) Version(ctx context.Context) (string, error) {
 	var version struct {
 		Version string `json:"version"`

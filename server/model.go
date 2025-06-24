@@ -11,10 +11,10 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/moogla/moogla/api"
-	"github.com/moogla/moogla/fs/ggml"
-	"github.com/moogla/moogla/template"
-	"github.com/moogla/moogla/types/model"
+	"github.com/goobla/goobla/api"
+	"github.com/goobla/goobla/fs/ggml"
+	"github.com/goobla/goobla/template"
+	"github.com/goobla/goobla/types/model"
 )
 
 var intermediateBlobs map[string]string = make(map[string]string)
@@ -47,9 +47,9 @@ func parseFromModel(ctx context.Context, name model.Name, fn func(api.ProgressRe
 		}
 
 		switch layer.MediaType {
-		case "application/vnd.ollama.image.model",
-			"application/vnd.ollama.image.projector",
-			"application/vnd.ollama.image.adapter":
+		case "application/vnd.goobla.image.model",
+			"application/vnd.goobla.image.projector",
+			"application/vnd.goobla.image.adapter":
 			blobpath, err := GetBlobsPath(layer.Digest)
 			if err != nil {
 				return nil, err
@@ -81,7 +81,7 @@ func detectChatTemplate(layers []*layerGGML) ([]*layerGGML, error) {
 			if t, err := template.Named(s); err != nil {
 				slog.Debug("template detection", "error", err, "template", s)
 			} else {
-				layer, err := NewLayer(t.Reader(), "application/vnd.ollama.image.template")
+				layer, err := NewLayer(t.Reader(), "application/vnd.goobla.image.template")
 				if err != nil {
 					return nil, err
 				}
@@ -95,7 +95,7 @@ func detectChatTemplate(layers []*layerGGML) ([]*layerGGML, error) {
 						return nil, err
 					}
 
-					layer, err := NewLayer(&b, "application/vnd.ollama.image.params")
+					layer, err := NewLayer(&b, "application/vnd.goobla.image.params")
 					if err != nil {
 						return nil, err
 					}

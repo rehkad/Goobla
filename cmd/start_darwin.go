@@ -7,7 +7,7 @@ import (
 	"os/exec"
 	"regexp"
 
-	"github.com/moogla/moogla/api"
+	"github.com/goobla/goobla/api"
 )
 
 func startApp(ctx context.Context, client *api.Client) error {
@@ -19,10 +19,10 @@ func startApp(ctx context.Context, client *api.Client) error {
 	if err != nil {
 		return err
 	}
-	r := regexp.MustCompile(`^.*/Moogla\s?\d*.app`)
+	r := regexp.MustCompile(`^.*/Goobla\s?\d*.app`)
 	m := r.FindStringSubmatch(link)
 	if len(m) != 1 {
-		return errors.New("could not find ollama app")
+		return errors.New("could not find goobla app")
 	}
 	if err := exec.Command("/usr/bin/open", "-j", "-a", m[0], "--args", "--fast-startup").Run(); err != nil {
 		return err

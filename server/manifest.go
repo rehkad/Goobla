@@ -13,7 +13,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/moogla/moogla/types/model"
+	"github.com/goobla/goobla/types/model"
 )
 
 type Manifest struct {

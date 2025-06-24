@@ -8,13 +8,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/moogla/moogla/api"
+	"github.com/goobla/goobla/api"
 )
 
 func TestList(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
-	t.Setenv("MOOGLA_MODELS", t.TempDir())
+	t.Setenv("GOOBLA_MODELS", t.TempDir())
 
 	expectNames := []string{
 		"mistral:7b-instruct-q4_0",

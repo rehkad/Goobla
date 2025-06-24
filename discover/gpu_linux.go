@@ -10,7 +10,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/moogla/moogla/format"
+	"github.com/goobla/goobla/format"
 )
 
 var CudartGlobs = []string{

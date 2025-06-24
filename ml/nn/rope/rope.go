@@ -1,6 +1,6 @@
 package rope
 
-import "github.com/moogla/moogla/ml"
+import "github.com/goobla/goobla/ml"
 
 // Options contains optional parameters for RoPE function
 type Options struct {

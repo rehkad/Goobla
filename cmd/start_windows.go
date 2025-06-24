@@ -13,19 +13,19 @@ import (
 	"syscall"
 	"unsafe"
 
-	"github.com/moogla/moogla/api"
+	"github.com/goobla/goobla/api"
 	"golang.org/x/sys/windows"
 )
 
 const (
-	Installer = "MooglaSetup.exe"
+	Installer = "GooblaSetup.exe"
 )
 
 func startApp(ctx context.Context, client *api.Client) error {
 	if len(isProcRunning(Installer)) > 0 {
 		return fmt.Errorf("upgrade in progress...")
 	}
-	AppName := "ollama app.exe"
+	AppName := "goobla app.exe"
 	exe, err := os.Executable()
 	if err != nil {
 		return err
@@ -35,13 +35,13 @@ func startApp(ctx context.Context, client *api.Client) error {
 	if errors.Is(err, os.ErrNotExist) {
 		// Try the standard install location
 		localAppData := os.Getenv("LOCALAPPDATA")
-		appExe = filepath.Join(localAppData, "Moogla", AppName)
+		appExe = filepath.Join(localAppData, "Goobla", AppName)
 		_, err := os.Stat(appExe)
 		if errors.Is(err, os.ErrNotExist) {
 			// Finally look in the path
 			appExe, err = exec.LookPath(AppName)
 			if err != nil {
-				return errors.New("could not locate ollama app")
+				return errors.New("could not locate goobla app")
 			}
 		}
 	}
@@ -55,7 +55,7 @@ func startApp(ctx context.Context, client *api.Client) error {
 	cmd.Stderr = os.Stderr
 
 	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("unable to start ollama app %w", err)
+		return fmt.Errorf("unable to start goobla app %w", err)
 	}
 
 	if cmd.Process != nil {

@@ -2,5 +2,5 @@
 
 package cpu
 
-// #cgo CPPFLAGS: -DMOOGLA_DEBUG
+// #cgo CPPFLAGS: -DGOOBLA_DEBUG
 import "C"

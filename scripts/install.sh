@@ -1,6 +1,6 @@
 #!/bin/sh
-# This script installs Moogla on Linux.
-# It detects the current operating system architecture and installs the appropriate version of Moogla.
+# This script installs Goobla on Linux.
+# It detects the current operating system architecture and installs the appropriate version of Goobla.
 
 set -eu
 
@@ -45,7 +45,7 @@ case "$KERN" in
     *) ;;
 esac
 
-VER_PARAM="${MOOGLA_VERSION:+?version=$MOOGLA_VERSION}"
+VER_PARAM="${GOOBLA_VERSION:+?version=$GOOBLA_VERSION}"
 
 SUDO=
 if [ "$(id -u)" -ne 0 ]; then
@@ -69,23 +69,23 @@ fi
 for BINDIR in /usr/local/bin /usr/bin /bin; do
     echo $PATH | grep -q $BINDIR && break || continue
 done
-MOOGLA_INSTALL_DIR=$(dirname ${BINDIR})
+GOOBLA_INSTALL_DIR=$(dirname ${BINDIR})
 
-if [ -d "$MOOGLA_INSTALL_DIR/lib/moogla" ] ; then
-    status "Cleaning up old version at $MOOGLA_INSTALL_DIR/lib/moogla"
-    $SUDO rm -rf "$MOOGLA_INSTALL_DIR/lib/moogla"
+if [ -d "$GOOBLA_INSTALL_DIR/lib/goobla" ] ; then
+    status "Cleaning up old version at $GOOBLA_INSTALL_DIR/lib/goobla"
+    $SUDO rm -rf "$GOOBLA_INSTALL_DIR/lib/goobla"
 fi
-status "Installing moogla to $MOOGLA_INSTALL_DIR"
+status "Installing goobla to $GOOBLA_INSTALL_DIR"
 $SUDO install -o0 -g0 -m755 -d $BINDIR
-$SUDO install -o0 -g0 -m755 -d "$MOOGLA_INSTALL_DIR/lib/moogla"
+$SUDO install -o0 -g0 -m755 -d "$GOOBLA_INSTALL_DIR/lib/goobla"
 status "Downloading Linux ${ARCH} bundle"
 curl --fail --show-error --location --progress-bar \
-    "https://moogla.com/download/moogla-linux-${ARCH}.tgz${VER_PARAM}" | \
-    $SUDO tar -xzf - -C "$MOOGLA_INSTALL_DIR"
+    "https://goobla.com/download/goobla-linux-${ARCH}.tgz${VER_PARAM}" | \
+    $SUDO tar -xzf - -C "$GOOBLA_INSTALL_DIR"
 
-if [ "$MOOGLA_INSTALL_DIR/bin/moogla" != "$BINDIR/moogla" ] ; then
-    status "Making moogla accessible in the PATH in $BINDIR"
-    $SUDO ln -sf "$MOOGLA_INSTALL_DIR/moogla" "$BINDIR/moogla"
+if [ "$GOOBLA_INSTALL_DIR/bin/goobla" != "$BINDIR/goobla" ] ; then
+    status "Making goobla accessible in the PATH in $BINDIR"
+    $SUDO ln -sf "$GOOBLA_INSTALL_DIR/goobla" "$BINDIR/goobla"
 fi
 
 # Check for NVIDIA JetPack systems with additional downloads
@@ -93,53 +93,53 @@ if [ -f /etc/nv_tegra_release ] ; then
     if grep R36 /etc/nv_tegra_release > /dev/null ; then
         status "Downloading JetPack 6 components"
         curl --fail --show-error --location --progress-bar \
-            "https://moogla.com/download/moogla-linux-${ARCH}-jetpack6.tgz${VER_PARAM}" | \
-            $SUDO tar -xzf - -C "$MOOGLA_INSTALL_DIR"
+            "https://goobla.com/download/goobla-linux-${ARCH}-jetpack6.tgz${VER_PARAM}" | \
+            $SUDO tar -xzf - -C "$GOOBLA_INSTALL_DIR"
     elif grep R35 /etc/nv_tegra_release > /dev/null ; then
         status "Downloading JetPack 5 components"
         curl --fail --show-error --location --progress-bar \
-            "https://moogla.com/download/moogla-linux-${ARCH}-jetpack5.tgz${VER_PARAM}" | \
-            $SUDO tar -xzf - -C "$MOOGLA_INSTALL_DIR"
+            "https://goobla.com/download/goobla-linux-${ARCH}-jetpack5.tgz${VER_PARAM}" | \
+            $SUDO tar -xzf - -C "$GOOBLA_INSTALL_DIR"
     else
         warning "Unsupported JetPack version detected.  GPU may not be supported"
     fi
 fi
 
 install_success() {
-    status 'The Moogla API is now available at 127.0.0.1:11434.'
-    status 'Install complete. Run "moogla" from the command line.'
+    status 'The Goobla API is now available at 127.0.0.1:11434.'
+    status 'Install complete. Run "goobla" from the command line.'
 }
 trap install_success EXIT
 
 # Everything from this point onwards is optional.
 
 configure_systemd() {
-    if ! id moogla >/dev/null 2>&1; then
-        status "Creating moogla user..."
-        $SUDO useradd -r -s /bin/false -U -m -d /usr/share/moogla moogla
+    if ! id goobla >/dev/null 2>&1; then
+        status "Creating goobla user..."
+        $SUDO useradd -r -s /bin/false -U -m -d /usr/share/goobla goobla
     fi
     if getent group render >/dev/null 2>&1; then
-        status "Adding moogla user to render group..."
-        $SUDO usermod -a -G render moogla
+        status "Adding goobla user to render group..."
+        $SUDO usermod -a -G render goobla
     fi
     if getent group video >/dev/null 2>&1; then
-        status "Adding moogla user to video group..."
-        $SUDO usermod -a -G video moogla
+        status "Adding goobla user to video group..."
+        $SUDO usermod -a -G video goobla
     fi
 
-    status "Adding current user to moogla group..."
-    $SUDO usermod -a -G moogla $(whoami)
+    status "Adding current user to goobla group..."
+    $SUDO usermod -a -G goobla $(whoami)
 
-    status "Creating moogla systemd service..."
-    cat <<EOF | $SUDO tee /etc/systemd/system/moogla.service >/dev/null
+    status "Creating goobla systemd service..."
+    cat <<EOF | $SUDO tee /etc/systemd/system/goobla.service >/dev/null
 [Unit]
-Description=Moogla Service
+Description=Goobla Service
 After=network-online.target
 
 [Service]
-ExecStart=$BINDIR/moogla serve
-User=moogla
-Group=moogla
+ExecStart=$BINDIR/goobla serve
+User=goobla
+Group=goobla
 Restart=always
 RestartSec=3
 Environment="PATH=$PATH"
@@ -150,11 +150,11 @@ EOF
     SYSTEMCTL_RUNNING="$(systemctl is-system-running || true)"
     case $SYSTEMCTL_RUNNING in
         running|degraded)
-            status "Enabling and starting moogla service..."
+            status "Enabling and starting goobla service..."
             $SUDO systemctl daemon-reload
-            $SUDO systemctl enable moogla
+            $SUDO systemctl enable goobla
 
-            start_service() { $SUDO systemctl restart moogla; }
+            start_service() { $SUDO systemctl restart goobla; }
             trap start_service EXIT
             ;;
         *)
@@ -217,15 +217,15 @@ fi
 
 if ! check_gpu lspci nvidia && ! check_gpu lshw nvidia && ! check_gpu lspci amdgpu && ! check_gpu lshw amdgpu; then
     install_success
-    warning "No NVIDIA/AMD GPU detected. Moogla will run in CPU-only mode."
+    warning "No NVIDIA/AMD GPU detected. Goobla will run in CPU-only mode."
     exit 0
 fi
 
 if check_gpu lspci amdgpu || check_gpu lshw amdgpu; then
     status "Downloading Linux ROCm ${ARCH} bundle"
     curl --fail --show-error --location --progress-bar \
-        "https://moogla.com/download/moogla-linux-${ARCH}-rocm.tgz${VER_PARAM}" | \
-        $SUDO tar -xzf - -C "$MOOGLA_INSTALL_DIR"
+        "https://goobla.com/download/goobla-linux-${ARCH}-rocm.tgz${VER_PARAM}" | \
+        $SUDO tar -xzf - -C "$GOOBLA_INSTALL_DIR"
 
     install_success
     status "AMD GPU ready."

@@ -1,18 +1,18 @@
 # How to troubleshoot issues
 
-Sometimes Moogla may not perform as expected. One of the best ways to figure out what happened is to take a look at the logs. Find the logs on **Mac** by running the command:
+Sometimes Goobla may not perform as expected. One of the best ways to figure out what happened is to take a look at the logs. Find the logs on **Mac** by running the command:
 
 ```shell
-cat ~/.moogla/logs/server.log
+cat ~/.goobla/logs/server.log
 ```
 
 On **Linux** systems with systemd, the logs can be found with this command:
 
 ```shell
-journalctl -u moogla --no-pager --follow --pager-end 
+journalctl -u goobla --no-pager --follow --pager-end 
 ```
 
-When you run Moogla in a **container**, the logs go to stdout/stderr in the container:
+When you run Goobla in a **container**, the logs go to stdout/stderr in the container:
 
 ```shell
 docker logs <container-name>
@@ -20,25 +20,25 @@ docker logs <container-name>
 
 (Use `docker ps` to find the container name)
 
-If manually running `moogla serve` in a terminal, the logs will be on that terminal.
+If manually running `goobla serve` in a terminal, the logs will be on that terminal.
 
-When you run Moogla on **Windows**, there are a few different locations. You can view them in the explorer window by hitting `<cmd>+R` and type in:
-- `explorer %LOCALAPPDATA%\Moogla` to view logs.  The most recent server logs will be in `server.log` and older logs will be in `server-#.log` 
-- `explorer %LOCALAPPDATA%\Programs\Moogla` to browse the binaries (The installer adds this to your user PATH)
-- `explorer %HOMEPATH%\.moogla` to browse where models and configuration is stored
+When you run Goobla on **Windows**, there are a few different locations. You can view them in the explorer window by hitting `<cmd>+R` and type in:
+- `explorer %LOCALAPPDATA%\Goobla` to view logs.  The most recent server logs will be in `server.log` and older logs will be in `server-#.log` 
+- `explorer %LOCALAPPDATA%\Programs\Goobla` to browse the binaries (The installer adds this to your user PATH)
+- `explorer %HOMEPATH%\.goobla` to browse where models and configuration is stored
 
 To enable additional debug logging to help troubleshoot problems, first **Quit the running app from the tray menu** then in a powershell terminal
 
 ```powershell
-$env:MOOGLA_DEBUG="1"
-& "moogla app.exe"
+$env:GOOBLA_DEBUG="1"
+& "goobla app.exe"
 ```
 
-Join the [Discord](https://discord.gg/moogla) for help interpreting the logs.
+Join the [Discord](https://discord.gg/goobla) for help interpreting the logs.
 
 ## LLM libraries
 
-Moogla includes multiple LLM libraries compiled for different GPUs and CPU vector features. Moogla tries to pick the best one based on the capabilities of your system. If this autodetection has problems, or you run into other problems (e.g. crashes in your GPU) you can workaround this by forcing a specific LLM library. `cpu_avx2` will perform the best, followed by `cpu_avx` an the slowest but most compatible is `cpu`. Rosetta emulation under MacOS will work with the `cpu` library. 
+Goobla includes multiple LLM libraries compiled for different GPUs and CPU vector features. Goobla tries to pick the best one based on the capabilities of your system. If this autodetection has problems, or you run into other problems (e.g. crashes in your GPU) you can workaround this by forcing a specific LLM library. `cpu_avx2` will perform the best, followed by `cpu_avx` an the slowest but most compatible is `cpu`. Rosetta emulation under MacOS will work with the `cpu` library. 
 
 In the server log, you will see a message that looks something like this (varies from release to release):
 
@@ -48,10 +48,10 @@ Dynamic LLM libraries [rocm_v6 cpu cpu_avx cpu_avx2 cuda_v12 rocm_v5]
 
 **Experimental LLM Library Override**
 
-You can set MOOGLA_LLM_LIBRARY to any of the available LLM libraries to bypass autodetection, so for example, if you have a CUDA card, but want to force the CPU LLM library with AVX2 vector support, use:
+You can set GOOBLA_LLM_LIBRARY to any of the available LLM libraries to bypass autodetection, so for example, if you have a CUDA card, but want to force the CPU LLM library with AVX2 vector support, use:
 
 ```shell
-MOOGLA_LLM_LIBRARY="cpu_avx2" moogla serve
+GOOBLA_LLM_LIBRARY="cpu_avx2" goobla serve
 ```
 
 You can see what features your CPU has with the following.
@@ -65,24 +65,24 @@ cat /proc/cpuinfo| grep flags | head -1
 If you run into problems on Linux and want to install an older version, or you'd like to try out a pre-release before it's officially released, you can tell the install script which version to install.
 
 ```shell
-curl -fsSL https://moogla.com/install.sh | MOOGLA_VERSION=0.5.7 sh
+curl -fsSL https://goobla.com/install.sh | GOOBLA_VERSION=0.5.7 sh
 ```
 
 ## Linux docker
 
-If Moogla initially works on the GPU in a docker container, but then switches to running on CPU after some period of time with errors in the server log reporting GPU discovery failures, this can be resolved by disabling systemd cgroup management in Docker.  Edit `/etc/docker/daemon.json` on the host and add `"exec-opts": ["native.cgroupdriver=cgroupfs"]` to the docker configuration.
+If Goobla initially works on the GPU in a docker container, but then switches to running on CPU after some period of time with errors in the server log reporting GPU discovery failures, this can be resolved by disabling systemd cgroup management in Docker.  Edit `/etc/docker/daemon.json` on the host and add `"exec-opts": ["native.cgroupdriver=cgroupfs"]` to the docker configuration.
 
 ## NVIDIA GPU Discovery
 
-When Moogla starts up, it takes inventory of the GPUs present in the system to determine compatibility and how much VRAM is available.  Sometimes this discovery can fail to find your GPUs.  In general, running the latest driver will yield the best results.
+When Goobla starts up, it takes inventory of the GPUs present in the system to determine compatibility and how much VRAM is available.  Sometimes this discovery can fail to find your GPUs.  In general, running the latest driver will yield the best results.
 
 ### Linux NVIDIA Troubleshooting
 
-If you are using a container to run Moogla, make sure you've set up the container runtime first as described in [docker.md](./docker.md)
+If you are using a container to run Goobla, make sure you've set up the container runtime first as described in [docker.md](./docker.md)
 
-Sometimes the Moogla can have difficulties initializing the GPU. When you check the server logs, this can show up as various error codes, such as "3" (not initialized), "46" (device unavailable), "100" (no device), "999" (unknown), or others. The following troubleshooting techniques may help resolve the problem
+Sometimes the Goobla can have difficulties initializing the GPU. When you check the server logs, this can show up as various error codes, such as "3" (not initialized), "46" (device unavailable), "100" (no device), "999" (unknown), or others. The following troubleshooting techniques may help resolve the problem
 
-- If you are using a container, is the container runtime working?  Try `docker run --gpus all ubuntu nvidia-smi` - if this doesn't work, Moogla won't be able to see your NVIDIA GPU.
+- If you are using a container, is the container runtime working?  Try `docker run --gpus all ubuntu nvidia-smi` - if this doesn't work, Goobla won't be able to see your NVIDIA GPU.
 - Is the uvm driver loaded? `sudo nvidia-modprobe -u`
 - Try reloading the nvidia_uvm driver - `sudo rmmod nvidia_uvm` then `sudo modprobe nvidia_uvm`
 - Try rebooting
@@ -95,13 +95,13 @@ If none of those resolve the problem, gather additional information and file an 
 
 ## AMD GPU Discovery
 
-On linux, AMD GPU access typically requires `video` and/or `render` group membership to access the `/dev/kfd` device.  If permissions are not set up correctly, Moogla will detect this and report an error in the server log.
+On linux, AMD GPU access typically requires `video` and/or `render` group membership to access the `/dev/kfd` device.  If permissions are not set up correctly, Goobla will detect this and report an error in the server log.
 
-When running in a container, in some Linux distributions and container runtimes, the moogla process may be unable to access the GPU.  Use `ls -lnd /dev/kfd /dev/dri /dev/dri/*` on the host system to determine the **numeric** group IDs on your system, and pass additional `--group-add ...` arguments to the container so it can access the required devices.   For example, in the following output `crw-rw---- 1 0  44 226,   0 Sep 16 16:55 /dev/dri/card0` the group ID column is `44` 
+When running in a container, in some Linux distributions and container runtimes, the goobla process may be unable to access the GPU.  Use `ls -lnd /dev/kfd /dev/dri /dev/dri/*` on the host system to determine the **numeric** group IDs on your system, and pass additional `--group-add ...` arguments to the container so it can access the required devices.   For example, in the following output `crw-rw---- 1 0  44 226,   0 Sep 16 16:55 /dev/dri/card0` the group ID column is `44` 
 
-If you are experiencing problems getting Moogla to correctly discover or use your GPU for inference, the following may help isolate the failure.
+If you are experiencing problems getting Goobla to correctly discover or use your GPU for inference, the following may help isolate the failure.
 - `AMD_LOG_LEVEL=3` Enable info log levels in the AMD HIP/ROCm libraries.  This can help show more detailed error codes that can help troubleshoot problems
-- `MOOGLA_DEBUG=1` During GPU discovery additional information will be reported
+- `GOOBLA_DEBUG=1` During GPU discovery additional information will be reported
 - Check dmesg for any errors from amdgpu or kfd drivers `sudo dmesg | grep -i amdgpu` and `sudo dmesg | grep -i kfd`
 
 ## Multiple AMD GPUs

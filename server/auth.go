@@ -15,8 +15,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/moogla/moogla/api"
-	"github.com/moogla/moogla/auth"
+	"github.com/goobla/goobla/api"
+	"github.com/goobla/goobla/auth"
 )
 
 type registryChallenge struct {

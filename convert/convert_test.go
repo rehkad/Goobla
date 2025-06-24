@@ -19,7 +19,7 @@ import (
 
 	"golang.org/x/exp/maps"
 
-	"github.com/moogla/moogla/fs/ggml"
+	"github.com/goobla/goobla/fs/ggml"
 )
 
 type tensorData struct {
@@ -285,7 +285,7 @@ func TestConvertAdapter(t *testing.T) {
 
 	cases := []AdapterCase{
 		{
-			Name: "discollama",
+			Name: "discgoobla",
 			BaseKV: map[string]any{
 				"general.architecture":          "llama",
 				"llama.attention.head_count":    uint32(32),
@@ -439,7 +439,7 @@ func generateLoraTestData(t *testing.T, tempDir string) {
     "adapter_path": "adapters-test",
     "batch_size": 8,
     "config": "config-tiny.json",
-    "data": "../discmoogla.completion",
+    "data": "../discgoobla.completion",
     "grad_checkpoint": null,
     "iters": 1000,
     "learning_rate": 1e-05,

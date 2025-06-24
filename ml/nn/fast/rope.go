@@ -2,8 +2,8 @@
 package fast
 
 import (
-	"github.com/moogla/moogla/ml"
-	"github.com/moogla/moogla/ml/nn/rope"
+	"github.com/goobla/goobla/ml"
+	"github.com/goobla/goobla/ml/nn/rope"
 )
 
 // fastRoPE is an interface for tensors that support fast rotary positional embedding.

@@ -1,10 +1,10 @@
 package tray
 
 import (
-	"github.com/moogla/moogla/app/tray/commontray"
-	"github.com/moogla/moogla/app/tray/wintray"
+	"github.com/goobla/goobla/app/tray/commontray"
+	"github.com/goobla/goobla/app/tray/wintray"
 )
 
-func InitPlatformTray(icon, updateIcon []byte) (commontray.MooglaTray, error) {
+func InitPlatformTray(icon, updateIcon []byte) (commontray.GooblaTray, error) {
 	return wintray.InitTray(icon, updateIcon)
 }

@@ -1,6 +1,6 @@
 package nn
 
-import "github.com/moogla/moogla/ml"
+import "github.com/goobla/goobla/ml"
 
 type Linear struct {
 	Weight ml.Tensor `gguf:"weight"`

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/moogla/moogla/api"
+	"github.com/goobla/goobla/api"
 	"golang.org/x/sync/semaphore"
 )
 

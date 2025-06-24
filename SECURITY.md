@@ -1,10 +1,10 @@
 # Security
 
-The Moogla maintainer team takes security seriously and will actively work to resolve security issues.
+The Goobla maintainer team takes security seriously and will actively work to resolve security issues.
 
 ## Reporting a vulnerability
 
-If you discover a security vulnerability, please do not open a public issue. Instead, please report it by emailing hello@moogla.com. We ask that you give us sufficient time to investigate and address the vulnerability before disclosing it publicly.
+If you discover a security vulnerability, please do not open a public issue. Instead, please report it by emailing hello@goobla.com. We ask that you give us sufficient time to investigate and address the vulnerability before disclosing it publicly.
 
 Please include the following details in your report:
 - A description of the vulnerability
@@ -14,12 +14,12 @@ Please include the following details in your report:
 
 ## Security best practices
 
-While the maintainer team does their best to secure Moogla, users are encouraged to implement their own security best practices, such as:
+While the maintainer team does their best to secure Goobla, users are encouraged to implement their own security best practices, such as:
 
-- Regularly updating to the latest version of Moogla
-- Securing access to hosted instances of Moogla
+- Regularly updating to the latest version of Goobla
+- Securing access to hosted instances of Goobla
 - Monitoring systems for unusual activity
 
 ## Contact
 
-For any other questions or concerns related to security, please contact us at hello@moogla.com
+For any other questions or concerns related to security, please contact us at hello@goobla.com

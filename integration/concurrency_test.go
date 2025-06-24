@@ -13,8 +13,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/moogla/moogla/api"
-	"github.com/moogla/moogla/format"
+	"github.com/goobla/goobla/api"
+	"github.com/goobla/goobla/format"
 )
 
 func TestMultiModelConcurrency(t *testing.T) {
@@ -72,7 +72,7 @@ func TestIntegrationConcurrentPredict(t *testing.T) {
 	reqLimit := len(req)
 	iterLimit := 5
 
-	if s := os.Getenv("MOOGLA_MAX_VRAM"); s != "" {
+	if s := os.Getenv("GOOBLA_MAX_VRAM"); s != "" {
 		maxVram, err := strconv.ParseUint(s, 10, 64)
 		require.NoError(t, err)
 		// Don't hammer on small VRAM cards...
@@ -108,9 +108,9 @@ func TestIntegrationConcurrentPredict(t *testing.T) {
 
 // Stress the system if we know how much VRAM it has, and attempt to load more models than will fit
 func TestMultiModelStress(t *testing.T) {
-	s := os.Getenv("MOOGLA_MAX_VRAM") // TODO - discover actual VRAM
+	s := os.Getenv("GOOBLA_MAX_VRAM") // TODO - discover actual VRAM
 	if s == "" {
-		t.Skip("MOOGLA_MAX_VRAM not specified, can't pick the right models for the stress test")
+		t.Skip("GOOBLA_MAX_VRAM not specified, can't pick the right models for the stress test")
 	}
 
 	maxVram, err := strconv.ParseUint(s, 10, 64)

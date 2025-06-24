@@ -19,14 +19,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/moogla/moogla/api"
-	"github.com/moogla/moogla/convert"
-	"github.com/moogla/moogla/envconfig"
-	"github.com/moogla/moogla/format"
-	"github.com/moogla/moogla/fs/ggml"
-	"github.com/moogla/moogla/template"
-	"github.com/moogla/moogla/types/errtypes"
-	"github.com/moogla/moogla/types/model"
+	"github.com/goobla/goobla/api"
+	"github.com/goobla/goobla/convert"
+	"github.com/goobla/goobla/envconfig"
+	"github.com/goobla/goobla/format"
+	"github.com/goobla/goobla/fs/ggml"
+	"github.com/goobla/goobla/template"
+	"github.com/goobla/goobla/types/errtypes"
+	"github.com/goobla/goobla/types/model"
 )
 
 var (
@@ -225,7 +225,7 @@ func detectModelTypeFromFiles(files map[string]string) string {
 }
 
 func convertFromSafetensors(files map[string]string, baseLayers []*layerGGML, isAdapter bool, fn func(resp api.ProgressResponse)) ([]*layerGGML, error) {
-	tmpDir, err := os.MkdirTemp(envconfig.Models(), "ollama-safetensors")
+	tmpDir, err := os.MkdirTemp(envconfig.Models(), "goobla-safetensors")
 	if err != nil {
 		return nil, err
 	}
@@ -264,7 +264,7 @@ func convertFromSafetensors(files map[string]string, baseLayers []*layerGGML, is
 	var mediaType string
 	if !isAdapter {
 		fn(api.ProgressResponse{Status: "converting model"})
-		mediaType = "application/vnd.ollama.image.model"
+		mediaType = "application/vnd.goobla.image.model"
 		if err := convert.ConvertModel(os.DirFS(tmpDir), t); err != nil {
 			return nil, err
 		}
@@ -274,7 +274,7 @@ func convertFromSafetensors(files map[string]string, baseLayers []*layerGGML, is
 			return nil, err
 		}
 		fn(api.ProgressResponse{Status: "converting adapter"})
-		mediaType = "application/vnd.ollama.image.adapter"
+		mediaType = "application/vnd.goobla.image.adapter"
 		if err := convert.ConvertAdapter(os.DirFS(tmpDir), t, kv); err != nil {
 			return nil, err
 		}
@@ -329,7 +329,7 @@ func createModel(r api.CreateRequest, name model.Name, baseLayers []*layerGGML, 
 	for _, layer := range baseLayers {
 		if layer.GGML != nil {
 			quantType := strings.ToUpper(cmp.Or(r.Quantize, r.Quantization))
-			if quantType != "" && layer.GGML.Name() == "gguf" && layer.MediaType == "application/vnd.ollama.image.model" {
+			if quantType != "" && layer.GGML.Name() == "gguf" && layer.MediaType == "application/vnd.goobla.image.model" {
 				want, err := ggml.ParseFileType(quantType)
 				if err != nil {
 					return err
@@ -506,12 +506,12 @@ func ggufLayers(digest string, fn func(resp api.ProgressResponse)) ([]*layerGGML
 		return nil, err
 	}
 
-	mediatype := "application/vnd.ollama.image.model"
+	mediatype := "application/vnd.goobla.image.model"
 	if f.KV().Kind() == "adapter" {
-		mediatype = "application/vnd.ollama.image.adapter"
+		mediatype = "application/vnd.goobla.image.adapter"
 	} else if (f.KV().Uint("block_count") == 0 && f.KV().Uint("vision.block_count") > 0) || f.KV().Kind() == "projector" {
 		// if a model has vision.block_count but not block_count, it is a standalone vision model
-		mediatype = "application/vnd.ollama.image.projector"
+		mediatype = "application/vnd.goobla.image.projector"
 	}
 
 	layer, err := NewLayerFromLayer(digest, mediatype, blob.Name())
@@ -541,13 +541,13 @@ func removeLayer(layers []Layer, mediatype string) []Layer {
 }
 
 func setTemplate(layers []Layer, t string) ([]Layer, error) {
-	layers = removeLayer(layers, "application/vnd.ollama.image.template")
+	layers = removeLayer(layers, "application/vnd.goobla.image.template")
 	if _, err := template.Parse(t); err != nil {
 		return nil, fmt.Errorf("%w: %s", errBadTemplate, err)
 	}
 
 	blob := strings.NewReader(t)
-	layer, err := NewLayer(blob, "application/vnd.ollama.image.template")
+	layer, err := NewLayer(blob, "application/vnd.goobla.image.template")
 	if err != nil {
 		return nil, err
 	}
@@ -557,10 +557,10 @@ func setTemplate(layers []Layer, t string) ([]Layer, error) {
 }
 
 func setSystem(layers []Layer, s string) ([]Layer, error) {
-	layers = removeLayer(layers, "application/vnd.ollama.image.system")
+	layers = removeLayer(layers, "application/vnd.goobla.image.system")
 	if s != "" {
 		blob := strings.NewReader(s)
-		layer, err := NewLayer(blob, "application/vnd.ollama.image.system")
+		layer, err := NewLayer(blob, "application/vnd.goobla.image.system")
 		if err != nil {
 			return nil, err
 		}
@@ -571,7 +571,7 @@ func setSystem(layers []Layer, s string) ([]Layer, error) {
 
 func setLicense(layers []Layer, l string) ([]Layer, error) {
 	blob := strings.NewReader(l)
-	layer, err := NewLayer(blob, "application/vnd.ollama.image.license")
+	layer, err := NewLayer(blob, "application/vnd.goobla.image.license")
 	if err != nil {
 		return nil, err
 	}
@@ -584,7 +584,7 @@ func setParameters(layers []Layer, p map[string]any) ([]Layer, error) {
 		p = make(map[string]any)
 	}
 	for _, layer := range layers {
-		if layer.MediaType != "application/vnd.ollama.image.params" {
+		if layer.MediaType != "application/vnd.goobla.image.params" {
 			continue
 		}
 
@@ -616,13 +616,13 @@ func setParameters(layers []Layer, p map[string]any) ([]Layer, error) {
 		return layers, nil
 	}
 
-	layers = removeLayer(layers, "application/vnd.ollama.image.params")
+	layers = removeLayer(layers, "application/vnd.goobla.image.params")
 
 	var b bytes.Buffer
 	if err := json.NewEncoder(&b).Encode(p); err != nil {
 		return nil, err
 	}
-	layer, err := NewLayer(&b, "application/vnd.ollama.image.params")
+	layer, err := NewLayer(&b, "application/vnd.goobla.image.params")
 	if err != nil {
 		return nil, err
 	}
@@ -638,12 +638,12 @@ func setMessages(layers []Layer, m []api.Message) ([]Layer, error) {
 	}
 
 	slog.Debug("removing old messages")
-	layers = removeLayer(layers, "application/vnd.ollama.image.messages")
+	layers = removeLayer(layers, "application/vnd.goobla.image.messages")
 	var b bytes.Buffer
 	if err := json.NewEncoder(&b).Encode(m); err != nil {
 		return nil, err
 	}
-	layer, err := NewLayer(&b, "application/vnd.ollama.image.messages")
+	layer, err := NewLayer(&b, "application/vnd.goobla.image.messages")
 	if err != nil {
 		return nil, err
 	}

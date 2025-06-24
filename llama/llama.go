@@ -38,10 +38,10 @@ import (
 	"sync"
 	"unsafe"
 
-	_ "github.com/moogla/moogla/llama/llama.cpp/common"
-	_ "github.com/moogla/moogla/llama/llama.cpp/src"
-	_ "github.com/moogla/moogla/llama/llama.cpp/tools/mtmd"
-	ggml "github.com/moogla/moogla/ml/backend/ggml/ggml/src"
+	_ "github.com/goobla/goobla/llama/llama.cpp/common"
+	_ "github.com/goobla/goobla/llama/llama.cpp/src"
+	_ "github.com/goobla/goobla/llama/llama.cpp/tools/mtmd"
+	ggml "github.com/goobla/goobla/ml/backend/ggml/ggml/src"
 )
 
 func init() {

@@ -3,7 +3,7 @@ package convert
 import (
 	"strings"
 
-	"github.com/moogla/moogla/fs/ggml"
+	"github.com/goobla/goobla/fs/ggml"
 	"github.com/pdevine/tensor"
 	"github.com/pdevine/tensor/native"
 )

@@ -1,4 +1,4 @@
-package mooglarunner
+package gooblarunner
 
 import (
 	"errors"
@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/moogla/moogla/ml"
-	"github.com/moogla/moogla/model/input"
+	"github.com/goobla/goobla/ml"
+	"github.com/goobla/goobla/model/input"
 )
 
 func TestCountCommon(t *testing.T) {

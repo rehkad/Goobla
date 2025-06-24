@@ -3,8 +3,8 @@ package gemma3
 import (
 	"image"
 
-	"github.com/moogla/moogla/fs"
-	"github.com/moogla/moogla/model/imageproc"
+	"github.com/goobla/goobla/fs"
+	"github.com/goobla/goobla/model/imageproc"
 )
 
 type ImageProcessor struct {

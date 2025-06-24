@@ -19,12 +19,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/moogla/moogla/auth"
-	"github.com/moogla/moogla/version"
+	"github.com/goobla/goobla/auth"
+	"github.com/goobla/goobla/version"
 )
 
 var (
-	UpdateCheckURLBase  = "https://moogla.com/api/update"
+	UpdateCheckURLBase  = "https://goobla.com/api/update"
 	UpdateDownloaded    = false
 	UpdateCheckInterval = 60 * 60 * time.Second
 )
@@ -69,7 +69,7 @@ func IsNewReleaseAvailable(ctx context.Context) (bool, UpdateResponse) {
 		return false, updateResp
 	}
 	req.Header.Set("Authorization", signature)
-	req.Header.Set("User-Agent", fmt.Sprintf("ollama/%s (%s %s) Go/%s", version.Version, runtime.GOARCH, runtime.GOOS, runtime.Version()))
+	req.Header.Set("User-Agent", fmt.Sprintf("goobla/%s (%s %s) Go/%s", version.Version, runtime.GOARCH, runtime.GOOS, runtime.Version()))
 
 	slog.Debug("checking for available update", "requestURL", requestURL)
 	resp, err := http.DefaultClient.Do(req)
@@ -158,7 +158,7 @@ func DownloadNewRelease(ctx context.Context, updateResp UpdateResponse) error {
 	_, err = os.Stat(filepath.Dir(stageFilename))
 	if errors.Is(err, os.ErrNotExist) {
 		if err := os.MkdirAll(filepath.Dir(stageFilename), 0o755); err != nil {
-			return fmt.Errorf("create ollama dir %s: %v", filepath.Dir(stageFilename), err)
+			return fmt.Errorf("create goobla dir %s: %v", filepath.Dir(stageFilename), err)
 		}
 	}
 

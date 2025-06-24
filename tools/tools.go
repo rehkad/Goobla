@@ -6,7 +6,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/moogla/moogla/api"
+	"github.com/goobla/goobla/api"
 )
 
 type toolsState int

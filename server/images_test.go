@@ -4,9 +4,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/moogla/moogla/fs/ggml"
-	"github.com/moogla/moogla/template"
-	"github.com/moogla/moogla/types/model"
+	"github.com/goobla/goobla/fs/ggml"
+	"github.com/goobla/goobla/template"
+	"github.com/goobla/goobla/types/model"
 )
 
 func TestModelCapabilities(t *testing.T) {

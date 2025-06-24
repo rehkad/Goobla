@@ -5,7 +5,7 @@
   * [Importing a Safetensors adapter](#Importing-a-fine-tuned-adapter-from-Safetensors-weights)
   * [Importing a Safetensors model](#Importing-a-model-from-Safetensors-weights)
   * [Importing a GGUF file](#Importing-a-GGUF-based-model-or-adapter)
-  * [Sharing models on moogla.com](#Sharing-your-model-on-mooglacom)
+  * [Sharing models on goobla.com](#Sharing-your-model-on-gooblacom)
 
 ## Importing a fine tuned adapter from Safetensors weights
 
@@ -18,19 +18,19 @@ ADAPTER /path/to/safetensors/adapter/directory
 
 Make sure that you use the same base model in the `FROM` command as you used to create the adapter otherwise you will get erratic results. Most frameworks use different quantization methods, so it's best to use non-quantized (i.e. non-QLoRA) adapters. If your adapter is in the same directory as your `Modelfile`, use `ADAPTER .` to specify the adapter path.
 
-Now run `moogla create` from the directory where the `Modelfile` was created:
+Now run `goobla create` from the directory where the `Modelfile` was created:
 
 ```shell
-moogla create my-model
+goobla create my-model
 ```
 
 Lastly, test the model:
 
 ```shell
-moogla run my-model
+goobla run my-model
 ```
 
-Moogla supports importing adapters based on several different model architectures including:
+Goobla supports importing adapters based on several different model architectures including:
 
   * Llama (including Llama 2, Llama 3, Llama 3.1, and Llama 3.2);
   * Mistral (including Mistral 1, Mistral 2, and Mixtral); and
@@ -53,19 +53,19 @@ FROM /path/to/safetensors/directory
 
 If you create the Modelfile in the same directory as the weights, you can use the command `FROM .`.
 
-Now run the `moogla create` command from the directory where you created the `Modelfile`:
+Now run the `goobla create` command from the directory where you created the `Modelfile`:
 
 ```shell
-moogla create my-model
+goobla create my-model
 ```
 
 Lastly, test the model:
 
 ```shell
-moogla run my-model
+goobla run my-model
 ```
 
-Moogla supports importing models for several different architectures including:
+Goobla supports importing models for several different architectures including:
 
   * Llama (including Llama 2, Llama 3, Llama 3.1, and Llama 3.2);
   * Mistral (including Mistral 1, Mistral 2, and Mixtral);
@@ -75,7 +75,7 @@ Moogla supports importing models for several different architectures including:
 This includes importing foundation models as well as any fine tuned models which have been _fused_ with a foundation model.
 ## Importing a GGUF based model or adapter
 
-If you have a GGUF based model or adapter it is possible to import it into Moogla. You can obtain a GGUF model or adapter by:
+If you have a GGUF based model or adapter it is possible to import it into Goobla. You can obtain a GGUF model or adapter by:
 
   * converting a Safetensors model with the `convert_hf_to_gguf.py` from Llama.cpp; 
   * converting a Safetensors adapter with the `convert_lora_to_gguf.py` from Llama.cpp; or
@@ -96,21 +96,21 @@ ADAPTER /path/to/file.gguf
 
 When importing a GGUF adapter, it's important to use the same base model as the base model that the adapter was created with. You can use:
 
- * a model from Moogla
+ * a model from Goobla
  * a GGUF file
  * a Safetensors based model 
 
-Once you have created your `Modelfile`, use the `moogla create` command to build the model.
+Once you have created your `Modelfile`, use the `goobla create` command to build the model.
 
 ```shell
-moogla create my-model
+goobla create my-model
 ```
 
 ## Quantizing a Model
 
 Quantizing a model allows you to run models faster and with less memory consumption but at reduced accuracy. This allows you to run a model on more modest hardware.
 
-Moogla can quantize FP16 and FP32 based models into different quantization levels using the `-q/--quantize` flag with the `moogla create` command.
+Goobla can quantize FP16 and FP32 based models into different quantization levels using the `-q/--quantize` flag with the `goobla create` command.
 
 First, create a Modelfile with the FP16 or FP32 based model you wish to quantize.
 
@@ -118,10 +118,10 @@ First, create a Modelfile with the FP16 or FP32 based model you wish to quantize
 FROM /path/to/my/gemma/f16/model
 ```
 
-Use `moogla create` to then create the quantized model.
+Use `goobla create` to then create the quantized model.
 
 ```shell
-$ moogla create --quantize q4_K_M mymodel
+$ goobla create --quantize q4_K_M mymodel
 transferring model data
 quantizing F16 model to Q4_K_M
 creating new layer sha256:735e246cc1abfd06e9cdcf95504d6789a6cd1ad7577108a70d9902fef503c1bd
@@ -140,35 +140,35 @@ success
 - `q4_K_M`
 
 
-## Sharing your model on moogla.com
+## Sharing your model on goobla.com
 
-You can share any model you have created by pushing it to [moogla.com](https://moogla.com) so that other users can try it out.
+You can share any model you have created by pushing it to [goobla.com](https://goobla.com) so that other users can try it out.
 
-First, use your browser to go to the [Moogla Sign-Up](https://moogla.com/signup) page. If you already have an account, you can skip this step.
+First, use your browser to go to the [Goobla Sign-Up](https://goobla.com/signup) page. If you already have an account, you can skip this step.
 
 <img src="images/signup.png" alt="Sign-Up" width="40%">
 
 The `Username` field will be used as part of your model's name (e.g. `jmorganca/mymodel`), so make sure you are comfortable with the username that you have selected.
 
-Now that you have created an account and are signed-in, go to the [Moogla Keys Settings](https://moogla.com/settings/keys) page.
+Now that you have created an account and are signed-in, go to the [Goobla Keys Settings](https://goobla.com/settings/keys) page.
 
-Follow the directions on the page to determine where your Moogla Public Key is located.
+Follow the directions on the page to determine where your Goobla Public Key is located.
 
-<img src="images/moogla-keys.png" alt="Moogla Keys" width="80%">
+<img src="images/goobla-keys.png" alt="Goobla Keys" width="80%">
 
-Click on the `Add Moogla Public Key` button, and copy and paste the contents of your Moogla Public Key into the text field.
+Click on the `Add Goobla Public Key` button, and copy and paste the contents of your Goobla Public Key into the text field.
 
-To push a model to [moogla.com](https://moogla.com), first make sure that it is named correctly with your username. You may have to use the `moogla cp` command to copy
-your model to give it the correct name. Once you're happy with your model's name, use the `moogla push` command to push it to [moogla.com](https://moogla.com).
+To push a model to [goobla.com](https://goobla.com), first make sure that it is named correctly with your username. You may have to use the `goobla cp` command to copy
+your model to give it the correct name. Once you're happy with your model's name, use the `goobla push` command to push it to [goobla.com](https://goobla.com).
 
 ```shell
-moogla cp mymodel myuser/mymodel
-moogla push myuser/mymodel
+goobla cp mymodel myuser/mymodel
+goobla push myuser/mymodel
 ```
 
 Once your model has been pushed, other users can pull and run it by using the command:
 
 ```shell
-moogla run myuser/mymodel
+goobla run myuser/mymodel
 ```
 

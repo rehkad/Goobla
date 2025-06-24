@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/moogla/moogla/api"
+	"github.com/goobla/goobla/api"
 	"github.com/stretchr/testify/require"
 )
 
@@ -79,16 +79,16 @@ func TestUnicodeModelDir(t *testing.T) {
 		t.Skip("Unicode test only applicable to windows")
 	}
 	// Only works for local testing
-	if os.Getenv("MOOGLA_TEST_EXISTING") != "" {
+	if os.Getenv("GOOBLA_TEST_EXISTING") != "" {
 		t.Skip("TestUnicodeModelDir only works for local testing, skipping")
 	}
 
-	modelDir, err := os.MkdirTemp("", "ollama_埃")
+	modelDir, err := os.MkdirTemp("", "goobla_埃")
 	require.NoError(t, err)
 	defer os.RemoveAll(modelDir)
-	slog.Info("unicode", "MOOGLA_MODELS", modelDir)
+	slog.Info("unicode", "GOOBLA_MODELS", modelDir)
 
-	t.Setenv("MOOGLA_MODELS", modelDir)
+	t.Setenv("GOOBLA_MODELS", modelDir)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 	defer cancel()

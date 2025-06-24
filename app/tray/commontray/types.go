@@ -1,8 +1,8 @@
 package commontray
 
 var (
-	Title   = "Moogla"
-	ToolTip = "Moogla"
+	Title   = "Goobla"
+	ToolTip = "Goobla"
 
 	UpdateIconName = "tray_upgrade"
 	IconName       = "tray"
@@ -15,7 +15,7 @@ type Callbacks struct {
 	ShowLogs   chan struct{}
 }
 
-type MooglaTray interface {
+type GooblaTray interface {
 	GetCallbacks() Callbacks
 	Run()
 	UpdateAvailable(ver string) error

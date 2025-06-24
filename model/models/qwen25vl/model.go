@@ -6,11 +6,11 @@ import (
 	"image"
 	"slices"
 
-	"github.com/moogla/moogla/fs"
-	"github.com/moogla/moogla/kvcache"
-	"github.com/moogla/moogla/ml"
-	"github.com/moogla/moogla/model"
-	"github.com/moogla/moogla/model/input"
+	"github.com/goobla/goobla/fs"
+	"github.com/goobla/goobla/kvcache"
+	"github.com/goobla/goobla/ml"
+	"github.com/goobla/goobla/model"
+	"github.com/goobla/goobla/model/input"
 	"log/slog"
 )
 

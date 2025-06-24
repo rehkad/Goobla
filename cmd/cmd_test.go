@@ -14,8 +14,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/spf13/cobra"
 
-	"github.com/moogla/moogla/api"
-	"github.com/moogla/moogla/types/model"
+	"github.com/goobla/goobla/api"
+	"github.com/goobla/goobla/types/model"
 )
 
 func TestShowInfo(t *testing.T) {
@@ -235,7 +235,7 @@ Weigh anchor!
 
 	t.Run("license", func(t *testing.T) {
 		var b bytes.Buffer
-		license := "MIT License\nCopyright (c) Moogla\n"
+		license := "MIT License\nCopyright (c) Goobla\n"
 		if err := showInfo(&api.ShowResponse{
 			Details: api.ModelDetails{
 				Family:            "test",
@@ -254,7 +254,7 @@ Weigh anchor!
 
   License
     MIT License             
-    Copyright (c) Moogla    
+    Copyright (c) Goobla    
 
 `
 		if diff := cmp.Diff(expect, b.String()); diff != "" {
@@ -333,7 +333,7 @@ func TestDeleteHandler(t *testing.T) {
 		}
 	}))
 
-	t.Setenv("MOOGLA_HOST", mockServer.URL)
+	t.Setenv("GOOBLA_HOST", mockServer.URL)
 	t.Cleanup(mockServer.Close)
 
 	cmd := &cobra.Command{}
@@ -489,7 +489,7 @@ func TestPushHandler(t *testing.T) {
 					}
 				},
 			},
-			expectedOutput: "\nYou can find your model at:\n\n\thttps://moogla.com/test-model\n",
+			expectedOutput: "\nYou can find your model at:\n\n\thttps://goobla.com/test-model\n",
 		},
 		{
 			name:      "unauthorized push",
@@ -521,7 +521,7 @@ func TestPushHandler(t *testing.T) {
 			}))
 			defer mockServer.Close()
 
-			t.Setenv("MOOGLA_HOST", mockServer.URL)
+			t.Setenv("GOOBLA_HOST", mockServer.URL)
 
 			cmd := &cobra.Command{}
 			cmd.Flags().Bool("insecure", false, "")
@@ -627,7 +627,7 @@ func TestListHandler(t *testing.T) {
 			}))
 			defer mockServer.Close()
 
-			t.Setenv("MOOGLA_HOST", mockServer.URL)
+			t.Setenv("GOOBLA_HOST", mockServer.URL)
 
 			cmd := &cobra.Command{}
 			cmd.SetContext(t.Context())
@@ -723,7 +723,7 @@ func TestCreateHandler(t *testing.T) {
 				}
 				handler(w, r)
 			}))
-			t.Setenv("MOOGLA_HOST", mockServer.URL)
+			t.Setenv("GOOBLA_HOST", mockServer.URL)
 			t.Cleanup(mockServer.Close)
 			tempFile, err := os.CreateTemp(t.TempDir(), "modelfile")
 			if err != nil {

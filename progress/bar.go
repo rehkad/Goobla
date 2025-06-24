@@ -8,7 +8,7 @@ import (
 
 	"golang.org/x/term"
 
-	"github.com/moogla/moogla/format"
+	"github.com/goobla/goobla/format"
 )
 
 type Bar struct {

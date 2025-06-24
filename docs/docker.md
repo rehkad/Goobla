@@ -1,9 +1,9 @@
-# Moogla Docker image
+# Goobla Docker image
 
 ### CPU only
 
 ```shell
-docker run -d -v moogla:/root/.moogla -p 11434:11434 --name moogla moogla/moogla
+docker run -d -v goobla:/root/.goobla -p 11434:11434 --name goobla goobla/goobla
 ```
 
 ### Nvidia GPU
@@ -51,18 +51,18 @@ sudo systemctl restart docker
 #### Start the container
 
 ```shell
-docker run -d --gpus=all -v moogla:/root/.moogla -p 11434:11434 --name moogla moogla/moogla
+docker run -d --gpus=all -v goobla:/root/.goobla -p 11434:11434 --name goobla goobla/goobla
 ```
 
 > [!NOTE]  
-> If you're running on an NVIDIA JetPack system, Moogla can't automatically discover the correct JetPack version. Pass the environment variable JETSON_JETPACK=5 or JETSON_JETPACK=6 to the container to select version 5 or 6.
+> If you're running on an NVIDIA JetPack system, Goobla can't automatically discover the correct JetPack version. Pass the environment variable JETSON_JETPACK=5 or JETSON_JETPACK=6 to the container to select version 5 or 6.
 
 ### AMD GPU
 
-To run Moogla using Docker with AMD GPUs, use the `rocm` tag and the following command:
+To run Goobla using Docker with AMD GPUs, use the `rocm` tag and the following command:
 
 ```shell
-docker run -d --device /dev/kfd --device /dev/dri -v moogla:/root/.moogla -p 11434:11434 --name moogla moogla/moogla:rocm
+docker run -d --device /dev/kfd --device /dev/dri -v goobla:/root/.goobla -p 11434:11434 --name goobla goobla/goobla:rocm
 ```
 
 ### Run model locally
@@ -70,9 +70,9 @@ docker run -d --device /dev/kfd --device /dev/dri -v moogla:/root/.moogla -p 114
 Now you can run a model:
 
 ```shell
-docker exec -it moogla moogla run llama3.2
+docker exec -it goobla goobla run llama3.2
 ```
 
 ### Try different models
 
-More models can be found on the [Moogla library](https://moogla.com/library).
+More models can be found on the [Goobla library](https://goobla.com/library).

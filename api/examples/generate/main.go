@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/moogla/moogla/api"
+	"github.com/goobla/goobla/api"
 )
 
 func main() {

@@ -14,10 +14,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/go-cmp/cmp"
 
-	"github.com/moogla/moogla/api"
-	"github.com/moogla/moogla/discover"
-	"github.com/moogla/moogla/fs/ggml"
-	"github.com/moogla/moogla/llm"
+	"github.com/goobla/goobla/api"
+	"github.com/goobla/goobla/discover"
+	"github.com/goobla/goobla/fs/ggml"
+	"github.com/goobla/goobla/llm"
 )
 
 type mockRunner struct {
@@ -157,7 +157,7 @@ func TestGenerateChat(t *testing.T) {
 			t.Errorf("expected status 400, got %d", w.Code)
 		}
 
-		if diff := cmp.Diff(w.Body.String(), `{"error":"registry.ollama.ai/library/test:latest does not support thinking"}`); diff != "" {
+		if diff := cmp.Diff(w.Body.String(), `{"error":"registry.goobla.ai/library/test:latest does not support thinking"}`); diff != "" {
 			t.Errorf("mismatch (-got +want):\n%s", diff)
 		}
 	})
@@ -753,7 +753,7 @@ func TestGenerate(t *testing.T) {
 			t.Errorf("expected status 400, got %d", w.Code)
 		}
 
-		if diff := cmp.Diff(w.Body.String(), `{"error":"registry.ollama.ai/library/test:latest does not support insert"}`); diff != "" {
+		if diff := cmp.Diff(w.Body.String(), `{"error":"registry.goobla.ai/library/test:latest does not support insert"}`); diff != "" {
 			t.Errorf("mismatch (-got +want):\n%s", diff)
 		}
 	})

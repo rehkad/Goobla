@@ -17,7 +17,7 @@ mkdir -p dist
 docker buildx build \
         --output type=local,dest=./dist/ \
         --platform=${PLATFORM} \
-        ${MOOGLA_COMMON_BUILD_ARGS} \
+        ${GOOBLA_COMMON_BUILD_ARGS} \
         --target archive \
         -f Dockerfile \
         .
@@ -30,7 +30,7 @@ if echo $PLATFORM | grep "amd64" > /dev/null; then
     docker buildx build \
         --output type=local,dest=${outDir} \
         --platform=linux/amd64 \
-        ${MOOGLA_COMMON_BUILD_ARGS} \
+        ${GOOBLA_COMMON_BUILD_ARGS} \
         --build-arg FLAVOR=rocm \
         --target archive \
         -f Dockerfile \
@@ -40,16 +40,16 @@ fi
 # buildx behavior changes for single vs. multiplatform
 echo "Compressing linux tar bundles..."
 if echo $PLATFORM | grep "," > /dev/null ; then
-        tar c -C ./dist/linux_arm64 --exclude cuda_jetpack5 --exclude cuda_jetpack6 . | pigz -9vc >./dist/moogla-linux-arm64.tgz
-        tar c -C ./dist/linux_arm64 ./lib/moogla/cuda_jetpack5  | pigz -9vc >./dist/moogla-linux-arm64-jetpack5.tgz
-        tar c -C ./dist/linux_arm64 ./lib/moogla/cuda_jetpack6  | pigz -9vc >./dist/moogla-linux-arm64-jetpack6.tgz
-        tar c -C ./dist/linux_amd64 --exclude rocm . | pigz -9vc >./dist/moogla-linux-amd64.tgz
-        tar c -C ./dist/linux_amd64 ./lib/moogla/rocm  | pigz -9vc >./dist/moogla-linux-amd64-rocm.tgz
+        tar c -C ./dist/linux_arm64 --exclude cuda_jetpack5 --exclude cuda_jetpack6 . | pigz -9vc >./dist/goobla-linux-arm64.tgz
+        tar c -C ./dist/linux_arm64 ./lib/goobla/cuda_jetpack5  | pigz -9vc >./dist/goobla-linux-arm64-jetpack5.tgz
+        tar c -C ./dist/linux_arm64 ./lib/goobla/cuda_jetpack6  | pigz -9vc >./dist/goobla-linux-arm64-jetpack6.tgz
+        tar c -C ./dist/linux_amd64 --exclude rocm . | pigz -9vc >./dist/goobla-linux-amd64.tgz
+        tar c -C ./dist/linux_amd64 ./lib/goobla/rocm  | pigz -9vc >./dist/goobla-linux-amd64-rocm.tgz
 elif echo $PLATFORM | grep "arm64" > /dev/null ; then
-        tar c -C ./dist/ --exclude cuda_jetpack5 --exclude cuda_jetpack6 bin lib | pigz -9vc >./dist/moogla-linux-arm64.tgz
-        tar c -C ./dist/ ./lib/moogla/cuda_jetpack5  | pigz -9vc >./dist/moogla-linux-arm64-jetpack5.tgz
-        tar c -C ./dist/ ./lib/moogla/cuda_jetpack6  | pigz -9vc >./dist/moogla-linux-arm64-jetpack6.tgz
+        tar c -C ./dist/ --exclude cuda_jetpack5 --exclude cuda_jetpack6 bin lib | pigz -9vc >./dist/goobla-linux-arm64.tgz
+        tar c -C ./dist/ ./lib/goobla/cuda_jetpack5  | pigz -9vc >./dist/goobla-linux-arm64-jetpack5.tgz
+        tar c -C ./dist/ ./lib/goobla/cuda_jetpack6  | pigz -9vc >./dist/goobla-linux-arm64-jetpack6.tgz
 elif echo $PLATFORM | grep "amd64" > /dev/null ; then
-        tar c -C ./dist/ --exclude rocm bin lib | pigz -9vc >./dist/moogla-linux-amd64.tgz
-        tar c -C ./dist/ ./lib/moogla/rocm  | pigz -9vc >./dist/moogla-linux-amd64-rocm.tgz
+        tar c -C ./dist/ --exclude rocm bin lib | pigz -9vc >./dist/goobla-linux-amd64.tgz
+        tar c -C ./dist/ ./lib/goobla/rocm  | pigz -9vc >./dist/goobla-linux-amd64-rocm.tgz
 fi

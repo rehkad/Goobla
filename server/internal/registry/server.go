@@ -1,4 +1,4 @@
-// Package registry implements an http.Handler for handling local Moogla API
+// Package registry implements an http.Handler for handling local Goobla API
 // model management requests. See [Local] for details.
 package registry
 
@@ -16,18 +16,18 @@ import (
 	"sync"
 	"time"
 
-	"github.com/moogla/moogla/server/internal/cache/blob"
-	"github.com/moogla/moogla/server/internal/client/moogla"
-	"github.com/moogla/moogla/server/internal/internal/backoff"
+	"github.com/goobla/goobla/server/internal/cache/blob"
+	"github.com/goobla/goobla/server/internal/client/goobla"
+	"github.com/goobla/goobla/server/internal/internal/backoff"
 )
 
-// Local implements an http.Handler for handling local Moogla API model
+// Local implements an http.Handler for handling local Goobla API model
 // management requests, such as pushing, pulling, and deleting models.
 //
 // It can be arranged for all unknown requests to be passed through to a
 // fallback handler, if one is provided.
 type Local struct {
-	Client *ollama.Registry // required
+	Client *goobla.Registry // required
 	Logger *slog.Logger     // required
 
 	// Fallback, if set, is used to handle requests that are not handled by
@@ -39,8 +39,8 @@ type Local struct {
 	Prune func() error // optional
 }
 
-// serverError is like ollama.Error, but with a Status field for the HTTP
-// response code. We want to avoid adding that field to ollama.Error because it
+// serverError is like goobla.Error, but with a Status field for the HTTP
+// response code. We want to avoid adding that field to goobla.Error because it
 // would always be 0 to clients (we don't want to leak the status code in
 // errors), and so it would be confusing to have a field that is always 0.
 type serverError struct {
@@ -134,7 +134,7 @@ func (s *Local) serveHTTP(rec *statusCodeRecorder, r *http.Request) {
 		var e *serverError
 		switch {
 		case errors.As(err, &e):
-		case errors.Is(err, ollama.ErrNameInvalid):
+		case errors.Is(err, goobla.ErrNameInvalid):
 			e = &serverError{400, "bad_request", err.Error()}
 		default:
 			e = errInternalError
@@ -268,7 +268,7 @@ func (s *Local) handlePull(w http.ResponseWriter, r *http.Request) error {
 	enc := json.NewEncoder(w)
 	if !p.stream() {
 		if err := s.Client.Pull(r.Context(), p.model()); err != nil {
-			if errors.Is(err, ollama.ErrModelNotFound) {
+			if errors.Is(err, goobla.ErrModelNotFound) {
 				return errModelNotFound
 			}
 			return err
@@ -297,9 +297,9 @@ func (s *Local) handlePull(w http.ResponseWriter, r *http.Request) error {
 		flushProgress() // flush initial state
 		t.Reset(100 * time.Millisecond)
 	})
-	ctx := ollama.WithTrace(r.Context(), &ollama.Trace{
-		Update: func(l *ollama.Layer, n int64, err error) {
-			if err != nil && !errors.Is(err, ollama.ErrCached) {
+	ctx := goobla.WithTrace(r.Context(), &goobla.Trace{
+		Update: func(l *goobla.Layer, n int64, err error) {
+			if err != nil && !errors.Is(err, goobla.ErrCached) {
 				s.Logger.Error("pulling", "model", p.model(), "error", err)
 				return
 			}
@@ -353,7 +353,7 @@ func (s *Local) handlePull(w http.ResponseWriter, r *http.Request) error {
 		case err := <-done:
 			flushProgress()
 			if err != nil {
-				if errors.Is(err, ollama.ErrModelNotFound) {
+				if errors.Is(err, goobla.ErrModelNotFound) {
 					return &serverError{
 						Status:  404,
 						Code:    "not_found",
@@ -402,7 +402,7 @@ func canRetry(err error) bool {
 	if err == nil {
 		return false
 	}
-	var oe *ollama.Error
+	var oe *goobla.Error
 	if errors.As(err, &oe) {
 		return oe.Temporary()
 	}

@@ -6,8 +6,8 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"github.com/moogla/moogla/api"
-	"github.com/moogla/moogla/template"
+	"github.com/goobla/goobla/api"
+	"github.com/goobla/goobla/template"
 )
 
 func TestChatPrompt(t *testing.T) {

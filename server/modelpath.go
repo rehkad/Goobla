@@ -10,8 +10,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/moogla/moogla/envconfig"
-	"github.com/moogla/moogla/types/model"
+	"github.com/goobla/goobla/envconfig"
+	"github.com/goobla/goobla/types/model"
 )
 
 type ModelPath struct {
@@ -23,7 +23,7 @@ type ModelPath struct {
 }
 
 const (
-	DefaultRegistry       = "registry.ollama.ai"
+	DefaultRegistry       = "registry.goobla.ai"
 	DefaultNamespace      = "library"
 	DefaultTag            = "latest"
 	DefaultProtocolScheme = "https"

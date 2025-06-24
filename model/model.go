@@ -16,13 +16,13 @@ import (
 	_ "golang.org/x/image/tiff"
 	_ "golang.org/x/image/webp"
 
-	"github.com/moogla/moogla/fs"
-	fsggml "github.com/moogla/moogla/fs/ggml"
-	"github.com/moogla/moogla/kvcache"
-	"github.com/moogla/moogla/logutil"
-	"github.com/moogla/moogla/ml"
-	_ "github.com/moogla/moogla/ml/backend"
-	"github.com/moogla/moogla/model/input"
+	"github.com/goobla/goobla/fs"
+	fsggml "github.com/goobla/goobla/fs/ggml"
+	"github.com/goobla/goobla/kvcache"
+	"github.com/goobla/goobla/logutil"
+	"github.com/goobla/goobla/ml"
+	_ "github.com/goobla/goobla/ml/backend"
+	"github.com/goobla/goobla/model/input"
 )
 
 var ErrNoVisionModel = errors.New("this model is missing data required for image input")

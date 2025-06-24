@@ -7,8 +7,8 @@ import (
 	"math"
 	"slices"
 
-	"github.com/moogla/moogla/ml"
-	"github.com/moogla/moogla/model/input"
+	"github.com/goobla/goobla/ml"
+	"github.com/goobla/goobla/model/input"
 )
 
 type shiftFn func(ctx ml.Context, layer int, key, shift ml.Tensor) (ml.Tensor, error)

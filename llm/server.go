@@ -25,14 +25,14 @@ import (
 
 	"golang.org/x/sync/semaphore"
 
-	"github.com/moogla/moogla/api"
-	"github.com/moogla/moogla/discover"
-	"github.com/moogla/moogla/envconfig"
-	"github.com/moogla/moogla/format"
-	"github.com/moogla/moogla/fs/ggml"
-	"github.com/moogla/moogla/llama"
-	"github.com/moogla/moogla/logutil"
-	"github.com/moogla/moogla/model"
+	"github.com/goobla/goobla/api"
+	"github.com/goobla/goobla/discover"
+	"github.com/goobla/goobla/envconfig"
+	"github.com/goobla/goobla/format"
+	"github.com/goobla/goobla/fs/ggml"
+	"github.com/goobla/goobla/llama"
+	"github.com/goobla/goobla/logutil"
+	"github.com/goobla/goobla/model"
 )
 
 type filteredEnv []string
@@ -42,7 +42,7 @@ func (e filteredEnv) LogValue() slog.Value {
 	for _, env := range e {
 		if key, value, ok := strings.Cut(env, "="); ok {
 			switch {
-			case strings.HasPrefix(key, "MOOGLA_"),
+			case strings.HasPrefix(key, "GOOBLA_"),
 				strings.HasPrefix(key, "CUDA_"),
 				strings.HasPrefix(key, "ROCR_"),
 				strings.HasPrefix(key, "ROCM_"),
@@ -91,7 +91,7 @@ type llmServer struct {
 	llamaModel     *llama.Model
 	llamaModelLock sync.Mutex
 
-	// textProcessor handles text encoding/decoding for the model in the Moogla engine
+	// textProcessor handles text encoding/decoding for the model in the Goobla engine
 	// nil if this server is running the llama.cpp based engine
 	textProcessor model.TextProcessor
 
@@ -262,9 +262,9 @@ func NewLlamaServer(gpus discover.GpuInfoList, modelPath string, f *ggml.GGML, a
 	}
 
 	libs := make(map[string]string)
-	if entries, err := os.ReadDir(discover.LibMooglaPath); err == nil {
+	if entries, err := os.ReadDir(discover.LibGooblaPath); err == nil {
 		for _, entry := range entries {
-			libs[entry.Name()] = filepath.Join(discover.LibMooglaPath, entry.Name())
+			libs[entry.Name()] = filepath.Join(discover.LibGooblaPath, entry.Name())
 		}
 	}
 
@@ -300,11 +300,11 @@ func NewLlamaServer(gpus discover.GpuInfoList, modelPath string, f *ggml.GGML, a
 
 	var llamaModel *llama.Model
 	var textProcessor model.TextProcessor
-	if envconfig.NewEngine() || f.KV().MooglaEngineRequired() {
+	if envconfig.NewEngine() || f.KV().GooblaEngineRequired() {
 		textProcessor, err = model.NewTextProcessor(modelPath)
 		if err != nil {
 			// To prepare for opt-out mode, instead of treating this as an error, we fallback to the old runner
-			slog.Debug("model not yet supported by Moogla engine, switching to compatibility mode", "model", modelPath, "error", err)
+			slog.Debug("model not yet supported by Goobla engine, switching to compatibility mode", "model", modelPath, "error", err)
 		}
 	}
 	if textProcessor == nil {
@@ -338,7 +338,7 @@ func NewLlamaServer(gpus discover.GpuInfoList, modelPath string, f *ggml.GGML, a
 		if textProcessor != nil {
 			// New engine
 			// TODO - if we have failure to load scenarios, add logic to retry with the old runner
-			finalParams = append(finalParams, "--ollama-engine")
+			finalParams = append(finalParams, "--goobla-engine")
 		}
 		finalParams = append(finalParams, params...)
 		finalParams = append(finalParams, "--port", strconv.Itoa(port))
@@ -355,12 +355,12 @@ func NewLlamaServer(gpus discover.GpuInfoList, modelPath string, f *ggml.GGML, a
 
 		// Note: we always put our dependency paths first
 		// since these are the exact version we compiled/linked against
-		libraryPaths := []string{discover.LibMooglaPath}
+		libraryPaths := []string{discover.LibGooblaPath}
 		if libraryPath, ok := os.LookupEnv(pathEnv); ok {
 			libraryPaths = append(libraryPaths, filepath.SplitList(libraryPath)...)
 		}
 
-		ggmlPaths := []string{discover.LibMooglaPath}
+		ggmlPaths := []string{discover.LibGooblaPath}
 		if len(compatible) > 0 {
 			c := compatible[0]
 			if libpath, ok := libs[c]; ok {
@@ -377,7 +377,7 @@ func NewLlamaServer(gpus discover.GpuInfoList, modelPath string, f *ggml.GGML, a
 		}
 
 		// finally, add the root library path
-		libraryPaths = append(libraryPaths, discover.LibMooglaPath)
+		libraryPaths = append(libraryPaths, discover.LibGooblaPath)
 
 		s := &llmServer{
 			port:          port,
@@ -400,7 +400,7 @@ func NewLlamaServer(gpus discover.GpuInfoList, modelPath string, f *ggml.GGML, a
 		s.cmd.Stderr = s.status
 		s.cmd.SysProcAttr = LlamaServerSysProcAttr
 
-		s.cmd.Env = append(s.cmd.Env, "MOOGLA_LIBRARY_PATH="+strings.Join(ggmlPaths, string(filepath.ListSeparator)))
+		s.cmd.Env = append(s.cmd.Env, "GOOBLA_LIBRARY_PATH="+strings.Join(ggmlPaths, string(filepath.ListSeparator)))
 
 		envWorkarounds := [][2]string{}
 		for _, gpu := range gpus {
@@ -463,7 +463,7 @@ func NewLlamaServer(gpus discover.GpuInfoList, modelPath string, f *ggml.GGML, a
 			if err != nil && s.status != nil && s.status.LastErrMsg != "" {
 				slog.Error("llama runner terminated", "error", err)
 				if strings.Contains(s.status.LastErrMsg, "unknown model") {
-					s.status.LastErrMsg = "this model is not supported by your version of Moogla. You may need to upgrade"
+					s.status.LastErrMsg = "this model is not supported by your version of Goobla. You may need to upgrade"
 				}
 				s.done <- errors.New(s.status.LastErrMsg)
 			} else {
@@ -805,7 +805,7 @@ func (s *llmServer) Completion(ctx context.Context, req CompletionRequest, fn fu
 	res, err := http.DefaultClient.Do(serverReq)
 	if err != nil {
 		slog.Error("post predict", "error", err)
-		return errors.New("model runner has unexpectedly stopped, this may be due to resource limitations or an internal error, check ollama server logs for details")
+		return errors.New("model runner has unexpectedly stopped, this may be due to resource limitations or an internal error, check goobla server logs for details")
 	}
 	defer res.Body.Close()
 

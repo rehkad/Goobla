@@ -1,4 +1,4 @@
-package mooglarunner
+package gooblarunner
 
 import (
 	"errors"
@@ -7,10 +7,10 @@ import (
 	"math"
 	"time"
 
-	"github.com/moogla/moogla/kvcache"
-	"github.com/moogla/moogla/ml"
-	"github.com/moogla/moogla/model"
-	"github.com/moogla/moogla/model/input"
+	"github.com/goobla/goobla/kvcache"
+	"github.com/goobla/goobla/ml"
+	"github.com/goobla/goobla/model"
+	"github.com/goobla/goobla/model/input"
 )
 
 type InputCache struct {

@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/moogla/moogla/api"
+	"github.com/goobla/goobla/api"
 )
 
 // TODO - this would ideally be in the llm package, but that would require some refactoring of interfaces in the server

@@ -9,11 +9,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/moogla/moogla/api"
+	"github.com/goobla/goobla/api"
 )
 
 func TestConvertFromSafetensors(t *testing.T) {
-	t.Setenv("MOOGLA_MODELS", t.TempDir())
+	t.Setenv("GOOBLA_MODELS", t.TempDir())
 
 	// Helper function to create a new layer and return its digest
 	makeTemp := func(content string) string {

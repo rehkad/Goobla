@@ -22,9 +22,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/moogla/moogla/api"
-	"github.com/moogla/moogla/app/lifecycle"
-	"github.com/moogla/moogla/format"
+	"github.com/goobla/goobla/api"
+	"github.com/goobla/goobla/app/lifecycle"
+	"github.com/goobla/goobla/format"
 	"github.com/stretchr/testify/require"
 )
 
@@ -53,11 +53,11 @@ func FindPort() string {
 
 func GetTestEndpoint() (*api.Client, string) {
 	defaultPort := "11434"
-	ollamaHost := os.Getenv("MOOGLA_HOST")
+	gooblaHost := os.Getenv("GOOBLA_HOST")
 
-	scheme, hostport, ok := strings.Cut(ollamaHost, "://")
+	scheme, hostport, ok := strings.Cut(gooblaHost, "://")
 	if !ok {
-		scheme, hostport = "http", ollamaHost
+		scheme, hostport = "http", gooblaHost
 	}
 
 	// trim trailing slashes
@@ -73,7 +73,7 @@ func GetTestEndpoint() (*api.Client, string) {
 		}
 	}
 
-	if os.Getenv("MOOGLA_TEST_EXISTING") == "" && port == defaultPort {
+	if os.Getenv("GOOBLA_TEST_EXISTING") == "" && port == defaultPort {
 		port = FindPort()
 	}
 
@@ -90,9 +90,9 @@ func GetTestEndpoint() (*api.Client, string) {
 var serverMutex sync.Mutex
 var serverReady bool
 
-func startServer(t *testing.T, ctx context.Context, ollamaHost string) error {
+func startServer(t *testing.T, ctx context.Context, gooblaHost string) error {
 	// Make sure the server has been built
-	CLIName, err := filepath.Abs("../moogla")
+	CLIName, err := filepath.Abs("../goobla")
 	if err != nil {
 		return err
 	}
@@ -110,13 +110,13 @@ func startServer(t *testing.T, ctx context.Context, ollamaHost string) error {
 		return nil
 	}
 
-	if tmp := os.Getenv("MOOGLA_HOST"); tmp != ollamaHost {
-		slog.Info("setting env", "MOOGLA_HOST", ollamaHost)
-		t.Setenv("MOOGLA_HOST", ollamaHost)
+	if tmp := os.Getenv("GOOBLA_HOST"); tmp != gooblaHost {
+		slog.Info("setting env", "GOOBLA_HOST", gooblaHost)
+		t.Setenv("GOOBLA_HOST", gooblaHost)
 	}
 
-	slog.Info("starting server", "url", ollamaHost)
-	done, err := lifecycle.SpawnServer(ctx, "../moogla")
+	slog.Info("starting server", "url", gooblaHost)
+	done, err := lifecycle.SpawnServer(ctx, "../goobla")
 	if err != nil {
 		return fmt.Errorf("failed to start server: %w", err)
 	}
@@ -197,9 +197,9 @@ var serverProcMutex sync.Mutex
 // Starts the server if needed
 func InitServerConnection(ctx context.Context, t *testing.T) (*api.Client, string, func()) {
 	client, testEndpoint := GetTestEndpoint()
-	if os.Getenv("MOOGLA_TEST_EXISTING") == "" {
+	if os.Getenv("GOOBLA_TEST_EXISTING") == "" {
 		serverProcMutex.Lock()
-		fp, err := os.CreateTemp("", "ollama-server-*.log")
+		fp, err := os.CreateTemp("", "goobla-server-*.log")
 		if err != nil {
 			t.Fatalf("failed to generate log file: %s", err)
 		}
@@ -209,7 +209,7 @@ func InitServerConnection(ctx context.Context, t *testing.T) (*api.Client, strin
 	}
 
 	return client, testEndpoint, func() {
-		if os.Getenv("MOOGLA_TEST_EXISTING") == "" {
+		if os.Getenv("GOOBLA_TEST_EXISTING") == "" {
 			defer serverProcMutex.Unlock()
 			if t.Failed() {
 				fp, err := os.Open(lifecycle.ServerLogFile)
@@ -350,7 +350,7 @@ func GenerateRequests() ([]api.GenerateRequest, [][]string) {
 
 func skipUnderMinVRAM(t *testing.T, gb uint64) {
 	// TODO use info API in the future
-	if s := os.Getenv("MOOGLA_MAX_VRAM"); s != "" {
+	if s := os.Getenv("GOOBLA_MAX_VRAM"); s != "" {
 		maxVram, err := strconv.ParseUint(s, 10, 64)
 		require.NoError(t, err)
 		// Don't hammer on small VRAM cards...

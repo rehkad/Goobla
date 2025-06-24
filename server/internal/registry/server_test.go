@@ -15,9 +15,9 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/moogla/moogla/server/internal/cache/blob"
-	"github.com/moogla/moogla/server/internal/client/moogla"
-	"github.com/moogla/moogla/server/internal/testutil"
+	"github.com/goobla/goobla/server/internal/cache/blob"
+	"github.com/goobla/goobla/server/internal/client/goobla"
+	"github.com/goobla/goobla/server/internal/testutil"
 	"golang.org/x/tools/txtar"
 
 	_ "embed"
@@ -63,7 +63,7 @@ func newTestServer(t *testing.T, upstreamRegistry http.HandlerFunc) *Local {
 		client = &http.Client{Transport: tr}
 	}
 
-	rc := &ollama.Registry{
+	rc := &goobla.Registry{
 		Cache:      c,
 		HTTPClient: client,
 		Mask:       "example.com/library/_:latest",
@@ -78,8 +78,8 @@ func newTestServer(t *testing.T, upstreamRegistry http.HandlerFunc) *Local {
 
 func (s *Local) send(t *testing.T, method, path, body string) *httptest.ResponseRecorder {
 	t.Helper()
-	ctx := ollama.WithTrace(t.Context(), &ollama.Trace{
-		Update: func(l *ollama.Layer, n int64, err error) {
+	ctx := goobla.WithTrace(t.Context(), &goobla.Trace{
+		Update: func(l *goobla.Layer, n int64, err error) {
 			t.Logf("update: %s %d %v", l.Digest, n, err)
 		},
 	})
@@ -287,8 +287,8 @@ func checkErrorResponse(t *testing.T, got *httptest.ResponseRecorder, status int
 		errorf("Code = %d; want %d", got.Code, status)
 	}
 
-	// unmarshal the error as *ollama.Error (proving *serverError is an *ollama.Error)
-	var e *ollama.Error
+	// unmarshal the error as *goobla.Error (proving *serverError is an *goobla.Error)
+	var e *goobla.Error
 	if err := json.Unmarshal(got.Body.Bytes(), &e); err != nil {
 		errorf("unmarshal error: %v", err)
 		t.FailNow()

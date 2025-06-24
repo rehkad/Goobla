@@ -7,13 +7,13 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/goobla/goobla/fs"
+	fsggml "github.com/goobla/goobla/fs/ggml"
+	"github.com/goobla/goobla/ml"
+	"github.com/goobla/goobla/ml/backend/ggml"
+	"github.com/goobla/goobla/ml/nn"
+	"github.com/goobla/goobla/model/input"
 	"github.com/google/go-cmp/cmp"
-	"github.com/moogla/moogla/fs"
-	fsggml "github.com/moogla/moogla/fs/ggml"
-	"github.com/moogla/moogla/ml"
-	"github.com/moogla/moogla/ml/backend/ggml"
-	"github.com/moogla/moogla/ml/nn"
-	"github.com/moogla/moogla/model/input"
 )
 
 func TestParseTags(t *testing.T) {

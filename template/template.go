@@ -16,7 +16,7 @@ import (
 	"github.com/agnivade/levenshtein"
 	"golang.org/x/exp/maps"
 
-	"github.com/moogla/moogla/api"
+	"github.com/goobla/goobla/api"
 )
 
 //go:embed index.json
