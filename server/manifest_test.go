@@ -77,6 +77,12 @@ func TestManifests(t *testing.T) {
 			},
 			wantInvalidCount: 2,
 		},
+		"deep nested": {
+			ps: []string{
+				filepath.Join("host", "namespace", "model", "tag", "a", "b", "c", "d"),
+			},
+			wantInvalidCount: 1,
+		},
 		"upper tag": {
 			ps: []string{
 				filepath.Join("host", "namespace", "model", "TAG"),
