@@ -226,7 +226,7 @@ func (s *Scheduler) processPending(ctx context.Context) {
 					} else if loadedCount == 0 {
 						// No models loaded. Load the model but prefer the best fit.
 						slog.Debug("loading first model", "model", pending.model.ModelPath)
-						g := pickBestFullFitByLibrary(pending, ggml, gpus, &numParallel)
+						g := s.pickBestFullFitByLibrary(pending, ggml, gpus, &numParallel)
 						if g != nil {
 							gpus = g
 						} else {
@@ -248,7 +248,7 @@ func (s *Scheduler) processPending(ctx context.Context) {
 
 						// Update free memory from currently loaded models
 						s.updateFreeSpace(availGpus)
-						fitGpus := pickBestFullFitByLibrary(pending, ggml, availGpus, &numParallel)
+						fitGpus := s.pickBestFullFitByLibrary(pending, ggml, availGpus, &numParallel)
 						if fitGpus != nil {
 							slog.Debug("new model fits with existing models, loading")
 							s.loadFn(pending, ggml, fitGpus, numParallel)
@@ -540,9 +540,8 @@ func (s *Scheduler) updateFreeSpace(allGpus discover.GpuInfoList) {
 				slog.Warn("predicted usage exceeds VRAM", "gpu", allGpus[i].ID, "totalMemory", allGpus[i].TotalMemory, "predicted", p)
 				allGpus[i].FreeMemory = 0
 			} else if (allGpus[i].TotalMemory - p) < allGpus[i].FreeMemory { // predicted free is smaller than reported free, use it
-				// TODO maybe we should just always trust our numbers, since cuda's free memory reporting is laggy
-				// and we might unload models we didn't actually need to.  The risk is if some other GPU intensive app is loaded
-				// after we start our first runner, then we'll never account for that, so picking the smallest free value seems prudent.
+				// cuda free memory reporting can lag so use the smaller value
+				// to avoid unloading models unnecessarily.
 				allGpus[i].FreeMemory = allGpus[i].TotalMemory - p
 			}
 			slog.Info("updated VRAM based on existing loaded models", "gpu", allGpus[i].ID, "library", allGpus[i].Library, "total", format.HumanBytes2(allGpus[i].TotalMemory), "available", format.HumanBytes2(allGpus[i].FreeMemory))
@@ -574,7 +573,19 @@ func (s *Scheduler) filterGPUsWithoutLoadingModels(allGpus discover.GpuInfoList)
 	return ret
 }
 
-// TODO consolidate sched_types.go
+// gpuLoadCounts returns the number of models currently loaded per GPU ID.
+func (s *Scheduler) gpuLoadCounts() map[string]int {
+	counts := map[string]int{}
+	s.loadedMu.Lock()
+	defer s.loadedMu.Unlock()
+	for _, r := range s.loaded {
+		for _, g := range r.gpus {
+			counts[g.ID]++
+		}
+	}
+	return counts
+}
+
 type runnerRef struct {
 	refMu    sync.Mutex
 	refCount uint // prevent unloading if > 0
@@ -748,7 +759,7 @@ func (a ByDurationAndName) Less(i, j int) bool {
 	return a[i].modelPath < a[j].modelPath
 }
 
-// TODO - future consideration to pick runners based on size
+// Future consideration: pick runners based on size
 // type BySize []*runnerRef
 // func (a BySize) Len() int           { return len(a) }
 // func (a BySize) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
@@ -759,7 +770,7 @@ func (a ByDurationAndName) Less(i, j int) bool {
 // If the model can not be fit fully within the available GPU(s) nil is returned
 // If numParallel is <= 0, this will attempt try to optimize parallelism based on available VRAM, and adjust
 // opts.NumCtx accordingly
-func pickBestFullFitByLibrary(req *LlmRequest, f *ggml.GGML, gpus discover.GpuInfoList, numParallel *int) discover.GpuInfoList {
+func (s *Scheduler) pickBestFullFitByLibrary(req *LlmRequest, f *ggml.GGML, gpus discover.GpuInfoList, numParallel *int) discover.GpuInfoList {
 	var estimatedVRAM uint64
 
 	var numParallelToTry []int
@@ -774,10 +785,28 @@ func pickBestFullFitByLibrary(req *LlmRequest, f *ggml.GGML, gpus discover.GpuIn
 		var ok bool
 		sgl := append(make(discover.GpuInfoList, 0, len(gl)), gl...)
 
-		// TODO - potentially sort by performance capability, existing models loaded, etc.
-		// TODO - Eliminate any GPUs that already have envconfig.MaxRunners loaded on them
-		// Note: at present, this will favor more VRAM over faster GPU speed in mixed setups
-		sort.Sort(sort.Reverse(discover.ByFreeMemory(sgl)))
+		loads := s.gpuLoadCounts()
+		if mr := int(envconfig.MaxRunners()); mr > 0 {
+			filtered := sgl[:0]
+			for _, g := range sgl {
+				if loads[g.ID] < mr {
+					filtered = append(filtered, g)
+				}
+			}
+			sgl = filtered
+		}
+		// Sort by number of models already loaded (ascending), then performance
+		sort.SliceStable(sgl, func(i, j int) bool {
+			if loads[sgl[i].ID] != loads[sgl[j].ID] {
+				return loads[sgl[i].ID] < loads[sgl[j].ID]
+			}
+			p1 := discover.PerformanceScore(sgl[i])
+			p2 := discover.PerformanceScore(sgl[j])
+			if p1 != p2 {
+				return p1 > p2
+			}
+			return sgl[i].FreeMemory > sgl[j].FreeMemory
+		})
 
 		// First attempt to fit the model into a single GPU
 		for _, p := range numParallelToTry {
@@ -793,7 +822,7 @@ func pickBestFullFitByLibrary(req *LlmRequest, f *ggml.GGML, gpus discover.GpuIn
 			}
 		}
 
-		// TODO future refinements
+		// Future refinements:
 		// - if multiple Libraries, see if any single GPU in any Library will fit
 		// - try subsets of GPUs instead of just falling back to 1 or all in a family
 
@@ -904,7 +933,8 @@ func (s *Scheduler) maybeFindCPURunnerToUnload(req *LlmRequest, f *ggml.GGML, gp
 		return nil
 	}
 
-	// TODO - optimization: try to find CPU only runners first, or partial offloads with enough in system memory to make room
+	// Optimization idea: try to unload CPU-only runners first or partial offloads with enough
+	// system memory to make room
 
 	return s.findRunnerToUnload()
 }
