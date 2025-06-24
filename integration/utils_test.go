@@ -92,7 +92,7 @@ var serverReady bool
 
 func startServer(t *testing.T, ctx context.Context, ollamaHost string) error {
 	// Make sure the server has been built
-	CLIName, err := filepath.Abs("../ollama")
+	CLIName, err := filepath.Abs("../moogla")
 	if err != nil {
 		return err
 	}
@@ -116,7 +116,7 @@ func startServer(t *testing.T, ctx context.Context, ollamaHost string) error {
 	}
 
 	slog.Info("starting server", "url", ollamaHost)
-	done, err := lifecycle.SpawnServer(ctx, "../ollama")
+	done, err := lifecycle.SpawnServer(ctx, "../moogla")
 	if err != nil {
 		return fmt.Errorf("failed to start server: %w", err)
 	}

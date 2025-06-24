@@ -1395,7 +1395,7 @@ func NewCLI() *cobra.Command {
 	}
 
 	rootCmd := &cobra.Command{
-		Use:           "ollama",
+		Use:           "moogla",
 		Short:         "Large language model runner",
 		SilenceUsage:  true,
 		SilenceErrors: true,
