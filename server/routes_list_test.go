@@ -22,7 +22,7 @@ func TestList(t *testing.T) {
 		"apple/OpenELM:latest",
 		"boreas:2b-code-v1.5-q6_K",
 		"notus:7b-v1-IQ2_S",
-		// TODO: host:port currently fails on windows (#4107)
+		// TODO: host:port currently fails on Windows (see docs/issues/windows-host-port.md)
 		// "localhost:5000/library/eurus:700b-v0.5-iq3_XXS",
 		"mynamespace/apeliotes:latest",
 		"myhost/mynamespace/lips:code",
