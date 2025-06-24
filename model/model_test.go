@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"reflect"
 	"slices"
 	"strings"
@@ -159,6 +160,23 @@ func TestGetTextProcessor(t *testing.T) {
 		t.Errorf("unexpected error: %v", err)
 	} else if tp != nil {
 		t.Error("expected nil tp")
+	}
+}
+
+func TestRegisterDuplicate(t *testing.T) {
+	old := models
+	models = make(map[string]func(fs.Config) (Model, error))
+	t.Cleanup(func() { models = old })
+
+	if err := Register("dup", func(fs.Config) (Model, error) { return nil, nil }); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	err := Register("dup", func(fs.Config) (Model, error) { return nil, nil })
+	if err == nil {
+		t.Fatal("expected error")
+	}
+	if !errors.Is(err, ErrModelRegistered) {
+		t.Errorf("unexpected error: %v", err)
 	}
 }
 

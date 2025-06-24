@@ -209,5 +209,7 @@ func (m *Model) Forward(ctx ml.Context, batch input.Batch) (ml.Tensor, error) {
 }
 
 func init() {
-	model.Register("gemma2", New)
+	if err := model.Register("gemma2", New); err != nil {
+		panic(err)
+	}
 }

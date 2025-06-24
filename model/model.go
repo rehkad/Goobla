@@ -88,13 +88,18 @@ func (m *Base) Config() config {
 
 var models = make(map[string]func(fs.Config) (Model, error))
 
+// ErrModelRegistered indicates a model with the same name has already been
+// registered.
+var ErrModelRegistered = errors.New("model: model already registered")
+
 // Register registers a model constructor for the given architecture
-func Register(name string, f func(fs.Config) (Model, error)) {
+func Register(name string, f func(fs.Config) (Model, error)) error {
 	if _, ok := models[name]; ok {
-		panic("model: model already registered")
+		return ErrModelRegistered
 	}
 
 	models[name] = f
+	return nil
 }
 
 // New initializes a new model instance with the provided configuration based on the metadata in the model file
