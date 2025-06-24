@@ -1666,18 +1666,18 @@ func filterThinkTags(msgs []api.Message, m *Model) []api.Message {
 
 	for i, msg := range msgs {
 		if msg.Role == "assistant" && i < finalUserIndex {
-			// TODO(drifkin): this is from before we added proper thinking support.
-			// However, even if thinking is not enabled (and therefore we shouldn't
-			// change the user output), we should probably perform this filtering
-			// for all thinking models since it tends to save tokens and improve quality.
-			thinkingState := &thinking.Parser{
-				OpeningTag: openingTag,
-				ClosingTag: closingTag,
-			}
-			_, content := thinkingState.AddContent(msg.Content)
-			msgs[i].Content = content
+			msgs[i].Content = stripThinking(msg.Content, openingTag, closingTag)
 		}
 	}
 
 	return msgs
+}
+
+// stripThinking removes thinking traces from a single message using the tags
+// inferred from the template. It is called for all previous assistant messages
+// regardless of whether the current request has thinking enabled.
+func stripThinking(content, openingTag, closingTag string) string {
+	parser := &thinking.Parser{OpeningTag: openingTag, ClosingTag: closingTag}
+	_, out := parser.AddContent(content)
+	return out
 }
