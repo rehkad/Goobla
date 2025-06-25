@@ -1209,6 +1209,7 @@ func (s *Server) GenerateRoutes(logger *slog.Logger, rc *goobla.Registry) (http.
 	r.POST("/api/copy", s.CopyHandler)
 
 	// Inference
+	r.GET("/api/info", s.InfoHandler)
 	r.GET("/api/ps", s.PsHandler)
 	r.POST("/api/generate", s.GenerateHandler)
 	r.POST("/api/chat", s.ChatHandler)
@@ -1396,6 +1397,10 @@ func streamResponse(c *gin.Context, ch chan any) {
 
 		return true
 	})
+}
+
+func (s *Server) InfoHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, discover.GetSystemInfo())
 }
 
 func (s *Server) PsHandler(c *gin.Context) {

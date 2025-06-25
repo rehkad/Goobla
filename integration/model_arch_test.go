@@ -58,15 +58,15 @@ func TestModelsGenerate(t *testing.T) {
 	client, _, cleanup := InitServerConnection(ctx, t)
 	defer cleanup()
 
-	// TODO use info API eventually
+	info, err := client.Info(ctx)
+	require.NoError(t, err)
 	var maxVram uint64
-	var err error
-	if s := os.Getenv("GOOBLA_MAX_VRAM"); s != "" {
-		maxVram, err = strconv.ParseUint(s, 10, 64)
-		if err != nil {
-			t.Fatalf("invalid  GOOBLA_MAX_VRAM %v", err)
+	for _, g := range info.GPUs {
+		if g.TotalMemory > maxVram {
+			maxVram = g.TotalMemory
 		}
-	} else {
+	}
+	if maxVram == 0 {
 		slog.Warn("No VRAM info available, testing all models, so larger ones might timeout...")
 	}
 
@@ -111,15 +111,15 @@ func TestModelsEmbed(t *testing.T) {
 	client, _, cleanup := InitServerConnection(ctx, t)
 	defer cleanup()
 
-	// TODO use info API eventually
+	info, err := client.Info(ctx)
+	require.NoError(t, err)
 	var maxVram uint64
-	var err error
-	if s := os.Getenv("GOOBLA_MAX_VRAM"); s != "" {
-		maxVram, err = strconv.ParseUint(s, 10, 64)
-		if err != nil {
-			t.Fatalf("invalid  GOOBLA_MAX_VRAM %v", err)
+	for _, g := range info.GPUs {
+		if g.TotalMemory > maxVram {
+			maxVram = g.TotalMemory
 		}
-	} else {
+	}
+	if maxVram == 0 {
 		slog.Warn("No VRAM info available, testing all models, so larger ones might timeout...")
 	}
 

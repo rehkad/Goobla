@@ -428,3 +428,12 @@ func (c *Client) Version(ctx context.Context) (string, error) {
 
 	return version.Version, nil
 }
+
+// Info returns hardware information from the Goobla server.
+func (c *Client) Info(ctx context.Context) (*SystemInfo, error) {
+	var info SystemInfo
+	if err := c.do(ctx, http.MethodGet, "/api/info", nil, &info); err != nil {
+		return nil, err
+	}
+	return &info, nil
+}

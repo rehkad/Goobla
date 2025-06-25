@@ -348,15 +348,33 @@ func GenerateRequests() ([]api.GenerateRequest, [][]string) {
 		}
 }
 
-func skipUnderMinVRAM(t *testing.T, gb uint64) {
-	// TODO use info API in the future
-	if s := os.Getenv("GOOBLA_MAX_VRAM"); s != "" {
-		maxVram, err := strconv.ParseUint(s, 10, 64)
-		require.NoError(t, err)
-		// Don't hammer on small VRAM cards...
-		if maxVram < gb*format.GibiByte {
-			t.Skip("skipping with small VRAM to avoid timeouts")
+func getMaxVRAM(t *testing.T) uint64 {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	client, _, cleanup := InitServerConnection(ctx, t)
+	defer cleanup()
+
+	info, err := client.Info(ctx)
+	require.NoError(t, err)
+
+	var maxVram uint64
+	for _, g := range info.GPUs {
+		if g.TotalMemory > maxVram {
+			maxVram = g.TotalMemory
 		}
+	}
+
+	return maxVram
+}
+
+func skipUnderMinVRAM(t *testing.T, gb uint64) {
+	maxVram := getMaxVRAM(t)
+	if maxVram == 0 {
+		slog.Warn("No VRAM info available, tests may timeout...")
+		return
+	}
+	if maxVram < gb*format.GibiByte {
+		t.Skip("skipping with small VRAM to avoid timeouts")
 	}
 }
 

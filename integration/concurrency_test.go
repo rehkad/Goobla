@@ -72,20 +72,23 @@ func TestIntegrationConcurrentPredict(t *testing.T) {
 	reqLimit := len(req)
 	iterLimit := 5
 
-	if s := os.Getenv("GOOBLA_MAX_VRAM"); s != "" {
-		maxVram, err := strconv.ParseUint(s, 10, 64)
-		require.NoError(t, err)
-		// Don't hammer on small VRAM cards...
-		if maxVram < 4*format.GibiByte {
-			reqLimit = min(reqLimit, 2)
-			iterLimit = 2
-		}
-	}
-
 	ctx, cancel := context.WithTimeout(context.Background(), 9*time.Minute)
 	defer cancel()
 	client, _, cleanup := InitServerConnection(ctx, t)
 	defer cleanup()
+
+	info, err := client.Info(ctx)
+	require.NoError(t, err)
+	var maxVram uint64
+	for _, g := range info.GPUs {
+		if g.TotalMemory > maxVram {
+			maxVram = g.TotalMemory
+		}
+	}
+	if maxVram < 4*format.GibiByte {
+		reqLimit = min(reqLimit, 2)
+		iterLimit = 2
+	}
 
 	// Get the server running (if applicable) warm the model up with a single initial request
 	DoGenerate(ctx, t, client, req[0], resp[0], 60*time.Second, 10*time.Second)
@@ -108,14 +111,21 @@ func TestIntegrationConcurrentPredict(t *testing.T) {
 
 // Stress the system if we know how much VRAM it has, and attempt to load more models than will fit
 func TestMultiModelStress(t *testing.T) {
-	s := os.Getenv("GOOBLA_MAX_VRAM") // TODO - discover actual VRAM
-	if s == "" {
-		t.Skip("GOOBLA_MAX_VRAM not specified, can't pick the right models for the stress test")
-	}
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
+	defer cancel()
+	client, _, cleanup := InitServerConnection(ctx, t)
+	defer cleanup()
 
-	maxVram, err := strconv.ParseUint(s, 10, 64)
-	if err != nil {
-		t.Fatal(err)
+	info, err := client.Info(ctx)
+	require.NoError(t, err)
+	var maxVram uint64
+	for _, g := range info.GPUs {
+		if g.TotalMemory > maxVram {
+			maxVram = g.TotalMemory
+		}
+	}
+	if maxVram == 0 {
+		t.Skip("VRAM info unavailable, skipping stress test")
 	}
 	if maxVram < 2*format.GibiByte {
 		t.Skip("VRAM less than 2G, skipping model stress tests")

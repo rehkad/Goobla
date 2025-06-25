@@ -480,6 +480,53 @@ type TokenResponse struct {
 	Token string `json:"token"`
 }
 
+// GpuInfo represents GPU hardware details returned by the /api/info endpoint.
+type GpuInfo struct {
+	TotalMemory          uint64      `json:"total_memory,omitempty"`
+	FreeMemory           uint64      `json:"free_memory,omitempty"`
+	FreeSwap             uint64      `json:"free_swap,omitempty"`
+	Library              string      `json:"library,omitempty"`
+	Variant              string      `json:"variant"`
+	DependencyPath       []string    `json:"lib_path,omitempty"`
+	EnvWorkarounds       [][2]string `json:"envs,omitempty"`
+	UnreliableFreeMemory bool        `json:"unreliable_free_memory"`
+	ID                   string      `json:"gpu_id"`
+	Name                 string      `json:"name"`
+	Compute              string      `json:"compute"`
+	DriverMajor          int         `json:"driver_major,omitempty"`
+	DriverMinor          int         `json:"driver_minor,omitempty"`
+}
+
+// CPU describes a single CPU package.
+type CPU struct {
+	ID                  string `json:"id"`
+	VendorID            string `json:"vendor_id"`
+	ModelName           string `json:"model_name"`
+	CoreCount           int    `json:"core_count"`
+	EfficiencyCoreCount int    `json:"efficiency_core_count"`
+	ThreadCount         int    `json:"thread_count"`
+}
+
+// CPUInfo contains CPU and memory information.
+type CPUInfo struct {
+	GpuInfo
+	CPUs []CPU `json:"cpus"`
+}
+
+// UnsupportedGPUInfo describes GPUs that were detected but cannot be used.
+type UnsupportedGPUInfo struct {
+	GpuInfo
+	Reason string `json:"reason"`
+}
+
+// SystemInfo is returned by the /api/info endpoint and describes system hardware.
+type SystemInfo struct {
+	System          CPUInfo              `json:"system"`
+	GPUs            []GpuInfo            `json:"gpus"`
+	UnsupportedGPUs []UnsupportedGPUInfo `json:"unsupported_gpus"`
+	DiscoveryErrors []string             `json:"discovery_errors"`
+}
+
 // GenerateResponse is the response passed into [GenerateResponseFunc].
 type GenerateResponse struct {
 	// Model is the model name that generated the response.
