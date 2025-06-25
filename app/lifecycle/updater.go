@@ -148,9 +148,9 @@ func DownloadNewRelease(ctx context.Context, updateResp UpdateResponse) error {
 	}
 	defer resp.Body.Close()
 	etag = strings.Trim(resp.Header.Get("etag"), "\"")
-       if etag == "" {
-               etag = "_"
-       }
+	if etag == "" {
+		etag = "_"
+	}
 
 	stageFilename = filepath.Join(UpdateStageDir, etag, filename)
 

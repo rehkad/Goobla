@@ -199,6 +199,14 @@ jobs:
         run: |
           go generate ./...
           git diff --name-only --exit-code || (echo "Please run 'go generate ./...'." && exit 1)
+      - name: check that 'gofmt' is clean
+        run: |
+          unformatted=$(gofmt -l $(git ls-files '*.go'))
+          if [ -n "$unformatted" ]; then
+            echo "Please run 'gofmt -w' on the following files:"
+            echo "$unformatted"
+            exit 1
+          fi
 
       - name: go test
         if: always()
