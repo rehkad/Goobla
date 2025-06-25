@@ -300,8 +300,11 @@ func New(modelPath string, params ml.BackendParams) (ml.Backend, error) {
 		case contains(t.Name, "cls", "output", "output_norm"):
 			createTensor(tensor{source: t}, output.bts, blocks)
 		case strings.HasPrefix(t.Name, "v.") || strings.HasPrefix(t.Name, "mm."):
-			// TODO: assign vision tensors to the gpu if possible
-			createTensor(tensor{source: t}, output.bts, blocks)
+			bts := output.bts
+			if len(gpuDeviceBufferTypes) > 0 {
+				bts = gpuDeviceBufferTypes[0].bts
+			}
+			createTensor(tensor{source: t}, bts, blocks)
 		case contains(t.Name, "rope_freqs", "rope_factors_long", "rope_factors_short"):
 			// these tensors should be repeated per layer
 			for i, layer := range layers {
