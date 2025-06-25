@@ -2,6 +2,7 @@
 package errtypes
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 )
@@ -11,9 +12,22 @@ const (
 	InvalidModelNameErrMsg = "invalid model name"
 )
 
-// TODO: This should have a structured response from the API
+// UnknownGooblaKey represents an invalid Goobla API key error.
+//
+// It marshals to JSON as:
+//
+//	{"error": "unknown goobla key", "key": "<key>"}
 type UnknownGooblaKey struct {
-	Key string
+	Key string `json:"key"`
+}
+
+// MarshalJSON implements json.Marshaler so that the error message is included
+// alongside the key field in JSON responses.
+func (e UnknownGooblaKey) MarshalJSON() ([]byte, error) {
+	return json.Marshal(struct {
+		Error string `json:"error"`
+		Key   string `json:"key"`
+	}{Error: UnknownGooblaKeyErrMsg, Key: e.Key})
 }
 
 func (e *UnknownGooblaKey) Error() string {
