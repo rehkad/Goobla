@@ -9,6 +9,18 @@ uint64_t getRecommendedMaxVRAM() {
   return result;
 }
 
+uint64_t getCurrentAllocatedVRAM() {
+  id<MTLDevice> device = MTLCreateSystemDefaultDevice();
+  uint64_t result = 0;
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 101300
+  if ([device respondsToSelector:@selector(currentAllocatedSize)]) {
+    result = device.currentAllocatedSize;
+  }
+#endif
+  CFRelease(device);
+  return result;
+}
+
 // getPhysicalMemory returns the total physical memory in bytes
 uint64_t getPhysicalMemory() {
   return [NSProcessInfo processInfo].physicalMemory;
