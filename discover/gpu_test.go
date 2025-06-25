@@ -1,6 +1,8 @@
 package discover
 
 import (
+	"os"
+	"path/filepath"
 	"runtime"
 	"testing"
 
@@ -55,6 +57,34 @@ func TestByLibrary(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestParseLspci(t *testing.T) {
+	sample := `00:02.0 VGA compatible controller: Intel Corporation UHD Graphics`
+	sample += "\n01:00.0 VGA compatible controller: NVIDIA Corporation RTX"
+	sample += "\n02:00.0 3D controller: Advanced Micro Devices, Inc. [AMD/ATI] Device"
+	devices := parseLspci(sample)
+	require.Len(t, devices, 3)
+}
+
+func TestIsIntegratedGPU(t *testing.T) {
+	require.True(t, isIntegratedGPU("Intel(R) HD Graphics"))
+	require.True(t, isIntegratedGPU("AMD Radeon(TM) Graphics"))
+	require.False(t, isIntegratedGPU("NVIDIA GeForce RTX"))
+	require.False(t, isIntegratedGPU("Intel Arc A770"))
+}
+
+func TestGPUHasRunner(t *testing.T) {
+	dir := t.TempDir()
+	old := LibGooblaPath
+	LibGooblaPath = dir
+	defer func() { LibGooblaPath = old }()
+
+	os.Mkdir(filepath.Join(dir, "cuda_v12"), 0o755)
+	g := GpuInfo{Library: "cuda", Variant: "v12"}
+	require.True(t, gpuHasRunner(g))
+	g.Variant = "v11"
+	require.False(t, gpuHasRunner(g))
 }
 
 // TODO - add some logic to figure out card type through other means and actually verify we got back what we expected

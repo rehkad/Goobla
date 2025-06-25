@@ -291,9 +291,9 @@ func AMDGetGPUInfo() ([]RocmGPUInfo, error) {
 		}
 
 		// iGPU detection, remove this check once we can support an iGPU variant of the rocm library
-		if totalMemory < IGPUMemLimit {
+		if isIntegratedGPU(name) {
 			reason := "unsupported Radeon iGPU detected skipping"
-			slog.Info(reason, "id", gpuID, "total", format.HumanBytes2(totalMemory))
+			slog.Info(reason, "id", gpuInfo.ID, "name", name)
 			unsupportedGPUs = append(unsupportedGPUs, UnsupportedGPUInfo{
 				GpuInfo: gpuInfo.GpuInfo,
 				Reason:  reason,
