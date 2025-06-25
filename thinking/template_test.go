@@ -119,6 +119,18 @@ For each function call, return a json object with function name and arguments wi
 			wantOpeningTag: "<think>",
 			wantClosingTag: "</think>",
 		},
+		{
+			desc: "pipeline reference ignored",
+			tmplString: `
+                        {{- range .Messages }}
+                                Opening
+                                {{ if .Thinking }}ignored{{ end }}
+                                Closing
+                        {{ end }}
+                `,
+			wantOpeningTag: "",
+			wantClosingTag: "",
+		},
 	}
 	for _, c := range cases {
 		tmpl := template.Must(template.New("test").Parse(c.tmplString))

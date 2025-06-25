@@ -6,51 +6,58 @@ import (
 	"text/template/parse"
 )
 
-func templateVisit(n parse.Node, enterFn func(parse.Node) bool, exitFn func(parse.Node)) {
+type visitContext int
+
+const (
+	contextAction visitContext = iota
+	contextPipeline
+)
+
+func templateVisit(n parse.Node, ctx visitContext, enterFn func(parse.Node, visitContext) bool, exitFn func(parse.Node, visitContext)) {
 	if n == nil {
 		return
 	}
-	shouldContinue := enterFn(n)
+	shouldContinue := enterFn(n, ctx)
 	if !shouldContinue {
 		return
 	}
 	switch x := n.(type) {
 	case *parse.ListNode:
 		for _, c := range x.Nodes {
-			templateVisit(c, enterFn, exitFn)
+			templateVisit(c, contextAction, enterFn, exitFn)
 		}
 	case *parse.BranchNode:
 		if x.Pipe != nil {
-			templateVisit(x.Pipe, enterFn, exitFn)
+			templateVisit(x.Pipe, contextPipeline, enterFn, exitFn)
 		}
 		if x.List != nil {
-			templateVisit(x.List, enterFn, exitFn)
+			templateVisit(x.List, contextAction, enterFn, exitFn)
 		}
 		if x.ElseList != nil {
-			templateVisit(x.ElseList, enterFn, exitFn)
+			templateVisit(x.ElseList, contextAction, enterFn, exitFn)
 		}
 	case *parse.ActionNode:
-		templateVisit(x.Pipe, enterFn, exitFn)
+		templateVisit(x.Pipe, contextAction, enterFn, exitFn)
 	case *parse.WithNode:
-		templateVisit(&x.BranchNode, enterFn, exitFn)
+		templateVisit(&x.BranchNode, ctx, enterFn, exitFn)
 	case *parse.RangeNode:
-		templateVisit(&x.BranchNode, enterFn, exitFn)
+		templateVisit(&x.BranchNode, ctx, enterFn, exitFn)
 	case *parse.IfNode:
-		templateVisit(&x.BranchNode, enterFn, exitFn)
+		templateVisit(&x.BranchNode, ctx, enterFn, exitFn)
 	case *parse.TemplateNode:
-		templateVisit(x.Pipe, enterFn, exitFn)
+		templateVisit(x.Pipe, contextAction, enterFn, exitFn)
 	case *parse.PipeNode:
 		for _, c := range x.Cmds {
-			templateVisit(c, enterFn, exitFn)
+			templateVisit(c, ctx, enterFn, exitFn)
 		}
 	case *parse.CommandNode:
 		for _, a := range x.Args {
-			templateVisit(a, enterFn, exitFn)
+			templateVisit(a, ctx, enterFn, exitFn)
 		}
 		// text, field, number, etc. are leaves – nothing to recurse into
 	}
 	if exitFn != nil {
-		exitFn(n)
+		exitFn(n, ctx)
 	}
 }
 
@@ -65,11 +72,14 @@ func InferTags(t *template.Template) (string, string) {
 	openingTag := ""
 	closingTag := ""
 
-	enterFn := func(n parse.Node) bool {
+	enterFn := func(n parse.Node, ctx visitContext) bool {
 		ancestors = append(ancestors, n)
 
 		switch x := n.(type) {
 		case *parse.FieldNode:
+			if ctx == contextPipeline {
+				return true
+			}
 			if len(x.Ident) > 0 && x.Ident[0] == "Thinking" {
 				var mostRecentRange *parse.RangeNode
 				for i := len(ancestors) - 1; i >= 0; i-- {
@@ -108,11 +118,11 @@ func InferTags(t *template.Template) (string, string) {
 		return true
 	}
 
-	exitFn := func(n parse.Node) {
+	exitFn := func(n parse.Node, ctx visitContext) {
 		ancestors = ancestors[:len(ancestors)-1]
 	}
 
-	templateVisit(t.Root, enterFn, exitFn)
+	templateVisit(t.Root, contextAction, enterFn, exitFn)
 
 	return openingTag, closingTag
 }
@@ -120,7 +130,7 @@ func InferTags(t *template.Template) (string, string) {
 // checks to see if the given field name is present in the pipeline of the given range node
 func rangeUsesField(rangeNode *parse.RangeNode, field string) bool {
 	found := false
-	enterFn := func(n parse.Node) bool {
+	enterFn := func(n parse.Node, ctx visitContext) bool {
 		switch x := n.(type) {
 		case *parse.FieldNode:
 			if x.Ident[0] == field {
@@ -129,6 +139,6 @@ func rangeUsesField(rangeNode *parse.RangeNode, field string) bool {
 		}
 		return true
 	}
-	templateVisit(rangeNode.BranchNode.Pipe, enterFn, nil)
+	templateVisit(rangeNode.BranchNode.Pipe, contextPipeline, enterFn, nil)
 	return found
 }
