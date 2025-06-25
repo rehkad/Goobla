@@ -349,14 +349,10 @@ func GenerateRequests() ([]api.GenerateRequest, [][]string) {
 }
 
 func skipUnderMinVRAM(t *testing.T, gb uint64) {
-	// TODO use info API in the future
-	if s := os.Getenv("GOOBLA_MAX_VRAM"); s != "" {
-		maxVram, err := strconv.ParseUint(s, 10, 64)
-		require.NoError(t, err)
-		// Don't hammer on small VRAM cards...
-		if maxVram < gb*format.GibiByte {
-			t.Skip("skipping with small VRAM to avoid timeouts")
-		}
+	maxVram := availableVRAM()
+	// Don't hammer on small VRAM cards...
+	if maxVram > 0 && maxVram < gb*format.GibiByte {
+		t.Skip("skipping with small VRAM to avoid timeouts")
 	}
 }
 
