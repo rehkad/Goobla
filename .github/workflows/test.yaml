@@ -212,12 +212,8 @@ jobs:
         if: always()
         run: go test -mod=vendor -count=1 -benchtime=1x ./...
 
-      # TODO(bmizerany): replace this heavy tool with just the
-      # tools/checks/binaries we want and then make them all run in parallel
-      # across jobs, not on a single tiny vm on Github Actions.
-      - uses: golangci/golangci-lint-action@v6
-        with:
-          args: --timeout 10m0s -v
+      # Go linters are executed in parallel jobs defined by the `lint` matrix
+      # below. Each job runs a single binary from tools/checks/.
 
       - name: cache save
         # Always save the cache, even if the job fails. The artifacts produced
@@ -238,6 +234,65 @@ jobs:
           # NOTE: The -3- here should be incremented when the scheme of data to be
           # cached changes (e.g. path above changes).
           key: ${{ github.job }}-${{ runner.os }}-${{ matrix.goarch }}-${{ matrix.buildflags }}-go-3-${{ hashFiles('**/go.sum') }}-${{ github.run_id }}
+
+  lint:
+    runs-on: ubuntu-latest
+    env:
+      CGO_ENABLED: '1'
+      GOEXPERIMENT: 'synctest'
+    strategy:
+      matrix:
+        linter:
+          - asasalint
+          - bidichk
+          - bodyclose
+          - containedctx
+          - gocheckcompilerdirectives
+          - gofmt
+          - gofumpt
+          - gosimple
+          - govet
+          - ineffassign
+          - intrange
+          - makezero
+          - misspell
+          - nilerr
+          - nolintlint
+          - nosprintfhostport
+          - staticcheck
+          - unconvert
+          - usetesting
+          - wastedassign
+          - whitespace
+    steps:
+      - uses: actions/checkout@v4
+      - name: cache restore
+        uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod/cache
+            ~\AppData\Local\go-build
+          key: ${{ github.job }}-${{ runner.os }}-${{ matrix.linter }}-go-3-${{ hashFiles('**/go.sum') }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ github.job }}-${{ runner.os }}-${{ matrix.linter }}-go-3-${{ hashFiles('**/go.sum') }}
+            ${{ github.job }}-${{ runner.os }}-${{ matrix.linter }}-go-3-
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          cache: false
+          go-version-file: go.mod
+      - name: run ${{ matrix.linter }}
+        run: tools/checks/${{ matrix.linter }} ./...
+      - name: cache save
+        if: always()
+        uses: actions/cache/save@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod/cache
+            ~\AppData\Local\go-build
+          key: ${{ github.job }}-${{ runner.os }}-${{ matrix.linter }}-go-3-${{ hashFiles('**/go.sum') }}-${{ github.run_id }}
 
   patches:
     runs-on: ubuntu-latest
