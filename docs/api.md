@@ -397,7 +397,6 @@ curl http://localhost:11434/api/generate -d '{
     "frequency_penalty": 1.0,
     "penalize_newline": true,
     "stop": ["\n", "user:"],
-    "numa": false,
     "num_ctx": 1024,
     "num_batch": 2,
     "num_gpu": 1,
