@@ -54,10 +54,11 @@ func NewEncoderCache() *EncoderCache {
 	}
 }
 
-func (c *EncoderCache) Init(backend ml.Backend, dtype ml.DType, maxSequences, capacity, maxBatch int) {
+func (c *EncoderCache) Init(backend ml.Backend, dtype ml.DType, maxSequences, capacity, maxBatch int) error {
 	if err := c.SetBackend(backend, maxSequences); err != nil {
-		panic(err)
+		return err
 	}
+	return nil
 }
 
 func (c *EncoderCache) SetBackend(backend ml.Backend, maxSequences int) error {
