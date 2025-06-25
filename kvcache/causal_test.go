@@ -25,7 +25,9 @@ func TestStore(t *testing.T) {
 	cache := NewCausalCache(nil)
 	defer cache.Close()
 
-	cache.Init(backend, ml.DTypeF16, 1, 16, 16)
+	if err := cache.Init(backend, ml.DTypeF16, 1, 16, 16); err != nil {
+		t.Fatalf("Init failed: %v", err)
+	}
 
 	tests := []testCase{
 		{
@@ -58,7 +60,9 @@ func TestSWA(t *testing.T) {
 	cache := NewSWACache(1, nil)
 	defer cache.Close()
 
-	cache.Init(backend, ml.DTypeF16, 1, 16, 16)
+	if err := cache.Init(backend, ml.DTypeF16, 1, 16, 16); err != nil {
+		t.Fatalf("Init failed: %v", err)
+	}
 
 	tests := []testCase{
 		{
@@ -91,7 +95,9 @@ func TestChunkedAttention(t *testing.T) {
 	defer cache.Close()
 
 	var b testBackend
-	cache.Init(&b, ml.DTypeF16, 1, 16, 16)
+	if err := cache.Init(&b, ml.DTypeF16, 1, 16, 16); err != nil {
+		t.Fatalf("Init failed: %v", err)
+	}
 
 	x := float32(math.Inf(-1))
 
@@ -149,7 +155,9 @@ func TestSequences(t *testing.T) {
 	cache := NewCausalCache(nil)
 	defer cache.Close()
 
-	cache.Init(backend, ml.DTypeF16, 1, 16, 16)
+	if err := cache.Init(backend, ml.DTypeF16, 1, 16, 16); err != nil {
+		t.Fatalf("Init failed: %v", err)
+	}
 
 	tests := []testCase{
 		{
@@ -184,7 +192,9 @@ func TestRemove(t *testing.T) {
 	})
 	defer cache.Close()
 
-	cache.Init(backend, ml.DTypeF16, 1, 16, 16)
+	if err := cache.Init(backend, ml.DTypeF16, 1, 16, 16); err != nil {
+		t.Fatalf("Init failed: %v", err)
+	}
 
 	tests := []testCase{
 		{
@@ -249,7 +259,9 @@ func TestDefrag(t *testing.T) {
 	})
 	defer cache.Close()
 
-	cache.Init(backend, ml.DTypeF16, 1, 16, 16)
+	if err := cache.Init(backend, ml.DTypeF16, 1, 16, 16); err != nil {
+		t.Fatalf("Init failed: %v", err)
+	}
 
 	tests := []testCase{
 		{
@@ -297,7 +309,9 @@ func TestCopy(t *testing.T) {
 	cache := NewCausalCache(func(ctx ml.Context, layer int, key, shift ml.Tensor) (ml.Tensor, error) { return key, nil })
 	defer cache.Close()
 
-	cache.Init(backend, ml.DTypeF16, 1, 16, 16)
+	if err := cache.Init(backend, ml.DTypeF16, 1, 16, 16); err != nil {
+		t.Fatalf("Init failed: %v", err)
+	}
 
 	tests := []testCase{
 		{
@@ -372,7 +386,9 @@ func TestCanResume(t *testing.T) {
 	cache := NewSWACache(windowSize, nil)
 	defer cache.Close()
 
-	cache.Init(backend, ml.DTypeF16, 1, 16, 16)
+	if err := cache.Init(backend, ml.DTypeF16, 1, 16, 16); err != nil {
+		t.Fatalf("Init failed: %v", err)
+	}
 
 	context := backend.NewContext()
 	defer context.Close()
@@ -445,7 +461,9 @@ func TestSWARemoveWindow(t *testing.T) {
 		})
 		defer cache.Close()
 
-		cache.Init(backend, ml.DTypeF16, 1, 16, 16)
+		if err := cache.Init(backend, ml.DTypeF16, 1, 16, 16); err != nil {
+			t.Fatalf("Init failed: %v", err)
+		}
 
 		ctx := backend.NewContext()
 		defer ctx.Close()
@@ -485,7 +503,9 @@ func TestSWARemoveWindow(t *testing.T) {
 		})
 		defer cache.Close()
 
-		cache.Init(backend, ml.DTypeF16, 1, 16, 16)
+		if err := cache.Init(backend, ml.DTypeF16, 1, 16, 16); err != nil {
+			t.Fatalf("Init failed: %v", err)
+		}
 
 		ctx := backend.NewContext()
 		defer ctx.Close()

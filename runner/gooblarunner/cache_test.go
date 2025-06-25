@@ -438,13 +438,15 @@ func (m *mockCache) Remove(seq int, beginIndex, endIndex int32) error {
 }
 
 // Stub implementations for other interface methods
-func (m *mockCache) SetLayer(layer int)                                                            {}
-func (m *mockCache) Get(ctx ml.Context) (ml.Tensor, ml.Tensor, ml.Tensor)                          { return nil, nil, nil }
-func (m *mockCache) Put(ctx ml.Context, key, value ml.Tensor)                                      {}
-func (m *mockCache) Init(backend ml.Backend, dtype ml.DType, maxSequences, capacity, maxBatch int) {}
-func (m *mockCache) Close()                                                                        {}
-func (m *mockCache) StartForward(ctx ml.Context, batch input.Batch, reserve bool) error            { return nil }
-func (m *mockCache) CopyPrefix(srcSeq, dstSeq int, len int32)                                      {}
+func (m *mockCache) SetLayer(layer int)                                   {}
+func (m *mockCache) Get(ctx ml.Context) (ml.Tensor, ml.Tensor, ml.Tensor) { return nil, nil, nil }
+func (m *mockCache) Put(ctx ml.Context, key, value ml.Tensor)             {}
+func (m *mockCache) Init(backend ml.Backend, dtype ml.DType, maxSequences, capacity, maxBatch int) error {
+	return nil
+}
+func (m *mockCache) Close()                                                             {}
+func (m *mockCache) StartForward(ctx ml.Context, batch input.Batch, reserve bool) error { return nil }
+func (m *mockCache) CopyPrefix(srcSeq, dstSeq int, len int32)                           {}
 func (m *mockCache) SetConfig(ml.CacheConfig) error {
 	return nil
 }

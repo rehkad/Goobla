@@ -46,7 +46,9 @@ func NewInputCache(model model.Model, kvCacheType string, kvSize int32, numSlots
 
 	cache := model.Config().Cache
 	if cache != nil {
-		cache.Init(model.Backend(), kvCacheTypeFromStr(kvCacheType), numSlots, int(numCtx), batchSize)
+		if err := cache.Init(model.Backend(), kvCacheTypeFromStr(kvCacheType), numSlots, int(numCtx), batchSize); err != nil {
+			return nil, err
+		}
 	}
 
 	return &InputCache{

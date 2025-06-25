@@ -114,7 +114,7 @@ func NewChunkedAttentionCache(chunkSize int32, shift shiftFn) *Causal {
 	}
 }
 
-func (c *Causal) Init(backend ml.Backend, dtype ml.DType, maxSequences, capacity, maxBatch int) {
+func (c *Causal) Init(backend ml.Backend, dtype ml.DType, maxSequences, capacity, maxBatch int) error {
 	if c.config == nil {
 		var config ml.CacheConfig
 		if cc, ok := backend.(ml.BackendCacheConfig); ok {
@@ -147,6 +147,7 @@ func (c *Causal) Init(backend ml.Backend, dtype ml.DType, maxSequences, capacity
 	c.DType = dtype
 	c.cellRanges = make(map[int]cellRange)
 	c.backend = backend
+	return nil
 }
 
 func (c *Causal) SetConfig(config ml.CacheConfig) error {

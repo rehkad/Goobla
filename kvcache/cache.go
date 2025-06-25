@@ -49,7 +49,9 @@ type Cache interface {
 	// maxSequences: The maximum number of sequences stored in the cache - across all batches
 	// capacity: The number of cache entries to store, per sequence
 	// maxBatch: The maximum number of tokens that can occur in a single batch
-	Init(backend ml.Backend, dtype ml.DType, maxSequences, capacity, maxBatch int)
+	//
+	// Returns an error if initialization fails.
+	Init(backend ml.Backend, dtype ml.DType, maxSequences, capacity, maxBatch int) error
 
 	// Close closes the cache and frees resources associated with it
 	Close()
