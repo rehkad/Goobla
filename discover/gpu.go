@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strconv"
@@ -81,8 +82,10 @@ var (
 
 var RocmComputeMajorMin = "9"
 
-// TODO find a better way to detect iGPU instead of minimum memory
-const IGPUMemLimit = 1 * format.GibiByte // 512G is what they typically report, so anything less than 1G must be iGPU
+// IGPUMemLimit is retained for backwards compatibility but should no longer be
+// used for iGPU detection.  Integrated GPUs are now detected using GPU names
+// obtained from the libraries or the PCI scan fallback.
+const IGPUMemLimit = 1 * format.GibiByte
 
 // Note: gpuMutex must already be held
 func initCudaHandles() *cudaHandles {
@@ -318,9 +321,9 @@ func GetGPUInfo() GpuInfoList {
 					continue
 				}
 
-				if gpuInfo.TotalMemory < IGPUMemLimit {
+				if isIntegratedGPU(gpuInfo.Name) {
 					reason := "unsupported NVIDIA iGPU detected skipping"
-					slog.Info(reason, "id", gpuInfo.ID, "total", format.HumanBytes2(gpuInfo.TotalMemory))
+					slog.Info(reason, "id", gpuInfo.ID, "name", gpuInfo.Name)
 					unsupportedGPUs = append(unsupportedGPUs, UnsupportedGPUInfo{GpuInfo: gpuInfo.GpuInfo, Reason: reason})
 					continue
 				}
@@ -392,9 +395,9 @@ func GetGPUInfo() GpuInfoList {
 						gpuInfo.DependencyPath = []string{LibGooblaPath}
 						gpuInfo.MinimumMemory = oneapiMinimumMemory
 
-						if gpuInfo.TotalMemory < IGPUMemLimit {
+						if isIntegratedGPU(gpuInfo.Name) {
 							reason := "unsupported Intel iGPU detected skipping"
-							slog.Info(reason, "id", gpuInfo.ID, "total", format.HumanBytes2(gpuInfo.TotalMemory))
+							slog.Info(reason, "id", gpuInfo.ID, "name", gpuInfo.Name)
 							unsupportedGPUs = append(unsupportedGPUs, UnsupportedGPUInfo{GpuInfo: gpuInfo.GpuInfo, Reason: reason})
 							continue
 						}
@@ -418,9 +421,60 @@ func GetGPUInfo() GpuInfoList {
 		bootstrapped = true
 		if len(cudaGPUs) == 0 && len(rocmGPUs) == 0 && len(oneapiGPUs) == 0 {
 			slog.Info("no compatible GPUs were discovered")
+			if len(bootstrapErrors) > 0 {
+				if devices := scanPCIGPUs(); len(devices) > 0 {
+					for _, d := range devices {
+						slog.Info("pci scan detected gpu", "device", d)
+					}
+				}
+			}
 		}
 
-		// TODO verify we have runners for the discovered GPUs, filter out any that aren't supported with good error messages
+		// verify we have runners for the discovered GPUs
+		filter := func(in []CudaGPUInfo) []CudaGPUInfo {
+			out := in[:0]
+			for _, g := range in {
+				if gpuHasRunner(g.GpuInfo) {
+					out = append(out, g)
+				} else {
+					reason := "no runner available"
+					slog.Info(reason, "gpu", g.ID, "runner", g.RunnerName())
+					unsupportedGPUs = append(unsupportedGPUs, UnsupportedGPUInfo{GpuInfo: g.GpuInfo, Reason: reason})
+				}
+			}
+			return out
+		}
+		cudaGPUs = filter(cudaGPUs)
+
+		filterROCM := func(in []RocmGPUInfo) []RocmGPUInfo {
+			out := in[:0]
+			for _, g := range in {
+				if gpuHasRunner(g.GpuInfo) {
+					out = append(out, g)
+				} else {
+					reason := "no runner available"
+					slog.Info(reason, "gpu", g.ID, "runner", g.RunnerName())
+					unsupportedGPUs = append(unsupportedGPUs, UnsupportedGPUInfo{GpuInfo: g.GpuInfo, Reason: reason})
+				}
+			}
+			return out
+		}
+		rocmGPUs = filterROCM(rocmGPUs)
+
+		filterOneAPI := func(in []OneapiGPUInfo) []OneapiGPUInfo {
+			out := in[:0]
+			for _, g := range in {
+				if gpuHasRunner(g.GpuInfo) {
+					out = append(out, g)
+				} else {
+					reason := "no runner available"
+					slog.Info(reason, "gpu", g.ID, "runner", g.RunnerName())
+					unsupportedGPUs = append(unsupportedGPUs, UnsupportedGPUInfo{GpuInfo: g.GpuInfo, Reason: reason})
+				}
+			}
+			return out
+		}
+		oneapiGPUs = filterOneAPI(oneapiGPUs)
 	}
 
 	// For detected GPUs, load library if not loaded
@@ -778,4 +832,61 @@ func isCPUOnlyBuild() bool {
 		}
 	}
 	return true
+}
+
+// parseLspci parses output from lspci or wmic and returns any lines referencing
+// common GPU vendors.
+func parseLspci(out string) []string {
+	devices := []string{}
+	for _, line := range strings.Split(out, "\n") {
+		l := strings.ToLower(strings.TrimSpace(line))
+		if l == "" {
+			continue
+		}
+		if strings.Contains(l, "nvidia") || strings.Contains(l, "amd") || strings.Contains(l, "advanced micro devices") || strings.Contains(l, "intel") {
+			devices = append(devices, strings.TrimSpace(line))
+		}
+	}
+	return devices
+}
+
+// scanPCIGPUs attempts to detect GPUs via lspci on linux or wmic on windows.
+func scanPCIGPUs() []string {
+	var out []byte
+	var err error
+	switch runtime.GOOS {
+	case "linux":
+		out, err = exec.Command("lspci").Output()
+	case "windows":
+		out, err = exec.Command("wmic", "path", "win32_VideoController", "get", "name").Output()
+	default:
+		return nil
+	}
+	if err != nil {
+		slog.Debug("pci scan failed", "error", err)
+		return nil
+	}
+	return parseLspci(string(out))
+}
+
+// isIntegratedGPU attempts to determine if a GPU is integrated based on its name.
+func isIntegratedGPU(name string) bool {
+	n := strings.ToLower(name)
+	if strings.Contains(n, "intel") && !strings.Contains(n, "arc") {
+		return true
+	}
+	if strings.Contains(n, "radeon(tm)") && strings.Contains(n, "graphics") {
+		return true
+	}
+	if strings.Contains(n, "vega") && strings.Contains(n, "graphics") {
+		return true
+	}
+	return false
+}
+
+// gpuHasRunner returns true if a runner directory exists for the GPU.
+func gpuHasRunner(g GpuInfo) bool {
+	path := filepath.Join(LibGooblaPath, g.RunnerName())
+	fi, err := os.Stat(path)
+	return err == nil && fi.IsDir()
 }
