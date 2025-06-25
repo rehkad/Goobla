@@ -37,8 +37,18 @@ func GetGPUInfo() GpuInfoList {
 	}
 	info.TotalMemory = uint64(C.getRecommendedMaxVRAM())
 
-	// TODO is there a way to gather actual allocated video memory? (currentAllocatedSize doesn't work)
-	info.FreeMemory = info.TotalMemory
+	allocated := uint64(C.getCurrentAllocatedVRAM())
+	switch {
+	case allocated == 0:
+		// Older macOS versions may not expose currentAllocatedSize. Fall back to reporting
+		// the entire VRAM as free.
+		slog.Debug("unable to query current allocated VRAM; assuming all free")
+		info.FreeMemory = info.TotalMemory
+	case allocated >= info.TotalMemory:
+		info.FreeMemory = 0
+	default:
+		info.FreeMemory = info.TotalMemory - allocated
+	}
 
 	info.MinimumMemory = metalMinimumMemory
 	return []GpuInfo{info}
