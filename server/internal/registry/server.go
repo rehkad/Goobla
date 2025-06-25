@@ -19,6 +19,7 @@ import (
 	"github.com/goobla/goobla/server/internal/cache/blob"
 	"github.com/goobla/goobla/server/internal/client/goobla"
 	"github.com/goobla/goobla/server/internal/internal/backoff"
+	"github.com/goobla/goobla/types/errtypes"
 )
 
 // Local implements an http.Handler for handling local Goobla API model
@@ -131,23 +132,36 @@ func (s *Local) serveHTTP(rec *statusCodeRecorder, r *http.Request) {
 		// We always log the error, so fill in the error log attribute
 		errattr = slog.String("error", err.Error())
 
-		var e *serverError
-		switch {
-		case errors.As(err, &e):
-		case errors.Is(err, goobla.ErrNameInvalid):
-			e = &serverError{400, "bad_request", err.Error()}
-		default:
-			e = errInternalError
-		}
+		// Handle UnknownGooblaKey specially so the key is included in
+		// the JSON response.
+		var ugk *errtypes.UnknownGooblaKey
+		if errors.As(err, &ugk) {
+			data, jerr := json.Marshal(ugk)
+			if jerr != nil {
+				panic(jerr) // unreachable
+			}
+			rec.Header().Set("Content-Type", "application/json")
+			rec.WriteHeader(http.StatusUnauthorized)
+			rec.Write(data)
+		} else {
+			var e *serverError
+			switch {
+			case errors.As(err, &e):
+			case errors.Is(err, goobla.ErrNameInvalid):
+				e = &serverError{400, "bad_request", err.Error()}
+			default:
+				e = errInternalError
+			}
 
-		data, err := json.Marshal(e)
-		if err != nil {
-			// unreachable
-			panic(err)
+			data, jerr := json.Marshal(e)
+			if jerr != nil {
+				// unreachable
+				panic(jerr)
+			}
+			rec.Header().Set("Content-Type", "application/json")
+			rec.WriteHeader(e.Status)
+			rec.Write(data)
 		}
-		rec.Header().Set("Content-Type", "application/json")
-		rec.WriteHeader(e.Status)
-		rec.Write(data)
 
 		// fallthrough to log
 	}
