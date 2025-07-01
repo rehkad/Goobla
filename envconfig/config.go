@@ -269,6 +269,7 @@ func AsMap() map[string]EnvVar {
 			m, _ := Models()
 			return EnvVar{"GOOBLA_MODELS", m, "The path to the models directory"}
 		}(),
+		"GOOBLA_CONFIG":          {"GOOBLA_CONFIG", String("GOOBLA_CONFIG")(), "Path to the configuration file"},
 		"GOOBLA_NOHISTORY":       {"GOOBLA_NOHISTORY", NoHistory(), "Do not preserve readline history"},
 		"GOOBLA_NOPRUNE":         {"GOOBLA_NOPRUNE", NoPrune(), "Do not prune model blobs on startup"},
 		"GOOBLA_NUM_PARALLEL":    {"GOOBLA_NUM_PARALLEL", NumParallel(), "Maximum number of parallel requests"},

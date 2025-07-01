@@ -6,8 +6,11 @@ import (
 )
 
 func getStorePath() string {
+	if s := os.Getenv("GOOBLA_CONFIG"); s != "" {
+		return s
+	}
+
 	if os.Geteuid() == 0 {
-		// TODO where should we store this on linux for system-wide operation?
 		return "/etc/goobla/config.json"
 	}
 

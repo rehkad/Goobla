@@ -6,7 +6,9 @@ import (
 )
 
 func getStorePath() string {
-	// TODO - system wide location?
+	if s := os.Getenv("GOOBLA_CONFIG"); s != "" {
+		return s
+	}
 
 	home := os.Getenv("HOME")
 	return filepath.Join(home, "Library", "Application Support", "Goobla", "config.json")
