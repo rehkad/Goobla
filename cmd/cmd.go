@@ -1338,7 +1338,8 @@ func initializeKeypair() error {
 			return err
 		}
 
-		if err := os.MkdirAll(filepath.Dir(privKeyPath), 0o755); err != nil {
+		dir := filepath.Dir(privKeyPath)
+		if err := os.MkdirAll(dir, 0o700); err != nil {
 			return fmt.Errorf("could not create directory %w", err)
 		}
 
