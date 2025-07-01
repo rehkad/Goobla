@@ -20,6 +20,7 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/goobla/goobla/api"
 	"github.com/goobla/goobla/envconfig"
@@ -42,11 +43,17 @@ var (
 	errInsecureProtocol     = errors.New("insecure protocol http")
 )
 
+const defaultHTTPTimeout = 30 * time.Second
+
 type registryOptions struct {
 	Insecure bool
 	Username string
 	Password string
 	Token    string
+
+	// Timeout specifies a time limit for requests made by the HTTP client.
+	// A zero value means no timeout is set.
+	Timeout time.Duration
 
 	CheckRedirect func(req *http.Request, via []*http.Request) error
 }
@@ -797,8 +804,12 @@ func makeRequest(ctx context.Context, method string, requestURL *url.URL, header
 		req.ContentLength = contentLength
 	}
 
-	c := &http.Client{
-		CheckRedirect: regOpts.CheckRedirect,
+	c := &http.Client{}
+	if regOpts != nil {
+		c.CheckRedirect = regOpts.CheckRedirect
+		if regOpts.Timeout > 0 {
+			c.Timeout = regOpts.Timeout
+		}
 	}
 	if testMakeRequestDialContext != nil {
 		tr := http.DefaultTransport.(*http.Transport).Clone()
