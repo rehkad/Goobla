@@ -3,11 +3,13 @@ package progress
 import (
 	"fmt"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"time"
 )
 
 type Spinner struct {
+	mu           sync.Mutex
 	message      atomic.Value
 	messageWidth int
 
@@ -53,8 +55,13 @@ func (s *Spinner) String() string {
 		sb.WriteString(" ")
 	}
 
-	if s.stopped.IsZero() {
-		spinner := s.parts[s.value]
+	s.mu.Lock()
+	value := s.value
+	stopped := s.stopped
+	s.mu.Unlock()
+
+	if stopped.IsZero() {
+		spinner := s.parts[value%len(s.parts)]
 		sb.WriteString(spinner)
 		sb.WriteString(" ")
 	}
@@ -63,17 +70,31 @@ func (s *Spinner) String() string {
 }
 
 func (s *Spinner) start() {
+	s.mu.Lock()
 	s.ticker = time.NewTicker(100 * time.Millisecond)
+	s.mu.Unlock()
+
 	for range s.ticker.C {
-		s.value = (s.value + 1) % len(s.parts)
+		s.mu.Lock()
 		if !s.stopped.IsZero() {
+			s.ticker.Stop()
+			s.ticker = nil
+			s.mu.Unlock()
 			return
 		}
+		s.value = (s.value + 1) % len(s.parts)
+		s.mu.Unlock()
 	}
 }
 
 func (s *Spinner) Stop() {
+	s.mu.Lock()
 	if s.stopped.IsZero() {
 		s.stopped = time.Now()
+		if s.ticker != nil {
+			s.ticker.Stop()
+			s.ticker = nil
+		}
 	}
+	s.mu.Unlock()
 }
