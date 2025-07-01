@@ -17,8 +17,6 @@ import (
 	"github.com/goobla/goobla/types/model"
 )
 
-var intermediateBlobs map[string]string = make(map[string]string)
-
 type layerGGML struct {
 	Layer
 	*ggml.GGML
