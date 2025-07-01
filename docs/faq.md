@@ -158,6 +158,14 @@ Goobla binds 127.0.0.1 port 11434 by default. Change the bind address with the `
 
 Refer to the section [above](#how-do-i-configure-goobla-server) for how to set environment variables on your platform.
 
+## Where is the configuration stored?
+
+- macOS: `~/Library/Application Support/Goobla/config.json`
+- Linux: `~/.goobla/config.json` (root: `/etc/goobla/config.json`)
+- Windows: `%LOCALAPPDATA%\Goobla\config.json`
+
+Set the `GOOBLA_CONFIG` environment variable to override the location.
+
 ## How can I use Goobla with a proxy server?
 
 Goobla runs an HTTP server and can be exposed using a proxy server such as Nginx. To do so, configure the proxy to forward requests and optionally set required headers (if not exposing Goobla on the network). For example, with Nginx:
