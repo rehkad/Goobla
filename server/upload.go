@@ -258,7 +258,7 @@ func (b *blobUpload) uploadPart(ctx context.Context, method string, requestURL *
 
 		// retry uploading to the redirect URL
 		for try := range maxRetries {
-			err = b.uploadPart(ctx, http.MethodPut, redirectURL, part, &registryOptions{})
+			err = b.uploadPart(ctx, http.MethodPut, redirectURL, part, &registryOptions{Timeout: opts.Timeout})
 			switch {
 			case errors.Is(err, context.Canceled):
 				return err

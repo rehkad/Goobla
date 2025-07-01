@@ -67,7 +67,7 @@ func getAuthorizationToken(ctx context.Context, challenge registryChallenge) (st
 
 	headers.Add("Authorization", signature)
 
-	response, err := makeRequest(ctx, http.MethodGet, redirectURL, headers, nil, &registryOptions{})
+	response, err := makeRequest(ctx, http.MethodGet, redirectURL, headers, nil, &registryOptions{Timeout: defaultHTTPTimeout})
 	if err != nil {
 		return "", err
 	}
