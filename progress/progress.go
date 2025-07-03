@@ -28,11 +28,16 @@ type Progress struct {
 	pos int
 
 	ticker *time.Ticker
+	done   chan struct{}
+
 	states []State
 }
 
 func NewProgress(w io.Writer) *Progress {
-	p := &Progress{w: bufio.NewWriter(w)}
+	p := &Progress{
+		w:    bufio.NewWriter(w),
+		done: make(chan struct{}),
+	}
 	go p.start()
 	return p
 }
@@ -46,6 +51,10 @@ func (p *Progress) stop() bool {
 
 	if p.ticker != nil {
 		p.ticker.Stop()
+		if p.done != nil {
+			close(p.done)
+			p.done = nil
+		}
 		p.ticker = nil
 		p.render()
 		return true
@@ -128,7 +137,12 @@ func (p *Progress) render() {
 
 func (p *Progress) start() {
 	p.ticker = time.NewTicker(100 * time.Millisecond)
-	for range p.ticker.C {
-		p.render()
+	for {
+		select {
+		case <-p.ticker.C:
+			p.render()
+		case <-p.done:
+			return
+		}
 	}
 }
