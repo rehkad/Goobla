@@ -239,11 +239,23 @@ func LogLevel() slog.Level {
 	return level
 }
 
+// LogFormat returns the logging format. Valid values are "json" or "text".
+// Any other value defaults to "text".
+func LogFormat() string {
+	v := strings.ToLower(Var("GOOBLA_LOG_FORMAT"))
+	if v == "json" {
+		return "json"
+	}
+	return "text"
+}
+
 var (
 	// FlashAttention enables the experimental flash attention feature.
 	FlashAttention = Bool("GOOBLA_FLASH_ATTENTION")
 	// KvCacheType is the quantization type for the K/V cache.
 	KvCacheType = String("GOOBLA_KV_CACHE_TYPE")
+	// LogFormat sets the logging format.
+	LogFormatVar = String("GOOBLA_LOG_FORMAT")
 	// NoHistory disables readline history.
 	NoHistory = Bool("GOOBLA_NOHISTORY")
 	// NoPrune disables pruning of model blobs on startup.
@@ -331,6 +343,7 @@ type EnvVar struct {
 func AsMap() map[string]EnvVar {
 	ret := map[string]EnvVar{
 		"GOOBLA_DEBUG":              {"GOOBLA_DEBUG", LogLevel(), "Show additional debug information (e.g. GOOBLA_DEBUG=1)"},
+		"GOOBLA_LOG_FORMAT":         {"GOOBLA_LOG_FORMAT", LogFormat(), "Logging format: 'text' or 'json'"},
 		"GOOBLA_FLASH_ATTENTION":    {"GOOBLA_FLASH_ATTENTION", FlashAttention(), "Enabled flash attention"},
 		"GOOBLA_KV_CACHE_TYPE":      {"GOOBLA_KV_CACHE_TYPE", KvCacheType(), "Quantization type for the K/V cache (default: f16)"},
 		"GOOBLA_GPU_OVERHEAD":       {"GOOBLA_GPU_OVERHEAD", GpuOverhead(), "Reserve a portion of VRAM per GPU (bytes)"},
