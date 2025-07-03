@@ -78,7 +78,11 @@ func Host() *url.URL {
 // AllowedOrigins returns a list of allowed origins. AllowedOrigins can be configured via the GOOBLA_ORIGINS environment variable.
 func AllowedOrigins() (origins []string) {
 	if s := Var("GOOBLA_ORIGINS"); s != "" {
-		origins = strings.Split(s, ",")
+		for _, o := range strings.Split(s, ",") {
+			if trimmed := strings.TrimSpace(o); trimmed != "" {
+				origins = append(origins, trimmed)
+			}
+		}
 	}
 
 	for _, origin := range []string{"localhost", "127.0.0.1", "0.0.0.0"} {
@@ -358,10 +362,10 @@ func AsMap() map[string]EnvVar {
 		"GOOBLA_SHUTDOWN_TIMEOUT":   {"GOOBLA_SHUTDOWN_TIMEOUT", ShutdownTimeout(), "HTTP server shutdown timeout (default \"5s\")"},
 		"GOOBLA_MAX_LOADED_MODELS":  {"GOOBLA_MAX_LOADED_MODELS", MaxRunners(), "Maximum number of loaded models per GPU"},
 		"GOOBLA_MAX_QUEUE":          {"GOOBLA_MAX_QUEUE", MaxQueue(), "Maximum number of queued requests"},
-               "GOOBLA_MODELS": func() EnvVar {
-                       m, _ := Models()
-                       return EnvVar{"GOOBLA_MODELS", m, "The path to the models directory"}
-               }(),
+		"GOOBLA_MODELS": func() EnvVar {
+			m, _ := Models()
+			return EnvVar{"GOOBLA_MODELS", m, "The path to the models directory"}
+		}(),
 		"GOOBLA_CONFIG":          {"GOOBLA_CONFIG", String("GOOBLA_CONFIG")(), "Path to the configuration file"},
 		"GOOBLA_CONFIG_DIR":      {"GOOBLA_CONFIG_DIR", configDir(), "Base directory for configuration and models"},
 		"GOOBLA_NOHISTORY":       {"GOOBLA_NOHISTORY", NoHistory(), "Do not preserve readline history"},

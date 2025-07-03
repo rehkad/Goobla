@@ -214,7 +214,11 @@ func (s *Server) GenerateHandler(c *gin.Context) {
 	}
 
 	if req.Think != nil && !*req.Think && !slices.Contains(m.Capabilities(), model.CapabilityThinking) {
-		slog.Warn("model does not support thinking output", "model", req.Model)
+		msg := "model does not support thinking output"
+		if m.Config.ModelFamily == "qwen3" || model.ParseName(m.Name).Model == "deepseek-r1" {
+			msg += "; pull the model again to get the latest version with full thinking support"
+		}
+		slog.Warn(msg, "model", req.Model)
 	}
 
 	checkpointLoaded := time.Now()
