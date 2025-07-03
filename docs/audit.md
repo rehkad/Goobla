@@ -6,7 +6,7 @@ This document outlines observations and improvement suggestions based on a quick
 
 ### Profiling Endpoints Enabled by Default
 
-The server exposes Go's `pprof` handlers by default when `GOOBLA_PPROF` is unset or set to `on`. This happens in the server startup logic:
+The server previously exposed Go's `pprof` handlers by default when `GOOBLA_PPROF` was unset or set to `on`. This has since been changed so profiling is disabled unless explicitly enabled. The original code looked like this:
 
 ```go
 pprofAddr := strings.ToLower(envconfig.PprofAddr())
@@ -31,15 +31,18 @@ PprofAddr = String("GOOBLA_PPROF")
 
 _Source: `envconfig/config.go` lines 189‑191_
 
-Documentation reiterates that pprof is enabled by default:
+Documentation at the time reiterated that pprof was enabled by default:
 
-```
+```md
 ## Profiling
 By default the server exposes Go's pprof handlers on the main port. Set the
 environment variable `GOOBLA_PPROF` to `off` to disable these endpoints or
 specify a host and port such as `127.0.0.1:6060` to run pprof on a separate
 port.
 ```
+
+Current behavior disables pprof unless `GOOBLA_PPROF` is set to `on` or a custom
+address.
 
 _Source: `docs/development.md` lines 160‑166_
 

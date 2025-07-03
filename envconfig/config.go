@@ -260,8 +260,9 @@ var (
 	ContextLength = Uint("GOOBLA_CONTEXT_LENGTH", 4096)
 	// Auth enables authentication between the Goobla client and server
 	UseAuth = Bool("GOOBLA_AUTH")
-	// PprofAddr configures the pprof server address. Set to "off" to disable
-	// pprof or specify a custom address (e.g. 127.0.0.1:6060).
+	// PprofAddr configures the pprof server address. Leave empty or set to "off"
+	// to disable profiling, set to "on" to run pprof on the main port, or specify
+	// a custom address (e.g. 127.0.0.1:6060) to run pprof on a separate port.
 	PprofAddr = String("GOOBLA_PPROF")
 )
 
