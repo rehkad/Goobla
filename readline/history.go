@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/emirpasic/gods/v2/lists/arraylist"
+	"github.com/goobla/goobla/envconfig"
 )
 
 type History struct {
@@ -38,12 +39,7 @@ func NewHistory() (*History, error) {
 }
 
 func (h *History) Init() error {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return err
-	}
-
-	path := filepath.Join(home, ".goobla", "history")
+	path := filepath.Join(envconfig.ConfigDir(), "history")
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		return err
 	}

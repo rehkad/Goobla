@@ -14,6 +14,28 @@ import (
 	"time"
 )
 
+// configDir returns the base configuration directory for Goobla.
+// It first checks GOOBLA_CONFIG_DIR. If unset, it uses the user's
+// configuration directory as determined by os.UserConfigDir and
+// falls back to the home directory if necessary.
+func configDir() string {
+	if dir := Var("GOOBLA_CONFIG_DIR"); dir != "" {
+		return dir
+	}
+	if dir, err := os.UserConfigDir(); err == nil {
+		return filepath.Join(dir, "goobla")
+	}
+	if home, err := os.UserHomeDir(); err == nil {
+		return filepath.Join(home, ".goobla")
+	}
+	return ".goobla"
+}
+
+// ConfigDir exposes the configured directory for other packages.
+func ConfigDir() string {
+	return configDir()
+}
+
 // Host returns the scheme and host. Host can be configured via the GOOBLA_HOST environment variable.
 // Default is scheme "http" and host "127.0.0.1:11434"
 func Host() *url.URL {
@@ -86,13 +108,8 @@ func Models() (string, error) {
 		return s, nil
 	}
 
-	home, err := os.UserHomeDir()
-	if err != nil {
-		// use a relative directory if we cannot determine the home
-		return filepath.Join(".goobla", "models"), err
-	}
-
-	return filepath.Join(home, ".goobla", "models"), nil
+	dir := configDir()
+	return filepath.Join(dir, "models"), nil
 }
 
 // KeepAlive returns the duration that models stay loaded in memory. KeepAlive can be configured via the GOOBLA_KEEP_ALIVE environment variable.
@@ -290,6 +307,7 @@ func AsMap() map[string]EnvVar {
 			return EnvVar{"GOOBLA_MODELS", m, "The path to the models directory"}
 		}(),
 		"GOOBLA_CONFIG":          {"GOOBLA_CONFIG", String("GOOBLA_CONFIG")(), "Path to the configuration file"},
+		"GOOBLA_CONFIG_DIR":      {"GOOBLA_CONFIG_DIR", configDir(), "Base directory for configuration and models"},
 		"GOOBLA_NOHISTORY":       {"GOOBLA_NOHISTORY", NoHistory(), "Do not preserve readline history"},
 		"GOOBLA_NOPRUNE":         {"GOOBLA_NOPRUNE", NoPrune(), "Do not prune model blobs on startup"},
 		"GOOBLA_NUM_PARALLEL":    {"GOOBLA_NUM_PARALLEL", NumParallel(), "Maximum number of parallel requests"},
