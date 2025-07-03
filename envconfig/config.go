@@ -171,6 +171,38 @@ func RegistryTimeout() (d time.Duration) {
 	return d
 }
 
+func httpTimeout(key string, d time.Duration) time.Duration {
+	if s := Var(key); s != "" {
+		if v, err := time.ParseDuration(s); err == nil {
+			d = v
+		} else if n, err := strconv.ParseInt(s, 10, 64); err == nil {
+			d = time.Duration(n) * time.Second
+		}
+	}
+	if d <= 0 {
+		return time.Duration(math.MaxInt64)
+	}
+	return d
+}
+
+// ReadTimeout returns the HTTP server read timeout. It is configured via the
+// GOOBLA_HTTP_READ_TIMEOUT environment variable. Default is 30 seconds.
+func ReadTimeout() time.Duration {
+	return httpTimeout("GOOBLA_HTTP_READ_TIMEOUT", 30*time.Second)
+}
+
+// WriteTimeout returns the HTTP server write timeout. It is configured via the
+// GOOBLA_HTTP_WRITE_TIMEOUT environment variable. Default is 30 seconds.
+func WriteTimeout() time.Duration {
+	return httpTimeout("GOOBLA_HTTP_WRITE_TIMEOUT", 30*time.Second)
+}
+
+// IdleTimeout returns the HTTP server idle timeout. It is configured via the
+// GOOBLA_HTTP_IDLE_TIMEOUT environment variable. Default is 2 minutes.
+func IdleTimeout() time.Duration {
+	return httpTimeout("GOOBLA_HTTP_IDLE_TIMEOUT", 2*time.Minute)
+}
+
 func Bool(k string) func() bool {
 	return func() bool {
 		if s := Var(k); s != "" {
@@ -291,17 +323,20 @@ type EnvVar struct {
 
 func AsMap() map[string]EnvVar {
 	ret := map[string]EnvVar{
-		"GOOBLA_DEBUG":             {"GOOBLA_DEBUG", LogLevel(), "Show additional debug information (e.g. GOOBLA_DEBUG=1)"},
-		"GOOBLA_FLASH_ATTENTION":   {"GOOBLA_FLASH_ATTENTION", FlashAttention(), "Enabled flash attention"},
-		"GOOBLA_KV_CACHE_TYPE":     {"GOOBLA_KV_CACHE_TYPE", KvCacheType(), "Quantization type for the K/V cache (default: f16)"},
-		"GOOBLA_GPU_OVERHEAD":      {"GOOBLA_GPU_OVERHEAD", GpuOverhead(), "Reserve a portion of VRAM per GPU (bytes)"},
-		"GOOBLA_HOST":              {"GOOBLA_HOST", Host(), "IP Address for the goobla server (default 127.0.0.1:11434)"},
-		"GOOBLA_KEEP_ALIVE":        {"GOOBLA_KEEP_ALIVE", KeepAlive(), "The duration that models stay loaded in memory (default \"5m\")"},
-		"GOOBLA_LLM_LIBRARY":       {"GOOBLA_LLM_LIBRARY", LLMLibrary(), "Set LLM library to bypass autodetection"},
-		"GOOBLA_LOAD_TIMEOUT":      {"GOOBLA_LOAD_TIMEOUT", LoadTimeout(), "How long to allow model loads to stall before giving up (default \"5m\")"},
-		"GOOBLA_REGISTRY_TIMEOUT":  {"GOOBLA_REGISTRY_TIMEOUT", RegistryTimeout(), "HTTP read timeout for registry operations (default \"30s\")"},
-		"GOOBLA_MAX_LOADED_MODELS": {"GOOBLA_MAX_LOADED_MODELS", MaxRunners(), "Maximum number of loaded models per GPU"},
-		"GOOBLA_MAX_QUEUE":         {"GOOBLA_MAX_QUEUE", MaxQueue(), "Maximum number of queued requests"},
+		"GOOBLA_DEBUG":              {"GOOBLA_DEBUG", LogLevel(), "Show additional debug information (e.g. GOOBLA_DEBUG=1)"},
+		"GOOBLA_FLASH_ATTENTION":    {"GOOBLA_FLASH_ATTENTION", FlashAttention(), "Enabled flash attention"},
+		"GOOBLA_KV_CACHE_TYPE":      {"GOOBLA_KV_CACHE_TYPE", KvCacheType(), "Quantization type for the K/V cache (default: f16)"},
+		"GOOBLA_GPU_OVERHEAD":       {"GOOBLA_GPU_OVERHEAD", GpuOverhead(), "Reserve a portion of VRAM per GPU (bytes)"},
+		"GOOBLA_HOST":               {"GOOBLA_HOST", Host(), "IP Address for the goobla server (default 127.0.0.1:11434)"},
+		"GOOBLA_KEEP_ALIVE":         {"GOOBLA_KEEP_ALIVE", KeepAlive(), "The duration that models stay loaded in memory (default \"5m\")"},
+		"GOOBLA_LLM_LIBRARY":        {"GOOBLA_LLM_LIBRARY", LLMLibrary(), "Set LLM library to bypass autodetection"},
+		"GOOBLA_LOAD_TIMEOUT":       {"GOOBLA_LOAD_TIMEOUT", LoadTimeout(), "How long to allow model loads to stall before giving up (default \"5m\")"},
+		"GOOBLA_REGISTRY_TIMEOUT":   {"GOOBLA_REGISTRY_TIMEOUT", RegistryTimeout(), "HTTP read timeout for registry operations (default \"30s\")"},
+		"GOOBLA_HTTP_READ_TIMEOUT":  {"GOOBLA_HTTP_READ_TIMEOUT", ReadTimeout(), "HTTP server read timeout (default \"30s\")"},
+		"GOOBLA_HTTP_WRITE_TIMEOUT": {"GOOBLA_HTTP_WRITE_TIMEOUT", WriteTimeout(), "HTTP server write timeout (default \"30s\")"},
+		"GOOBLA_HTTP_IDLE_TIMEOUT":  {"GOOBLA_HTTP_IDLE_TIMEOUT", IdleTimeout(), "HTTP server idle timeout (default \"2m\")"},
+		"GOOBLA_MAX_LOADED_MODELS":  {"GOOBLA_MAX_LOADED_MODELS", MaxRunners(), "Maximum number of loaded models per GPU"},
+		"GOOBLA_MAX_QUEUE":          {"GOOBLA_MAX_QUEUE", MaxQueue(), "Maximum number of queued requests"},
 		func() EnvVar {
 			m, _ := Models()
 			return EnvVar{"GOOBLA_MODELS", m, "The path to the models directory"}

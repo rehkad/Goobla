@@ -346,3 +346,38 @@ func TestLogLevel(t *testing.T) {
 		})
 	}
 }
+
+func TestServerTimeouts(t *testing.T) {
+	type entry struct {
+		key string
+		def time.Duration
+		fn  func() time.Duration
+	}
+	tests := []entry{
+		{"GOOBLA_HTTP_READ_TIMEOUT", 30 * time.Second, ReadTimeout},
+		{"GOOBLA_HTTP_WRITE_TIMEOUT", 30 * time.Second, WriteTimeout},
+		{"GOOBLA_HTTP_IDLE_TIMEOUT", 2 * time.Minute, IdleTimeout},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.key, func(t *testing.T) {
+			cases := map[string]time.Duration{
+				"":    tt.def,
+				"1s":  time.Second,
+				"60":  60 * time.Second,
+				"0":   time.Duration(math.MaxInt64),
+				"-1":  time.Duration(math.MaxInt64),
+				"bad": tt.def,
+			}
+
+			for val, expect := range cases {
+				t.Run(val, func(t *testing.T) {
+					t.Setenv(tt.key, val)
+					if got := tt.fn(); got != expect {
+						t.Errorf("%s=%s: expected %s, got %s", tt.key, val, expect, got)
+					}
+				})
+			}
+		})
+	}
+}
