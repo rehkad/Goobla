@@ -359,9 +359,8 @@ func (s *Server) run(ctx context.Context) {
 		case <-ctx.Done():
 			return
 		default:
-			err := s.processBatch()
-			if err != nil {
-				panic(err)
+			if err := s.processBatch(); err != nil {
+				slog.Error("batch processing failed", "error", err)
 			}
 		}
 	}
@@ -876,7 +875,10 @@ func (s *Server) load(
 ) {
 	err := s.initModel(mpath, params, lpath, parallel, kvCacheType, kvSize, multiUserCache)
 	if err != nil {
-		panic(err)
+		slog.Error("failed to initialize model", "error", err)
+		s.status = llm.ServerStatusError
+		s.ready.Done()
+		return
 	}
 
 	slog.Debug("memory", "allocated", s.model.Backend().BackendMemory())
@@ -886,7 +888,10 @@ func (s *Server) load(
 			s.progress = progress
 		})
 	if err != nil {
-		panic(err)
+		slog.Error("failed to load model backend", "error", err)
+		s.status = llm.ServerStatusError
+		s.ready.Done()
+		return
 	}
 
 	s.status = llm.ServerStatusReady
