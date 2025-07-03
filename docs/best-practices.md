@@ -5,7 +5,7 @@ This document lists recommended practices when running or modifying Goobla.
 ## Security
 
 - **Disable profiling** unless explicitly required. Set `GOOBLA_PPROF=off` in production and run pprof on a separate port when needed.
-- **Protect registry and pull/push endpoints** behind authentication and TLS. Never expose them directly to the public Internet.
+- **Protect registry and pull/push endpoints** behind authentication and TLS. Set `GOOBLA_TLS_CERT` and `GOOBLA_TLS_KEY` to serve HTTPS and never expose these endpoints directly to the public Internet.
 - **Validate configuration values** at startup and fail fast on invalid settings.
 - **Avoid committing credentials**. Example keys in documentation are placeholders and should not be reused.
 

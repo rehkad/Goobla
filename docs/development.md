@@ -161,6 +161,6 @@ If the libraries are not found, Goobla will not run with any acceleration librar
 ## Profiling
 
 By default the server does **not** expose Go's pprof handlers. Set the
-environment variable `GOOBLA_PPROF` to `on` to enable them on the main port or
+environment variable `GOOBLA_PPROF` to `on` to enable them on the main port, or
 specify a host and port such as `127.0.0.1:6060` to run pprof on a separate
-port.
+port. Leave the variable unset or set to `off` in production.

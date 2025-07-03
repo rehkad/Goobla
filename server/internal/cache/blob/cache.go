@@ -14,6 +14,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/goobla/goobla/server/internal/internal/names"
@@ -57,6 +58,22 @@ type DiskCache struct {
 	now func() time.Time
 
 	testHookBeforeFinalWrite func(f *os.File)
+	mu                       sync.Mutex
+}
+
+func (c *DiskCache) lockFile(path string) (func(), error) {
+	lock := path + ".lock"
+	for i := 0; i < 20; i++ {
+		f, err := os.OpenFile(lock, os.O_CREATE|os.O_EXCL|os.O_RDWR, 0o644)
+		if err == nil {
+			return func() { os.Remove(lock); f.Close() }, nil
+		}
+		if !errors.Is(err, fs.ErrExist) {
+			return nil, err
+		}
+		time.Sleep(50 * time.Millisecond)
+	}
+	return nil, fmt.Errorf("timeout acquiring lock for %s", path)
 }
 
 // PutBytes is a convenience function for c.Put(d, strings.NewReader(s), int64(len(s))).
@@ -466,6 +483,11 @@ func (w *checkWriter) Write(p []byte) (int, error) {
 // copyNamedFile copies file into name, expecting it to have the given Digest
 // and size, if that file is not present already.
 func (c *DiskCache) copyNamedFile(name string, file io.Reader, out Digest, size int64) error {
+	unlock, err := c.lockFile(name)
+	if err != nil {
+		return err
+	}
+	defer unlock()
 	if err := os.MkdirAll(filepath.Dir(name), 0o777); err != nil {
 		return err
 	}

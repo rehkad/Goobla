@@ -106,7 +106,7 @@ const openai = new OpenAI({
   baseURL: 'http://localhost:11434/v1/',
 
   // required but ignored
-  apiKey: 'goobla',
+  apiKey: 'goobla', // placeholder key, do not use real credentials in code
 })
 
 const chatCompletion = await openai.chat.completions.create({
