@@ -161,10 +161,11 @@ Refer to the section [above](#how-do-i-configure-goobla-server) for how to set e
 ## Where is the configuration stored?
 
 - macOS: `~/Library/Application Support/Goobla/config.json`
-- Linux: `~/.goobla/config.json` (root: `/etc/goobla/config.json`)
-- Windows: `%LOCALAPPDATA%\Goobla\config.json`
+- Linux: `~/.config/goobla/config.json` (root: `/etc/goobla/config.json`)
+- Windows: `%AppData%\Goobla\config.json`
 
-Set the `GOOBLA_CONFIG` environment variable to override the location.
+Set the `GOOBLA_CONFIG` environment variable to override the location. The base
+directory can be changed with `GOOBLA_CONFIG_DIR`.
 
 ## How can I use Goobla with a proxy server?
 
@@ -213,8 +214,8 @@ Refer to the section [above](#how-do-i-configure-goobla-server) for how to set e
 ## Where are models stored?
 
 - macOS: `~/.goobla/models`
-- Linux: `/usr/share/goobla/.goobla/models`
-- Windows: `C:\Users\%username%\.goobla\models`
+- Linux: `~/.config/goobla/models`
+- Windows: `%AppData%\Goobla\models`
 
 ### How do I set them to a different location?
 

@@ -3,6 +3,8 @@ package store
 import (
 	"os"
 	"path/filepath"
+
+	"github.com/goobla/goobla/envconfig"
 )
 
 func getStorePath() string {
@@ -10,6 +12,6 @@ func getStorePath() string {
 		return s
 	}
 
-	localAppData := os.Getenv("LOCALAPPDATA")
-	return filepath.Join(localAppData, "Goobla", "config.json")
+	dir := envconfig.ConfigDir()
+	return filepath.Join(dir, "config.json")
 }
