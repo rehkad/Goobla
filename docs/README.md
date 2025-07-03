@@ -18,4 +18,5 @@
 
 * [Troubleshooting Guide](./troubleshooting.md)
 * [FAQ](./faq.md)
+* [Best Practices](./best-practices.md)
 * [Development guide](./development.md)

@@ -358,10 +358,10 @@ func AsMap() map[string]EnvVar {
 		"GOOBLA_SHUTDOWN_TIMEOUT":   {"GOOBLA_SHUTDOWN_TIMEOUT", ShutdownTimeout(), "HTTP server shutdown timeout (default \"5s\")"},
 		"GOOBLA_MAX_LOADED_MODELS":  {"GOOBLA_MAX_LOADED_MODELS", MaxRunners(), "Maximum number of loaded models per GPU"},
 		"GOOBLA_MAX_QUEUE":          {"GOOBLA_MAX_QUEUE", MaxQueue(), "Maximum number of queued requests"},
-		func() EnvVar {
-			m, _ := Models()
-			return EnvVar{"GOOBLA_MODELS", m, "The path to the models directory"}
-		}(),
+               "GOOBLA_MODELS": func() EnvVar {
+                       m, _ := Models()
+                       return EnvVar{"GOOBLA_MODELS", m, "The path to the models directory"}
+               }(),
 		"GOOBLA_CONFIG":          {"GOOBLA_CONFIG", String("GOOBLA_CONFIG")(), "Path to the configuration file"},
 		"GOOBLA_CONFIG_DIR":      {"GOOBLA_CONFIG_DIR", configDir(), "Base directory for configuration and models"},
 		"GOOBLA_NOHISTORY":       {"GOOBLA_NOHISTORY", NoHistory(), "Do not preserve readline history"},
