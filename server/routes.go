@@ -51,6 +51,15 @@ func experimentEnabled(name string) bool {
 
 var useClient2 = experimentEnabled("client2")
 
+func newHTTPServer(h http.Handler) *http.Server {
+	return &http.Server{
+		Handler:      h,
+		ReadTimeout:  envconfig.ReadTimeout(),
+		WriteTimeout: envconfig.WriteTimeout(),
+		IdleTimeout:  envconfig.IdleTimeout(),
+	}
+}
+
 var mode string = gin.DebugMode
 
 type Server struct {
@@ -1276,13 +1285,13 @@ func Serve(ln net.Listener) error {
 		// Use DefaultServeMux so we get net/http/pprof handlers on the
 		// main server.
 		http.Handle("/", h)
-		srvr = &http.Server{Handler: nil}
+		srvr = newHTTPServer(nil)
 	case "off", "false", "0":
-		srvr = &http.Server{Handler: h}
+		srvr = newHTTPServer(h)
 	default:
 		// Serve application routes on the main server and start pprof on
 		// a separate port using the default mux.
-		srvr = &http.Server{Handler: h}
+		srvr = newHTTPServer(h)
 		go func() {
 			slog.Info("pprof listening", "addr", pprofAddr)
 			if err := http.ListenAndServe(pprofAddr, nil); err != nil && !errors.Is(err, http.ErrServerClosed) {
