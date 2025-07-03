@@ -135,6 +135,25 @@ func LoadTimeout() (loadTimeout time.Duration) {
 	return loadTimeout
 }
 
+// RegistryTimeout returns the HTTP read timeout used for registry
+// operations. RegistryTimeout can be configured via the
+// GOOBLA_REGISTRY_TIMEOUT environment variable. Zero or negative values are
+// treated as infinite. Default is 30 seconds.
+func RegistryTimeout() (d time.Duration) {
+	d = 30 * time.Second
+	if s := Var("GOOBLA_REGISTRY_TIMEOUT"); s != "" {
+		if v, err := time.ParseDuration(s); err == nil {
+			d = v
+		} else if n, err := strconv.ParseInt(s, 10, 64); err == nil {
+			d = time.Duration(n) * time.Second
+		}
+	}
+	if d <= 0 {
+		return time.Duration(math.MaxInt64)
+	}
+	return d
+}
+
 func Bool(k string) func() bool {
 	return func() bool {
 		if s := Var(k); s != "" {
@@ -263,6 +282,7 @@ func AsMap() map[string]EnvVar {
 		"GOOBLA_KEEP_ALIVE":        {"GOOBLA_KEEP_ALIVE", KeepAlive(), "The duration that models stay loaded in memory (default \"5m\")"},
 		"GOOBLA_LLM_LIBRARY":       {"GOOBLA_LLM_LIBRARY", LLMLibrary(), "Set LLM library to bypass autodetection"},
 		"GOOBLA_LOAD_TIMEOUT":      {"GOOBLA_LOAD_TIMEOUT", LoadTimeout(), "How long to allow model loads to stall before giving up (default \"5m\")"},
+		"GOOBLA_REGISTRY_TIMEOUT":  {"GOOBLA_REGISTRY_TIMEOUT", RegistryTimeout(), "HTTP read timeout for registry operations (default \"30s\")"},
 		"GOOBLA_MAX_LOADED_MODELS": {"GOOBLA_MAX_LOADED_MODELS", MaxRunners(), "Maximum number of loaded models per GPU"},
 		"GOOBLA_MAX_QUEUE":         {"GOOBLA_MAX_QUEUE", MaxQueue(), "Maximum number of queued requests"},
 		func() EnvVar {

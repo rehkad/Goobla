@@ -259,6 +259,27 @@ func TestLoadTimeout(t *testing.T) {
 	}
 }
 
+func TestRegistryTimeout(t *testing.T) {
+	defaultTimeout := 30 * time.Second
+	cases := map[string]time.Duration{
+		"":    defaultTimeout,
+		"1s":  time.Second,
+		"60":  60 * time.Second,
+		"0":   time.Duration(math.MaxInt64),
+		"-1":  time.Duration(math.MaxInt64),
+		"bad": defaultTimeout,
+	}
+
+	for val, expect := range cases {
+		t.Run(val, func(t *testing.T) {
+			t.Setenv("GOOBLA_REGISTRY_TIMEOUT", val)
+			if got := RegistryTimeout(); got != expect {
+				t.Errorf("%s: expected %s, got %s", val, expect, got)
+			}
+		})
+	}
+}
+
 func TestVar(t *testing.T) {
 	cases := map[string]string{
 		"value":       "value",

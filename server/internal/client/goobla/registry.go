@@ -36,6 +36,7 @@ import (
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/sync/errgroup"
 
+	"github.com/goobla/goobla/envconfig"
 	"github.com/goobla/goobla/server/internal/cache/blob"
 	"github.com/goobla/goobla/server/internal/internal/names"
 
@@ -272,7 +273,7 @@ func DefaultRegistry() (*Registry, error) {
 	}
 
 	var rc Registry
-	rc.ReadTimeout = 30 * time.Second
+	rc.ReadTimeout = envconfig.RegistryTimeout()
 	rc.UserAgent = UserAgent()
 	rc.Key, err = ssh.ParseRawPrivateKey(keyPEM)
 	if err != nil {
