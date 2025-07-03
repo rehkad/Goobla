@@ -357,6 +357,7 @@ func TestServerTimeouts(t *testing.T) {
 		{"GOOBLA_HTTP_READ_TIMEOUT", 30 * time.Second, ReadTimeout},
 		{"GOOBLA_HTTP_WRITE_TIMEOUT", 30 * time.Second, WriteTimeout},
 		{"GOOBLA_HTTP_IDLE_TIMEOUT", 2 * time.Minute, IdleTimeout},
+		{"GOOBLA_SHUTDOWN_TIMEOUT", 5 * time.Second, ShutdownTimeout},
 	}
 
 	for _, tt := range tests {

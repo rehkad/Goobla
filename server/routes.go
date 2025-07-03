@@ -1312,7 +1312,11 @@ func Serve(ln net.Listener) error {
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
 		<-signals
-		srvr.Close()
+		ctxShutdown, cancel := context.WithTimeout(context.Background(), envconfig.ShutdownTimeout())
+		defer cancel()
+		if err := srvr.Shutdown(ctxShutdown); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			slog.Error("server shutdown error", "error", err)
+		}
 		schedDone()
 		sched.unloadAllRunners()
 		done()

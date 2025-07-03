@@ -203,6 +203,12 @@ func IdleTimeout() time.Duration {
 	return httpTimeout("GOOBLA_HTTP_IDLE_TIMEOUT", 2*time.Minute)
 }
 
+// ShutdownTimeout returns the HTTP server shutdown timeout. It is configured via
+// the GOOBLA_SHUTDOWN_TIMEOUT environment variable. Default is 5 seconds.
+func ShutdownTimeout() time.Duration {
+	return httpTimeout("GOOBLA_SHUTDOWN_TIMEOUT", 5*time.Second)
+}
+
 func Bool(k string) func() bool {
 	return func() bool {
 		if s := Var(k); s != "" {
@@ -335,6 +341,7 @@ func AsMap() map[string]EnvVar {
 		"GOOBLA_HTTP_READ_TIMEOUT":  {"GOOBLA_HTTP_READ_TIMEOUT", ReadTimeout(), "HTTP server read timeout (default \"30s\")"},
 		"GOOBLA_HTTP_WRITE_TIMEOUT": {"GOOBLA_HTTP_WRITE_TIMEOUT", WriteTimeout(), "HTTP server write timeout (default \"30s\")"},
 		"GOOBLA_HTTP_IDLE_TIMEOUT":  {"GOOBLA_HTTP_IDLE_TIMEOUT", IdleTimeout(), "HTTP server idle timeout (default \"2m\")"},
+		"GOOBLA_SHUTDOWN_TIMEOUT":   {"GOOBLA_SHUTDOWN_TIMEOUT", ShutdownTimeout(), "HTTP server shutdown timeout (default \"5s\")"},
 		"GOOBLA_MAX_LOADED_MODELS":  {"GOOBLA_MAX_LOADED_MODELS", MaxRunners(), "Maximum number of loaded models per GPU"},
 		"GOOBLA_MAX_QUEUE":          {"GOOBLA_MAX_QUEUE", MaxQueue(), "Maximum number of queued requests"},
 		func() EnvVar {

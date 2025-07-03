@@ -68,7 +68,9 @@ The `Processor` column will show which memory the model was loaded in to:
 
 ## How do I configure Goobla server?
 
-Goobla server can be configured with environment variables.
+Goobla server can be configured with environment variables. Common variables
+include `GOOBLA_HOST`, `GOOBLA_KEEP_ALIVE`, and `GOOBLA_SHUTDOWN_TIMEOUT` which
+controls how long the server waits for active connections to finish on exit.
 
 ### Setting environment variables on Mac
 
