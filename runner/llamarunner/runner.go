@@ -317,7 +317,8 @@ func (s *Server) run(ctx context.Context) {
 	// but it is better for performance to allocate them once here
 	tokenBatch, err := llama.NewBatch(s.batchSize, len(s.seqs), 0)
 	if err != nil {
-		panic(err)
+		slog.Error("failed to create token batch", "error", err)
+		return
 	}
 	defer tokenBatch.Free()
 
@@ -326,7 +327,8 @@ func (s *Server) run(ctx context.Context) {
 	if embedBatchSize != 0 {
 		embedBatch, err = llama.NewBatch(embedBatchSize, len(s.seqs), s.image.EmbedSize(s.lc))
 		if err != nil {
-			panic(err)
+			slog.Error("failed to create embed batch", "error", err)
+			return
 		}
 		defer embedBatch.Free()
 	} else {
@@ -338,9 +340,8 @@ func (s *Server) run(ctx context.Context) {
 		case <-ctx.Done():
 			return
 		default:
-			err := s.processBatch(tokenBatch, embedBatch)
-			if err != nil {
-				panic(err)
+			if err := s.processBatch(tokenBatch, embedBatch); err != nil {
+				slog.Error("batch processing failed", "error", err)
 			}
 
 			tokenBatch.Clear()
@@ -748,20 +749,28 @@ func (s *Server) loadModel(
 	var err error
 	s.model, err = llama.LoadModelFromFile(mpath, params)
 	if err != nil {
-		panic(err)
+		slog.Error("failed to load model", "error", err)
+		s.status = llm.ServerStatusError
+		s.ready.Done()
+		return
 	}
 
 	ctxParams := llama.NewContextParams(kvSize, s.batchSize*s.parallel, s.parallel, threads, flashAttention, kvCacheType)
 	s.lc, err = llama.NewContextWithModel(s.model, ctxParams)
 	if err != nil {
-		panic(err)
+		slog.Error("failed to create context", "error", err)
+		s.status = llm.ServerStatusError
+		s.ready.Done()
+		return
 	}
 
 	if lpath.String() != "" {
 		for _, path := range lpath {
-			err := s.model.ApplyLoraFromFile(s.lc, path, 1.0, threads)
-			if err != nil {
-				panic(err)
+			if err := s.model.ApplyLoraFromFile(s.lc, path, 1.0, threads); err != nil {
+				slog.Error("failed to apply lora", "path", path, "error", err)
+				s.status = llm.ServerStatusError
+				s.ready.Done()
+				return
 			}
 		}
 	}
@@ -770,13 +779,19 @@ func (s *Server) loadModel(
 		var err error
 		s.image, err = NewImageContext(s.lc, ppath)
 		if err != nil {
-			panic(err)
+			slog.Error("failed to load image context", "error", err)
+			s.status = llm.ServerStatusError
+			s.ready.Done()
+			return
 		}
 	}
 
 	s.cache, err = NewInputCache(s.lc, kvSize, s.parallel, multiUserCache)
 	if err != nil {
-		panic(err)
+		slog.Error("failed to allocate cache", "error", err)
+		s.status = llm.ServerStatusError
+		s.ready.Done()
+		return
 	}
 
 	s.status = llm.ServerStatusReady
