@@ -36,27 +36,39 @@ func keyPath() (string, error) {
 	return filepath.Join(home, ".goobla", defaultPrivateKey), nil
 }
 
+// loadPrivateKey reads and parses the configured private key. It returns an
+// ssh.Signer that can be used for public key retrieval or signing operations.
+// The path to the key may be overridden by the GOOBLA_PRIVATE_KEY environment
+// variable.
+func loadPrivateKey() (ssh.Signer, error) {
+	path, err := keyPath()
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := os.ReadFile(path)
+	if err != nil {
+		slog.Info(fmt.Sprintf("Failed to load private key: %v", err))
+		return nil, err
+	}
+
+	signer, err := ssh.ParsePrivateKey(data)
+	if err != nil {
+		return nil, err
+	}
+	return signer, nil
+}
+
 // GetPublicKey returns the SSH public key corresponding to the configured
 // private key. The path can be overridden by the GOOBLA_PRIVATE_KEY environment
 // variable.
 func GetPublicKey() (string, error) {
-	keyPath, err := keyPath()
+	signer, err := loadPrivateKey()
 	if err != nil {
 		return "", err
 	}
 
-	privateKeyFile, err := os.ReadFile(keyPath)
-	if err != nil {
-		slog.Info(fmt.Sprintf("Failed to load private key: %v", err))
-		return "", err
-	}
-
-	privateKey, err := ssh.ParsePrivateKey(privateKeyFile)
-	if err != nil {
-		return "", err
-	}
-
-	publicKey := ssh.MarshalAuthorizedKey(privateKey.PublicKey())
+	publicKey := ssh.MarshalAuthorizedKey(signer.PublicKey())
 
 	return strings.TrimSpace(string(publicKey)), nil
 }
@@ -75,30 +87,19 @@ func NewNonce(r io.Reader, length int) (string, error) {
 // string of the form "<public_key>:<signature>". The private key path can be
 // overridden by the GOOBLA_PRIVATE_KEY environment variable.
 func Sign(ctx context.Context, bts []byte) (string, error) {
-	keyPath, err := keyPath()
-	if err != nil {
-		return "", err
-	}
-
-	privateKeyFile, err := os.ReadFile(keyPath)
-	if err != nil {
-		slog.Info(fmt.Sprintf("Failed to load private key: %v", err))
-		return "", err
-	}
-
-	privateKey, err := ssh.ParsePrivateKey(privateKeyFile)
+	signer, err := loadPrivateKey()
 	if err != nil {
 		return "", err
 	}
 
 	// get the pubkey, but remove the type
-	publicKey := ssh.MarshalAuthorizedKey(privateKey.PublicKey())
+	publicKey := ssh.MarshalAuthorizedKey(signer.PublicKey())
 	parts := bytes.Split(publicKey, []byte(" "))
 	if len(parts) < 2 {
 		return "", errors.New("malformed public key")
 	}
 
-	signedData, err := privateKey.Sign(rand.Reader, bts)
+	signedData, err := signer.Sign(rand.Reader, bts)
 	if err != nil {
 		return "", err
 	}
