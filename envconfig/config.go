@@ -276,6 +276,10 @@ var (
 	ContextLength = Uint("GOOBLA_CONTEXT_LENGTH", 4096)
 	// Auth enables authentication between the Goobla client and server
 	UseAuth = Bool("GOOBLA_AUTH")
+	// TLSCert specifies a path to a TLS certificate to enable HTTPS
+	TLSCert = String("GOOBLA_TLS_CERT")
+	// TLSKey specifies the TLS private key when HTTPS is enabled
+	TLSKey = String("GOOBLA_TLS_KEY")
 	// PprofAddr configures the pprof server address. Leave empty or set to "off"
 	// to disable profiling, set to "on" to run pprof on the main port, or specify
 	// a custom address (e.g. 127.0.0.1:6060) to run pprof on a separate port.
@@ -377,6 +381,8 @@ func AsMap() map[string]EnvVar {
 		"GOOBLA_CONTEXT_LENGTH":  {"GOOBLA_CONTEXT_LENGTH", ContextLength(), "Context length to use unless otherwise specified (default: 4096)"},
 		"GOOBLA_NEW_ENGINE":      {"GOOBLA_NEW_ENGINE", NewEngine(), "Enable the new Goobla engine"},
 		"GOOBLA_PPROF":           {"GOOBLA_PPROF", PprofAddr(), "Bind pprof to this address or 'off' to disable"},
+		"GOOBLA_TLS_CERT":        {"GOOBLA_TLS_CERT", TLSCert(), "Path to TLS certificate"},
+		"GOOBLA_TLS_KEY":         {"GOOBLA_TLS_KEY", TLSKey(), "Path to TLS private key"},
 
 		// Informational
 		"HTTP_PROXY":  {"HTTP_PROXY", String("HTTP_PROXY")(), "HTTP proxy"},
@@ -414,4 +420,27 @@ func Values() map[string]string {
 // Var returns an environment variable stripped of leading and trailing quotes or spaces
 func Var(key string) string {
 	return strings.Trim(strings.TrimSpace(os.Getenv(key)), "\"'")
+}
+
+// Validate checks environment configuration values for basic correctness.
+func Validate() error {
+	h := Host()
+	_, port, _ := net.SplitHostPort(h.Host)
+	if n, err := strconv.ParseInt(port, 10, 32); err != nil || n < 0 || n > 65535 {
+		return fmt.Errorf("invalid GOOBLA_HOST port: %s", port)
+	}
+
+	cert, key := TLSCert(), TLSKey()
+	if cert != "" || key != "" {
+		if cert == "" || key == "" {
+			return fmt.Errorf("both GOOBLA_TLS_CERT and GOOBLA_TLS_KEY must be set")
+		}
+		if _, err := os.Stat(cert); err != nil {
+			return fmt.Errorf("GOOBLA_TLS_CERT: %w", err)
+		}
+		if _, err := os.Stat(key); err != nil {
+			return fmt.Errorf("GOOBLA_TLS_KEY: %w", err)
+		}
+	}
+	return nil
 }

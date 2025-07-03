@@ -1235,6 +1235,9 @@ func (s *Server) GenerateRoutes(logger *slog.Logger, rc *goobla.Registry) (http.
 }
 
 func Serve(ln net.Listener) error {
+	if err := envconfig.Validate(); err != nil {
+		return err
+	}
 	slog.SetDefault(logutil.NewLogger(os.Stderr, envconfig.LogLevel()))
 	slog.Info("server config", "env", envconfig.Values())
 
@@ -1309,7 +1312,11 @@ func Serve(ln net.Listener) error {
 	sched := InitScheduler(schedCtx)
 	s.sched = sched
 
-	slog.Info(fmt.Sprintf("Listening on %s (version %s)", ln.Addr(), version.Version))
+	proto := "http"
+	if envconfig.TLSCert() != "" {
+		proto = "https"
+	}
+	slog.Info(fmt.Sprintf("Listening on %s (%s, version %s)", ln.Addr(), proto, version.Version))
 
 	// listen for a ctrl+c and stop any loaded llm
 	signals := make(chan os.Signal, 1)
@@ -1337,7 +1344,11 @@ func Serve(ln net.Listener) error {
 	gpus := discover.GetGPUInfo()
 	gpus.LogDetails()
 
-	err = srvr.Serve(ln)
+	if envconfig.TLSCert() != "" {
+		err = srvr.ServeTLS(ln, envconfig.TLSCert(), envconfig.TLSKey())
+	} else {
+		err = srvr.Serve(ln)
+	}
 	// If server is closed from the signal handler, wait for the ctx to be done
 	// otherwise error out quickly
 	if !errors.Is(err, http.ErrServerClosed) {
