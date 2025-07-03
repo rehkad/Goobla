@@ -4,12 +4,14 @@ import (
 	"io"
 	"log/slog"
 	"path/filepath"
+
+	"github.com/goobla/goobla/envconfig"
 )
 
 const LevelTrace slog.Level = -8
 
 func NewLogger(w io.Writer, level slog.Level) *slog.Logger {
-	return slog.New(slog.NewTextHandler(w, &slog.HandlerOptions{
+	opts := &slog.HandlerOptions{
 		Level:     level,
 		AddSource: true,
 		ReplaceAttr: func(_ []string, attr slog.Attr) slog.Attr {
@@ -25,5 +27,10 @@ func NewLogger(w io.Writer, level slog.Level) *slog.Logger {
 			}
 			return attr
 		},
-	}))
+	}
+
+	if envconfig.LogFormat() == "json" {
+		return slog.New(slog.NewJSONHandler(w, opts))
+	}
+	return slog.New(slog.NewTextHandler(w, opts))
 }
