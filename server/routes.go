@@ -1281,12 +1281,12 @@ func Serve(ln net.Listener) error {
 	pprofAddr := strings.ToLower(envconfig.PprofAddr())
 	var srvr *http.Server
 	switch pprofAddr {
-	case "", "on":
+	case "on":
 		// Use DefaultServeMux so we get net/http/pprof handlers on the
 		// main server.
 		http.Handle("/", h)
 		srvr = newHTTPServer(nil)
-	case "off", "false", "0":
+	case "", "off", "false", "0":
 		srvr = newHTTPServer(h)
 	default:
 		// Serve application routes on the main server and start pprof on
