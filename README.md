@@ -29,6 +29,12 @@ curl -fsSL https://goobla.com/install.sh | sh
 ```
 > [!WARNING]
 > Inspect the script or verify its checksum before running. You can download the script from [install.sh](https://github.com/goobla/goobla/blob/main/scripts/install.sh) to review it first.
+> To check the checksum locally:
+> ```shell
+> curl -fsSL https://goobla.com/install.sh -o install.sh
+> sha256sum install.sh
+> ```
+> Compare the output against the value published on the releases page before running `sh install.sh`.
 
 [Manual install instructions](https://github.com/goobla/goobla/blob/main/docs/linux.md)
 
